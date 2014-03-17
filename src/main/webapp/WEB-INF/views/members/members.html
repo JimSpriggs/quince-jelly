@@ -1,7 +1,10 @@
 <!DOCTYPE html>
-<html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+      
 <head>
-    <title th:text="#{view.index.title}">Welcome!</title>
+    <title th:text="#{view.index.title}">Members</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
     <link href="../../../resources/css/core.css" rel="stylesheet" media="screen" th:href="@{/resources/css/core.css}" />
@@ -16,8 +19,26 @@
         <!-- /* The message code is returned from the @Controller */ -->
         <div th:replace="fragments/alert :: alert (type=${#strings.toLowerCase(message.type)}, message=#{${message.message}(${#authentication.name})})">&nbsp;</div>
     </th:block>
-    <img src="/resources/images/Certificate-VG-Logo.png" th:src="@{/resources/images/Certificate-VG-Logo.png}" />
-    <p>Welcome.</p>
+    
+    <table border="1">
+      <tr>
+        <th>Member No</th>
+        <th>Title</th>
+        <th>First Name</th>
+        <th>Surname</th>
+        <th>Investment</th>
+        <th>Email</th>
+      </tr>
+      <tr th:each="member : ${members}">
+        <td align="right" th:text="${member.memberNo}">123</td>
+        <td th:text="${member.title}">Mr</td>
+        <td th:text="${member.firstName}">James</td>
+        <td th:text="${member.surname}">Spriggs</td>
+        <td th:text="${member.totalInvestment}">1,500</td>
+        <td th:text="${member.email}">jhurst1970@gmail.com</td>
+      </tr>
+    </table>
+      
 </div>
 </body>
 </html>

@@ -21,7 +21,7 @@ public class CertificateController {
     @ResponseStatus(value = HttpStatus.OK)
 //    @ResponseBody
     public String generateCertificates(HttpServletRequest request) {
-    	certificateService.generateCertificate(request);
+//    	certificateService.generateCertificate(request);
     	return "members/members";
     }
 

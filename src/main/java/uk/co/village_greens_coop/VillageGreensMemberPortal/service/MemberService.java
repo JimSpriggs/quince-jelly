@@ -34,9 +34,13 @@ public class MemberService {
 	@PostConstruct	
 	protected void initialize() {
 		memberRepository.save(
+				new Member("Ms", "Denise", "McAvoy", "denise@village-greens-coop.co.uk", "76 Clifton Road", "Prestwich", "Manchester", null, "M25 3HR", "19/05/1970", 10000L, true));
+		memberRepository.save(
 			new Member("Mr", "John", "Hurst", "jhurst1970@gmail.com", "76 Clifton Road", "Prestwich", "Manchester", null, "M25 3HR", "18/07/1970", 500L, true));
 		memberRepository.save(
-			new Member("Mrs", "Rebecca", "Hurst", "jhurst1970@gmail.com", "76 Clifton Road", "Prestwich", "Manchester", null, "M25 3HR", "19/05/1970", 500L, true));
+			new Member("Mrs", "Rebecca", "Hurst", "rebeccajphillips8@gmail.com", "76 Clifton Road", "Prestwich", "Manchester", null, "M25 3HR", "19/05/1970", 500L, true));
+		memberRepository.save(
+				new Member("Mr", "Test", "Member", "whoever@wherever.com", "76 Clifton Road", "Prestwich", "Manchester", null, "M25 3HR", "19/05/1970", 99999L, true));
 		
 		
 	}
@@ -69,28 +73,29 @@ public class MemberService {
 	public String generateMemberCertificate(Member member) throws IOException {
 		String certFileName = String.format("VillageGreensMemberCertificate-%d.pdf", member.getMemberNo());
 		FileOutputStream fos = new FileOutputStream(String.format("/Users/john/dev/" + certFileName, member.getMemberNo()));
-		byte[] certificateBytes = certificateService.generateCertificate(member);
+		byte[] certificateBytes = certificateService.generateCertificateFromTemplate(member, "certificate-draft.pdf");
 		fos.write(certificateBytes);
 		fos.close();
 		return certFileName;
 	}
 	
 	public void sendCertificateToMember(Member member, String certFileName) {
-//		try {
-//			final JavaMailSender javaMailSender = (JavaMailSender)mailSender;
-//			final MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-//			final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true);
-//			message.setFrom("jhurst1970@gmail.com");
+		try {
+			final JavaMailSender javaMailSender = (JavaMailSender)mailSender;
+			final MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+			final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true);
+			message.setFrom("jhurst1970@gmail.com");
 //			message.setTo(member.getEmail());
-//			message.setSubject("Village Greens Member Share Certificate");
-//			message.setText(String.format("Dear %s %s", member.getTitle(), member.getSurname()) + "\n\n"
-//					+ "Please find attached your Village Greens Cooperative share certificate.\n\n"
-//					+ "Sincerely\n\n"
-//					+ "John Hurst\n");
-//			message.addAttachment(certFileName, new File("/Users/john/dev/" + certFileName));
-//			javaMailSender.send(mimeMessage);
-//		} catch (MessagingException e) {
-//			e.printStackTrace();
-//		}
+			message.setTo("denise@village-greens-coop.co.uk");
+			message.setSubject("Your Village Greens Share Certificate");
+			message.setText(String.format("Dear %s %s", member.getTitle(), member.getSurname()) + "\n\n"
+					+ "Please find attached your Village Greens Cooperative share certificate.\n\n"
+					+ "Yours faithfully\n\n"
+					+ "Village Greens Treasurer\n");
+			message.addAttachment(certFileName, new File("/Users/john/dev/" + certFileName));
+			javaMailSender.send(mimeMessage);
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
 	}
 }

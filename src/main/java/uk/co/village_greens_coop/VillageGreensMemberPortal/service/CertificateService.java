@@ -3,6 +3,9 @@ package uk.co.village_greens_coop.VillageGreensMemberPortal.service;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,10 @@ import com.itextpdf.text.Font.FontFamily;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.PdfWriter;
 
 @Service
@@ -80,7 +87,7 @@ public class CertificateService {
             
             Chunk shareCertNumberChunk1 = new Chunk("Share Certificate Number: ", fieldLabelFont);
             paragraph2.add(shareCertNumberChunk1);
-            Chunk shareCertNumberChunk2 = new Chunk(String.format("%05d", member.getMemberNo()), fieldValueFont);
+            Chunk shareCertNumberChunk2 = new Chunk(new DecimalFormat("00000").format(member.getMemberNo()), fieldValueFont);
             paragraph2.add(shareCertNumberChunk2);
 
             document.add(paragraph1);
@@ -96,4 +103,64 @@ public class CertificateService {
         return retval;
 	}
 	
+	public byte[] generateCertificateFromTemplate(Member member, String templateFileName) {
+		System.out.println("Called cert service generateCertificateFromTemplate()");
+		byte[] retval = null;
+		PdfReader reader = null;
+		PdfStamper stamper = null;
+		
+    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		
+		String templatePath = "images/" + templateFileName;
+		try {
+			reader = new PdfReader(new ClassPathResource(templatePath).getInputStream());
+            stamper = new PdfStamper(reader, baos);
+		} catch (IOException e) {
+        	System.out.println("IOException caught reading template " + templatePath + ": " + e.getMessage());
+        	return retval;
+		} catch (DocumentException e) {
+        	System.out.println("DocumentException caught reading template " + templatePath + ": " + e.getMessage());
+        	return retval;
+		}
+
+		// get the content layer for stamping over the existing content
+		try {
+			PdfContentByte content = stamper.getOverContent(1);
+			content.beginText();
+			content.setFontAndSize(
+					BaseFont.createFont(BaseFont.HELVETICA_BOLD, 
+										BaseFont.WINANSI, 
+										BaseFont.EMBEDDED), 
+										14F);
+			content.showTextAligned(PdfContentByte.ALIGN_RIGHT, 
+					new DecimalFormat("00000").format(member.getMemberNo()),
+					370,312,0);
+			content.showTextAligned(PdfContentByte.ALIGN_RIGHT, 
+					new DecimalFormat("###,###").format(member.getTotalInvestment()),
+					370,285,0);
+			content.showTextAligned(PdfContentByte.ALIGN_CENTER, 
+					String.format("%s %s", member.getFirstName(), member.getSurname()),
+					420,195,0);
+			content.showTextAligned(PdfContentByte.ALIGN_CENTER, 
+					new DecimalFormat("###,###.00").format(member.getTotalInvestment()),
+					420,153,0);
+			content.showTextAligned(PdfContentByte.ALIGN_CENTER, 
+					String.format("%s", new SimpleDateFormat("dd MMMM yyyy").format(new Date())),
+					350,71,0);
+			
+			content.endText();
+			stamper.close();
+		} catch (DocumentException e1) {
+			System.out.println("DocumentException caught creating font");
+			e1.printStackTrace();
+			return retval;
+		} catch (IOException e1) {
+			System.out.println("IOException caught creating font");
+			e1.printStackTrace();
+			return retval;
+		}
+
+        retval = baos.toByteArray();
+        return retval;
+	}
 }

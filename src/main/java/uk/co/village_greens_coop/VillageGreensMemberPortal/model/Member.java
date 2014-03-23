@@ -1,11 +1,15 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.model;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 @SuppressWarnings("serial")
 @Entity
@@ -39,7 +43,7 @@ public class Member implements java.io.Serializable {
 	@Column
 	private String dob;
 	@Column
-	private Long totalInvestment;
+	private BigDecimal totalInvestment;
 	@Column
 	private Boolean rollCall;
 	
@@ -50,7 +54,7 @@ public class Member implements java.io.Serializable {
 			String surname, String email, 
 			String addressLine1, String addressLine2,
 			String addressLine3, String addressLine4, String postcode,
-			String dob, Long totalInvestment, Boolean rollCall) {
+			String dob, BigDecimal totalInvestment, Boolean rollCall) {
 		super();
 		this.title = title;
 		this.firstName = firstName;
@@ -154,11 +158,11 @@ public class Member implements java.io.Serializable {
 		this.dob = dob;
 	}
 
-	public Long getTotalInvestment() {
+	public BigDecimal getTotalInvestment() {
 		return totalInvestment;
 	}
 
-	public void setTotalInvestment(Long totalInvestment) {
+	public void setTotalInvestment(BigDecimal totalInvestment) {
 		this.totalInvestment = totalInvestment;
 	}
 
@@ -170,4 +174,13 @@ public class Member implements java.io.Serializable {
 		this.rollCall = rollCall;
 	}
 	
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+        		.append("memberno", memberNo)
+                .append("firstName", firstName)
+                .append("surname", surname)
+                .append("email", email)
+                .append("totalInvestment", totalInvestment).toString();
+    }
 }

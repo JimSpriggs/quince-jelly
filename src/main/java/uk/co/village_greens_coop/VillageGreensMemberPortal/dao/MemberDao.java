@@ -34,13 +34,21 @@ public class MemberDao {
 
 	@SuppressWarnings("unchecked")
 	public List<Member> getAll() {
-		return (List<Member>)entityManager.createQuery("from Member")
+		return (List<Member>)entityManager.createQuery("from Member m order by m.memberNo")
 				.getResultList();
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<Member> getAllEmailable() {
-		return (List<Member>)entityManager.createQuery("from Member where email IS NOT NULL")
+		return (List<Member>)entityManager.createQuery("from Member m where email IS NOT NULL m order by m.memberNo")
+				.getResultList();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Member> getAllAwaitingCertificate(int limit) {
+		return (List<Member>)entityManager.createQuery("from Member m where m.certificateGenerated IS NULL order by m.memberNo")
+				.setFirstResult(0)
+				.setMaxResults(limit)
 				.getResultList();
 	}
 }

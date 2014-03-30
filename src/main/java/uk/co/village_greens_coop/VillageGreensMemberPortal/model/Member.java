@@ -1,6 +1,7 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.model;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,6 +30,8 @@ public class Member implements java.io.Serializable {
 	@Column
 	private String surname;
 	@Column
+	private String organisation;
+	@Column
 	private String email;
 	@Column
 	private String addressLine1;
@@ -46,6 +49,13 @@ public class Member implements java.io.Serializable {
 	private BigDecimal totalInvestment;
 	@Column
 	private Boolean rollCall;
+	@Column
+	private Boolean seis;
+	@Column 
+	private Date certificateGenerated;
+	@Column
+	private Date certificateSent;
+	
 	
     protected Member() {
 	}
@@ -100,6 +110,42 @@ public class Member implements java.io.Serializable {
 
 	public void setSurname(String surname) {
 		this.surname = surname;
+	}
+
+	public String getOrganisation() {
+		return organisation;
+	}
+
+	public void setOrganisation(String organisation) {
+		this.organisation = organisation;
+	}
+
+	public String getDisplayName() {
+		if (organisation != null && !organisation.equals("")) {
+			return organisation;
+		} else {
+			String name = firstName;
+			if (name != null && !name.equals("")) {
+				name = name + " " + surname;
+			} else {
+				name = surname;
+			}
+			return name;
+		}
+	}
+
+	public String getSalutation(boolean formal) {
+		String retval = formal ? "Dear " : "Hi ";;
+		if (organisation != null && !organisation.equals("")) {
+			retval += organisation;
+		} else {
+			if (formal) {
+				retval += String.format("%s %s", title, surname);
+			} else {
+				retval += firstName;
+			}
+		}
+		return retval;
 	}
 
 	public String getEmail() {
@@ -174,12 +220,37 @@ public class Member implements java.io.Serializable {
 		this.rollCall = rollCall;
 	}
 	
+	public Boolean getSeis() {
+		return seis;
+	}
+
+	public void setSeis(Boolean seis) {
+		this.seis = seis;
+	}
+	
+	public Date getCertificateSent() {
+		return certificateSent;
+	}
+
+	public void setCertificateSent(Date certificateSent) {
+		this.certificateSent = certificateSent;
+	}
+	
+	public Date getCertificateGenerated() {
+		return certificateGenerated;
+	}
+
+	public void setCertificateGenerated(Date certificateGenerated) {
+		this.certificateGenerated = certificateGenerated;
+	}
+	
     @Override
     public String toString() {
         return new ToStringBuilder(this)
         		.append("memberno", memberNo)
                 .append("firstName", firstName)
                 .append("surname", surname)
+                .append("organisation", organisation)
                 .append("email", email)
                 .append("totalInvestment", totalInvestment).toString();
     }

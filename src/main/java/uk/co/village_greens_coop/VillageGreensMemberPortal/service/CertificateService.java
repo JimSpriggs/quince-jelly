@@ -5,10 +5,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -19,6 +23,7 @@ import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.utils.Utils;
@@ -44,8 +49,11 @@ public class CertificateService {
 	@Autowired
 	private MailSender mailSender;
 
+	@Autowired
+	private MemberService memberService;
+
 	public byte[] generateCertificate(Member member) {
-		System.out.println("Called cert service generateCertificate() for member " + member);
+//		System.out.println("Called cert service generateCertificate() for member " + member);
 		byte[] retval = null;
 		
 		Document document = new Document(PageSize.A4.rotate());
@@ -110,54 +118,105 @@ public class CertificateService {
         return retval;
 	}
 	
-	public void generateMemberCertificates(List<Member> membersList) {
+	@Transactional
+	public List<Member> generateMemberCertificates(int limit, String emailTo) {
+		List<Member> membersList = memberService.getAllAwaitingCertificate(limit);
+		System.out.println(String.format("Generating %d certificates...", membersList.size()));
+
+		Map<Member, String> membersCerts = new HashMap<Member, String>();
+		
 		for (Member member : membersList) {
 			String certFile = null;
 			try {
 				certFile = generateMemberCertificate(member);
+				memberService.markCertificateGenerated(member);
 			} catch (FileNotFoundException fnfe) {
 				fnfe.printStackTrace();
 			} catch (IOException ioe) {
 				ioe.printStackTrace();
 			}
 			
-			if (certFile != null) {
-//				sendCertificateToMember(member, certFile);
+			// if we generated a cert, and there is an email address for the member, send the cert
+			if (certFile != null) { // && member.getEmail() != null && !member.getEmail().equals("")) {
+				membersCerts.put(member,  certFile);
 			}
 		}
+		
+		if (!membersCerts.isEmpty()) {
+			sendCertificatesToMembers(membersCerts, emailTo);
+		}
+		
+		return memberService.getAll();
 	}
 
 	public String generateMemberCertificate(Member member) throws IOException {
 		String certFileName = String.format("VillageGreensMemberCertificate-%d.pdf", member.getMemberNo());
 		FileOutputStream fos = new FileOutputStream(String.format("/Users/john/dev/" + certFileName, member.getMemberNo()));
-		byte[] certificateBytes = generateCertificateFromTemplate(member, "VG-Share-Certificate-02.pdf");
+		byte[] certificateBytes = generateCertificateFromTemplate(member, "VG-Share-Certificate-04.pdf");
 		fos.write(certificateBytes);
 		fos.close();
 		return certFileName;
 	}
 	
-	public void sendCertificateToMember(Member member, String certFileName) {
+	public void sendCertificatesToMembers(Map<Member, String> membersCerts, String emailTo) {
+		
+		List<MimeMessage> messageList = new ArrayList<MimeMessage>();
 		try {
 			final JavaMailSender javaMailSender = (JavaMailSender)mailSender;
-			final MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-			final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true);
-			message.setFrom("jhurst1970@gmail.com");
-//			message.setTo(member.getEmail());
-			message.setTo("denise@village-greens-coop.co.uk");
-			message.setSubject("Your Village Greens Share Certificate");
-			message.setText(String.format("Dear %s %s", member.getTitle(), member.getSurname()) + "\n\n"
-					+ "Please find attached your Village Greens Cooperative share certificate.\n\n"
-					+ "Yours faithfully\n\n"
-					+ "Village Greens Treasurer\n");
-			message.addAttachment(certFileName, new File("/Users/john/dev/" + certFileName));
-			javaMailSender.send(mimeMessage);
+			for (Map.Entry<Member, String> memberCert : membersCerts.entrySet()) {
+	
+				Member member = memberCert.getKey();
+				String certFileName = memberCert.getValue();
+				
+				String email = member.getEmail();
+				if (email == null || email.equals("")){
+					System.out.println(String.format("No email address for certificate %d", member.getMemberNo()));
+					continue;
+				}
+				
+				final MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+				final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true);
+				message.setFrom("info@village-greens-coop.co.uk", "Village Greens Info");
+				String sendingEmailTo = member.getEmail(); 
+				if (emailTo != null && !emailTo.equals("")) {
+					sendingEmailTo = emailTo;
+				}
+				message.setTo(sendingEmailTo);
+				System.out.println(String.format("Sending certificate %d to %s", member.getMemberNo(), sendingEmailTo));
+				message.setSubject("Your Village Greens Share Certificate");
+				message.setText(member.getSalutation(false) + "\n\n"
+						+ "Attached please find your certificate to confirm shares purchased in Village Greens (Prestwich) Co-operative Ltd.\n\n"
+						+ "We want to take this opportunity to say a huge thank you for your support and investment, and we are only weeks away from opening the doors on this exciting new community venture as the lease has now been signed.\n\n"
+						+ "Together we have made this happen, and this is just the beginning.\n\n\n"
+						+ "The Directors of Village Greens\n"
+						+ "www.village-greens-coop.co.uk\n\n\n"
+						+ "NB If you have not already done so then please let Janet know if you wish to be registered for 50% tax relief with HMRC at: janet@village-greens-coop.co.uk\n\n\n");
+				message.addAttachment(certFileName, new File("/Users/john/dev/" + certFileName));
+				messageList.add(mimeMessage);
+			}
+			
+			if (messageList.size() > 0) {
+				// send the messages in bulk
+				System.out.println(String.format("Sending %d messages...", messageList.size()));
+				javaMailSender.send(messageList.toArray(new MimeMessage[messageList.size()]));
+				System.out.println(String.format("Sent!"));
+				
+				// if all sent successfully, mark as sent
+				for (Member member : membersCerts.keySet()) {
+					memberService.markCertificateSent(member);
+				}
+			}
+			
 		} catch (MessagingException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	public byte[] generateCertificateFromTemplate(Member member, String templateFileName) {
-		System.out.println("Called cert service generateCertificateFromTemplate() \n" + member);
+		System.out.println(member);
 		byte[] retval = null;
 		PdfReader reader = null;
 		PdfStamper stamper = null;
@@ -182,12 +241,29 @@ public class CertificateService {
 			content.beginText();
 			
 			BaseFont bfSmall = createBaseFont("DIN-Light.ttf", "images/din-light.ttf");
-			BaseFont bfLarge = createBaseFont("FestivoLettersNo6.otf", "images/FestivoLettersNo.6.otf");
-			content.setFontAndSize(bfLarge, 24F);
+//			BaseFont bfLarge = createBaseFont("FestivoLettersNo6.otf", "images/FestivoLettersNo.6.otf");
+
 			content.setRGBColorFill(71, 55, 41);
-			content.showTextAligned(PdfContentByte.ALIGN_CENTER, 
-					String.format("%s %s", member.getFirstName(), member.getSurname()),
-					504,276,0);
+
+			String memberName = member.getDisplayName();
+			if (memberName.length() >= 30) {
+				content.setFontAndSize(bfSmall, 22F);
+				content.showTextAligned(PdfContentByte.ALIGN_LEFT, 
+						memberName,
+						344,276,0);
+			} else if (memberName.length() > 28) {
+				content.setFontAndSize(bfSmall, 22F);
+				content.showTextAligned(PdfContentByte.ALIGN_CENTER, 
+						memberName,
+						504,276,0);
+			} else {
+				content.setFontAndSize(bfSmall, 24F);
+				content.showTextAligned(PdfContentByte.ALIGN_CENTER, 
+						memberName,
+						504,276,0);
+			}
+
+			content.setFontAndSize(bfSmall, 24F);
 			content.showTextAligned(PdfContentByte.ALIGN_RIGHT, 
 					new DecimalFormat("###,###").format(member.getTotalInvestment()),
 					656,230,0);
@@ -195,7 +271,7 @@ public class CertificateService {
 			content.setFontAndSize(bfSmall, 16F);
 			content.setRGBColorFill(71, 55, 41);
 			content.showTextAligned(PdfContentByte.ALIGN_RIGHT, 
-					new DecimalFormat("00000").format(member.getMemberNo()),
+					new DecimalFormat("0").format(member.getMemberNo()),
 					718,132,0);
 			content.showTextAligned(PdfContentByte.ALIGN_RIGHT, 
 					new DecimalFormat("###,###").format(member.getTotalInvestment()),

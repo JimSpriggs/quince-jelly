@@ -28,6 +28,8 @@
         <th>Surname</th>
         <th>Investment</th>
         <th>Email</th>
+        <th>Certificate Generated</th>
+        <th>Certificate Sent</th>
       </tr>
       <tr th:each="member : ${members}">
         <td align="right" th:text="${member.memberNo}">123</td>
@@ -36,8 +38,16 @@
         <td th:text="${member.surname}">Spriggs</td>
         <td th:text="${member.totalInvestment}">1,500</td>
         <td th:text="${member.email}">jhurst1970@gmail.com</td>
+        <td th:text="${member.certificateGenerated}">26/03/2014 21:30:00</td>
+        <td th:text="${member.certificateSent}">26/03/2014 21:35:43</td>
       </tr>
     </table>
+    
+    <form action="#" th:action="@{/members}" th:object="${certificateGenerationParameters}" method="POST">
+    	<input type="text" th:field="*{batchSize}" />
+    	<input type="text" th:field="*{sendEmailsTo}" />
+    	<button type="submit">Submit</button>
+	</form>
 </div>
 </body>
 </html>

@@ -39,4 +39,11 @@
 		<nature>org.eclipse.wst.common.project.facet.core.nature</nature>
 		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>doc/db/patch001.0/dml</name>
+			<type>2</type>
+			<location>/Users/john/Google Drive/Dev/Village Greens/doc/db/patch001.0/dml</location>
+		</link>
+	</linkedResources>
 </projectDescription>

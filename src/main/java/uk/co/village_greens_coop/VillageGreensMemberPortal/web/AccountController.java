@@ -1,4 +1,4 @@
-package uk.co.village_greens_coop.VillageGreensMemberPortal.account;
+package uk.co.village_greens_coop.VillageGreensMemberPortal.web;
 
 import java.security.Principal;
 
@@ -12,17 +12,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.AccountDAO;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.AccountDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Account;
 
 @Controller
 @Secured("ROLE_USER")
 class AccountController {
 
-    private AccountDAO accountRepository;
+    private AccountDao accountRepository;
 
     @Autowired
-    public AccountController(AccountDAO accountRepository) {
+    public AccountController(AccountDao accountRepository) {
         this.accountRepository = accountRepository;
     }
 

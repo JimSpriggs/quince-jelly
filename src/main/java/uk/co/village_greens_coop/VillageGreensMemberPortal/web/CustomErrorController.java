@@ -1,4 +1,4 @@
-package uk.co.village_greens_coop.VillageGreensMemberPortal.error;
+package uk.co.village_greens_coop.VillageGreensMemberPortal.web;
 
 import java.text.MessageFormat;
 

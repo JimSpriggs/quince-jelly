@@ -1,4 +1,4 @@
-package uk.co.village_greens_coop.VillageGreensMemberPortal.signup;
+package uk.co.village_greens_coop.VillageGreensMemberPortal.web;
 
 import javax.validation.Valid;
 
@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.account.*;
-import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.AccountDAO;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.AccountDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Account;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.service.UserService;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.signup.SignupForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.support.web.*;
 
 @Controller
@@ -20,7 +22,7 @@ public class SignupController {
     private static final String SIGNUP_VIEW_NAME = "signup/signup";
 
 	@Autowired
-	private AccountDAO accountRepository;
+	private AccountDao accountRepository;
 	
 	@Autowired
 	private UserService userService;

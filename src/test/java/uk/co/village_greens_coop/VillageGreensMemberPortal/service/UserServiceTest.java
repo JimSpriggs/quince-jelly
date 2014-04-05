@@ -1,4 +1,4 @@
-package uk.co.village_greens_coop.VillageGreensMemberPortal.account;
+package uk.co.village_greens_coop.VillageGreensMemberPortal.service;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.*;
@@ -17,8 +17,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.AccountDAO;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.AccountDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Account;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.service.UserService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceTest {
@@ -27,7 +28,7 @@ public class UserServiceTest {
 	private UserService userService = new UserService();
 
 	@Mock
-	private AccountDAO accountRepositoryMock;
+	private AccountDao accountRepositoryMock;
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();

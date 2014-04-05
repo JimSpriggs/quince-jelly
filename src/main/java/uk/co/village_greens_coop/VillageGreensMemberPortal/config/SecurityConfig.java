@@ -5,7 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 
-import uk.co.village_greens_coop.VillageGreensMemberPortal.account.UserService;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.service.UserService;
 
 @Configuration
 @ImportResource(value = "classpath:spring-security-context.xml")

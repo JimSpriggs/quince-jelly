@@ -11,7 +11,7 @@ import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Account;
 
 @Repository
 @Transactional(readOnly = true)
-public class AccountDAO {
+public class AccountDao {
 	
 	@PersistenceContext
 	private EntityManager entityManager;

@@ -1,4 +1,4 @@
-package uk.co.village_greens_coop.VillageGreensMemberPortal.signin;
+package uk.co.village_greens_coop.VillageGreensMemberPortal.web;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

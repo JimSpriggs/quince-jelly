@@ -16,9 +16,8 @@
         <!-- /* The message code is returned from the @Controller */ -->
         <div th:replace="fragments/alert :: alert (type=${#strings.toLowerCase(message.type)}, message=#{${message.message}(${#authentication.name})})">&nbsp;</div>
     </th:block>
-    <p>
-        Welcome to the Spring MVC Quickstart application!
-    </p>
+    <img src="/resources/images/Certificate-VG-Logo.png" th:src="@{/resources/images/Certificate-VG-Logo.png}" />
+    <p>Welcome.</p>
 </div>
 </body>
 </html>

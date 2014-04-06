@@ -4,16 +4,35 @@
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>
-				%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{32} - %msg%n
-			</pattern>
+			<Pattern>
+				%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</Pattern>
 		</encoder>
 	</appender>
+	<appender name="DAILYFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    	<file>/VillageGreensMembers/logs/vfmembers.daily.log</file>
+    	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	      	<!-- daily rollover -->
+	      	<fileNamePattern>vgmembers.daily.%d{yyyy-MM-dd}.log</fileNamePattern>
+	
+	      	<!-- keep 90 days' worth of history -->
+	      	<maxHistory>90</maxHistory>
+    	</rollingPolicy>
 
+    	<encoder>
+			<Pattern>
+				%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</Pattern>
+    	</encoder>
+	</appender> 
+  
 	<jmxConfigurator />
-	<root level="WARN">
-		<appender-ref ref="STDOUT" />
-	</root>
 
 	<logger name="uk.co.village_greens_coop.VillageGreensMemberPortal" level="ALL" />
+
+	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="DAILYFILE" />
+	</root>
+
 </configuration>

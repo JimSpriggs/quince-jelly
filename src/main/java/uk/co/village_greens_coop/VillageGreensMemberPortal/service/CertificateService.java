@@ -17,6 +17,8 @@ import java.util.Map;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailSender;
@@ -27,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.utils.Utils;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.web.SignupController;
 
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -46,6 +49,8 @@ import com.itextpdf.text.pdf.PdfWriter;
 @Service
 public class CertificateService {
 
+	private static final Logger LOG = LoggerFactory.getLogger(CertificateService.class);
+	
 	@Autowired
 	private MailSender mailSender;
 
@@ -53,7 +58,6 @@ public class CertificateService {
 	private MemberService memberService;
 
 	public byte[] generateCertificate(Member member) {
-//		System.out.println("Called cert service generateCertificate() for member " + member);
 		byte[] retval = null;
 		
 		Document document = new Document(PageSize.A4.rotate());
@@ -70,7 +74,7 @@ public class CertificateService {
                 image = Image.getInstance(Utils.getClassPathResourceIntoByteArray("images/Certificate-VG-Logo.png"));
 	            document.open();
             } catch (IOException ioe) {
-            	System.out.println("IOException caught: " + ioe.getMessage());
+            	LOG.error("IOException getting image and opening new PDF document ", ioe);
             	return retval;
             }
 
@@ -121,7 +125,7 @@ public class CertificateService {
 	@Transactional
 	public List<Member> generateMemberCertificates(int limit, String emailTo) {
 		List<Member> membersList = memberService.getAllAwaitingCertificate(limit);
-		System.out.println(String.format("Generating %d certificates...", membersList.size()));
+		LOG.info("Generating {} certificates...", membersList.size());
 
 		Map<Member, String> membersCerts = new HashMap<Member, String>();
 		
@@ -170,7 +174,7 @@ public class CertificateService {
 				
 				String email = member.getEmail();
 				if (email == null || email.equals("")){
-					System.out.println(String.format("No email address for certificate %d", member.getMemberNo()));
+					LOG.warn("No email address for certificate {}", member.getMemberNo());
 					continue;
 				}
 				
@@ -182,7 +186,7 @@ public class CertificateService {
 					sendingEmailTo = emailTo;
 				}
 				message.setTo(sendingEmailTo);
-				System.out.println(String.format("Sending certificate %d to %s", member.getMemberNo(), sendingEmailTo));
+				LOG.info("Sending certificate {} to {}", member.getMemberNo(), sendingEmailTo);
 				message.setSubject("Your Village Greens Share Certificate");
 				message.setText(member.getSalutation(false) + "\n\n"
 						+ "Attached please find your certificate to confirm shares purchased in Village Greens (Prestwich) Co-operative Ltd.\n\n"
@@ -197,9 +201,9 @@ public class CertificateService {
 			
 			if (messageList.size() > 0) {
 				// send the messages in bulk
-				System.out.println(String.format("Sending %d messages...", messageList.size()));
+				LOG.info("Sending {} messages...", messageList.size());
 				javaMailSender.send(messageList.toArray(new MimeMessage[messageList.size()]));
-				System.out.println(String.format("Sent!"));
+				LOG.info("Sent!");
 				
 				// if all sent successfully, mark as sent
 				for (Member member : membersCerts.keySet()) {
@@ -216,7 +220,6 @@ public class CertificateService {
 	}
 
 	public byte[] generateCertificateFromTemplate(Member member, String templateFileName) {
-		System.out.println(member);
 		byte[] retval = null;
 		PdfReader reader = null;
 		PdfStamper stamper = null;
@@ -228,10 +231,10 @@ public class CertificateService {
 			reader = new PdfReader(new ClassPathResource(templatePath).getInputStream());
             stamper = new PdfStamper(reader, baos);
 		} catch (IOException e) {
-        	System.out.println("IOException caught reading template " + templatePath + ": " + e.getMessage());
+        	LOG.error("IOException caught reading template {}", templatePath, e);
         	return retval;
 		} catch (DocumentException e) {
-        	System.out.println("DocumentException caught reading template " + templatePath + ": " + e.getMessage());
+        	LOG.error("DocumentException caught reading template {}", templatePath, e);
         	return retval;
 		}
 
@@ -282,13 +285,11 @@ public class CertificateService {
 			
 			content.endText();
 			stamper.close();
-		} catch (DocumentException e1) {
-			System.out.println("DocumentException caught creating font");
-			e1.printStackTrace();
+		} catch (DocumentException e) {
+			LOG.error("DocumentException caught writing certificate", e);
 			return retval;
-		} catch (IOException e1) {
-			System.out.println("IOException caught creating font");
-			e1.printStackTrace();
+		} catch (IOException e) {
+			LOG.error("IOException caught writing certificate", e);
 			return retval;
 		}
 

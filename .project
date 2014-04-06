@@ -45,5 +45,10 @@
 			<type>2</type>
 			<location>/Users/john/Google Drive/Dev/Village Greens/doc/db/patch001.0/dml</location>
 		</link>
+		<link>
+			<name>src/main/resources/mail.properties</name>
+			<type>1</type>
+			<location>/Users/john/Google Drive/Dev/Village Greens/properties/mail.properties</location>
+		</link>
 	</linkedResources>
 </projectDescription>

@@ -29,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.utils.Utils;
-import uk.co.village_greens_coop.VillageGreensMemberPortal.web.SignupController;
 
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;

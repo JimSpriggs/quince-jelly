@@ -1,12 +1,13 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.signup;
 
-import org.junit.Test;
-
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+import org.junit.Test;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.config.WebAppConfigurationAware;
 

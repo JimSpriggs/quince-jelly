@@ -10,7 +10,7 @@
 		</encoder>
 	</appender>
 	<appender name="DAILYFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    	<file>/VillageGreensMembers/logs/vfmembers.daily.log</file>
+    	<file>/VillageGreensMembers/logs/vgmembers.daily.log</file>
     	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 	      	<!-- daily rollover -->
 	      	<fileNamePattern>vgmembers.daily.%d{yyyy-MM-dd}.log</fileNamePattern>

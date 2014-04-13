@@ -50,5 +50,10 @@
 			<type>1</type>
 			<location>/Users/john/Google Drive/Dev/Village Greens/properties/mail.properties</location>
 		</link>
+		<link>
+			<name>doc/db/patch001.0/ddl/db001.9.ddl.sql</name>
+			<type>1</type>
+			<location>/Users/john/Google Drive/Dev/Village Greens/doc/db/patch001.0/ddl/db001.9.ddl.sql</location>
+		</link>
 	</linkedResources>
 </projectDescription>

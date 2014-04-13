@@ -1,3 +1,6 @@
+/*
+ * Remember to SET ROLE vgowner;
+ */
 DROP TABLE member;
 CREATE TABLE member
 (

@@ -1,3 +1,6 @@
+/*
+ * Remember to SET ROLE vgowner;
+ */
 DROP TABLE account;
 CREATE TABLE account
 (

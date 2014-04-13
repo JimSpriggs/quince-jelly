@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.AccountDao;
-import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Account;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.service.SignUpService;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.service.UserService;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.signup.SignupForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.support.web.MessageHelper;
@@ -27,6 +27,9 @@ public class SignupController {
 
 	@Autowired
 	private AccountDao accountRepository;
+	
+	@Autowired
+	private SignUpService signUpService;
 	
 	@Autowired
 	private UserService userService;
@@ -44,8 +47,8 @@ public class SignupController {
 			LOG.info("Errors in signup form");
 			return SIGNUP_VIEW_NAME;
 		}
-		Account account = accountRepository.save(signupForm.createAccount());
-		userService.signin(account);
+		
+		signUpService.signup(signupForm.getEmail(), signupForm.getPassword());
         // see /WEB-INF/i18n/messages.properties and /WEB-INF/views/homeSignedIn.html
         MessageHelper.addSuccessAttribute(ra, "signup.success");
 		return "redirect:/";

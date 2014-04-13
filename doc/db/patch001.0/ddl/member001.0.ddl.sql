@@ -1,7 +1,7 @@
 DROP TABLE member;
 CREATE TABLE member
 (
-	memberno        bigint          PRIMARY KEY,
+	id        serial          PRIMARY KEY,
 	title           varchar(20),
 	firstname       varchar(30),
 	surname         varchar(30),	

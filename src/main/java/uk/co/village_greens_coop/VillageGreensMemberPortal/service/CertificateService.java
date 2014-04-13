@@ -105,7 +105,7 @@ public class CertificateService {
             
             Chunk shareCertNumberChunk1 = new Chunk("Share Certificate Number: ", fieldLabelFont);
             paragraph2.add(shareCertNumberChunk1);
-            Chunk shareCertNumberChunk2 = new Chunk(new DecimalFormat("00000").format(member.getMemberNo()), fieldValueFont);
+            Chunk shareCertNumberChunk2 = new Chunk(new DecimalFormat("00000").format(member.getId()), fieldValueFont);
             paragraph2.add(shareCertNumberChunk2);
 
             document.add(paragraph1);
@@ -153,8 +153,8 @@ public class CertificateService {
 	}
 
 	public String generateMemberCertificate(Member member) throws IOException {
-		String certFileName = String.format("VillageGreensMemberCertificate-%d.pdf", member.getMemberNo());
-		FileOutputStream fos = new FileOutputStream(String.format("/Users/john/dev/" + certFileName, member.getMemberNo()));
+		String certFileName = String.format("VillageGreensMemberCertificate-%d.pdf", member.getId());
+		FileOutputStream fos = new FileOutputStream(String.format("/Users/john/dev/" + certFileName, member.getId()));
 		byte[] certificateBytes = generateCertificateFromTemplate(member, "VG-Share-Certificate-04.pdf");
 		fos.write(certificateBytes);
 		fos.close();
@@ -173,7 +173,7 @@ public class CertificateService {
 				
 				String email = member.getEmail();
 				if (email == null || email.equals("")){
-					LOG.warn("No email address for certificate {}", member.getMemberNo());
+					LOG.warn("No email address for certificate {}", member.getId());
 					continue;
 				}
 				
@@ -185,7 +185,7 @@ public class CertificateService {
 					sendingEmailTo = emailTo;
 				}
 				message.setTo(sendingEmailTo);
-				LOG.info("Sending certificate {} to {}", member.getMemberNo(), sendingEmailTo);
+				LOG.info("Sending certificate {} to {}", member.getId(), sendingEmailTo);
 				message.setSubject("Your Village Greens Share Certificate");
 				message.setText(member.getSalutation(false) + "\n\n"
 						+ "Attached please find your certificate to confirm shares purchased in Village Greens (Prestwich) Co-operative Ltd.\n\n"
@@ -273,7 +273,7 @@ public class CertificateService {
 			content.setFontAndSize(bfSmall, 16F);
 			content.setRGBColorFill(71, 55, 41);
 			content.showTextAligned(PdfContentByte.ALIGN_RIGHT, 
-					new DecimalFormat("0").format(member.getMemberNo()),
+					new DecimalFormat("0").format(member.getId()),
 					718,132,0);
 			content.showTextAligned(PdfContentByte.ALIGN_RIGHT, 
 					new DecimalFormat("###,###").format(member.getTotalInvestment()),

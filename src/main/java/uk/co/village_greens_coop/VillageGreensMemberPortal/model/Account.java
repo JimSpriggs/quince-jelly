@@ -1,6 +1,20 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.model;
 
-import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
@@ -13,7 +27,7 @@ public class Account implements java.io.Serializable {
 	public static final String FIND_BY_EMAIL = "Account.findByEmail";
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY) 
 	private Long id;
 
 	@Column(unique = true)
@@ -22,16 +36,32 @@ public class Account implements java.io.Serializable {
 	@JsonIgnore
 	private String password;
 
-	private String role = "ROLE_USER";
-
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinTable(name = "account_role", 
+				joinColumns = { 
+					@JoinColumn(
+							name = "account_id", 
+							nullable = false, 
+							updatable = false
+					) 
+				}, 
+				inverseJoinColumns = { 
+					@JoinColumn(
+							name = "role_id", 
+							nullable = false, 
+							updatable = false
+					) 
+				}
+		)
+	private Set<Role> roles;
+	
     protected Account() {
-
 	}
 	
-	public Account(String email, String password, String role) {
+	public Account(String email, String password, Role role) {
 		this.email = email;
 		this.password = password;
-		this.role = role;
+		this.addRole(role);
 	}
 
 	public Long getId() {
@@ -54,11 +84,18 @@ public class Account implements java.io.Serializable {
 		this.password = password;
 	}
 
-	public String getRole() {
-		return role;
+	public Set<Role> getRoles() {
+		return roles;
 	}
 
-	public void setRole(String role) {
-		this.role = role;
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
+	}
+	
+	public void addRole(Role role) {
+		if (roles == null) {
+			roles = new HashSet<Role>();
+		}
+		roles.add(role);
 	}
 }

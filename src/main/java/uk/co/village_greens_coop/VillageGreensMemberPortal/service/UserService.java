@@ -1,6 +1,7 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.service;
 
-import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -15,9 +16,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.AccountDao;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.RoleDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Account;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Role;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -25,6 +29,9 @@ public class UserService implements UserDetailsService {
 	@Autowired
 	private AccountDao accountRepository;
 	
+	@Autowired
+	private RoleDao roleRepository;
+
 	@PostConstruct	
 	protected void initialize() {
 //		accountRepository.save(new Account("user", "demo", "ROLE_USER"));
@@ -39,21 +46,25 @@ public class UserService implements UserDetailsService {
 		}
 		return createUser(account);
 	}
-	
+
 	public void signin(Account account) {
 		SecurityContextHolder.getContext().setAuthentication(authenticate(account));
 	}
 	
 	private Authentication authenticate(Account account) {
-		return new UsernamePasswordAuthenticationToken(createUser(account), null, Collections.singleton(createAuthority(account)));		
+		return new UsernamePasswordAuthenticationToken(createUser(account), null, createAuthorities(account));		
 	}
 	
 	private User createUser(Account account) {
-		return new User(account.getEmail(), account.getPassword(), Collections.singleton(createAuthority(account)));
+		return new User(account.getEmail(), account.getPassword(), createAuthorities(account));
 	}
 
-	private GrantedAuthority createAuthority(Account account) {
-		return new SimpleGrantedAuthority(account.getRole());
+	private Set<GrantedAuthority> createAuthorities(Account account) {
+		Set<GrantedAuthority> auths = new HashSet<GrantedAuthority>();
+		for (Role role : account.getRoles()) {
+			auths.add(new SimpleGrantedAuthority(role.getName()));
+		}
+		return auths;
 	}
 
 }

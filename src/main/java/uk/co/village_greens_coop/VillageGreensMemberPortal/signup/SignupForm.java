@@ -31,8 +31,4 @@ public class SignupForm {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
-	public Account createAccount() {
-        return new Account(getEmail(), getPassword(), "ROLE_USER");
-	}
 }

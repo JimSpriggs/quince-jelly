@@ -22,7 +22,7 @@ public class Member implements java.io.Serializable {
 
 	@Id
 	@GeneratedValue
-	private Long memberNo;
+	private Long id;
 	@Column
 	private String title;
 	@Column
@@ -80,12 +80,12 @@ public class Member implements java.io.Serializable {
 		this.rollCall = rollCall;
 	}
 
-	public Long getMemberNo() {
-		return memberNo;
+	public Long getId() {
+		return id;
 	}
 
-	public void setMemberNo(Long memberNo) {
-		this.memberNo = memberNo;
+	public void setId(Long id) {
+		this.id	= id;
 	}
 
 	public String getTitle() {
@@ -247,7 +247,7 @@ public class Member implements java.io.Serializable {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-        		.append("memberno", memberNo)
+        		.append("memberno", id)
                 .append("firstName", firstName)
                 .append("surname", surname)
                 .append("organisation", organisation)

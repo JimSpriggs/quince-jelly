@@ -1,5 +1,6 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.model;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,12 +31,27 @@ public class Account implements java.io.Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY) 
 	private Long id;
 
+	@Column
+	private String firstName;
+	
+	@Column
+	private String surname;
+	
 	@Column(unique = true)
 	private String email;
 	
 	@JsonIgnore
 	private String password;
 
+	@Column
+	private Boolean active = Boolean.FALSE; 
+	
+	@Column(name = "creation_dt")
+	private Date creationDate;
+	
+	@Column(name = "activation_dt")
+	private Date activationDate;
+	
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "account_role", 
 				joinColumns = { 
@@ -58,9 +74,13 @@ public class Account implements java.io.Serializable {
     protected Account() {
 	}
 	
-	public Account(String email, String password, Role role) {
+	public Account(String firstName, String surname, String email, String password, Role role) {
+		this.firstName = firstName;
+		this.surname = surname;
 		this.email = email;
 		this.password = password;
+		this.creationDate = new Date();
+		this.active = Boolean.FALSE;
 		this.addRole(role);
 	}
 
@@ -68,7 +88,24 @@ public class Account implements java.io.Serializable {
 		return id;
 	}
 
-    public String getEmail() {
+	
+    public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getSurname() {
+		return surname;
+	}
+
+	public void setSurname(String surname) {
+		this.surname = surname;
+	}
+
+	public String getEmail() {
 		return email;
 	}
 
@@ -97,5 +134,32 @@ public class Account implements java.io.Serializable {
 			roles = new HashSet<Role>();
 		}
 		roles.add(role);
+	}
+
+	public boolean isActive() {
+		return (active!= null && active);
+	}
+	public Boolean getActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Date getActivationDate() {
+		return activationDate;
+	}
+
+	public void setActivationDate(Date activationDate) {
+		this.activationDate = activationDate;
 	}
 }

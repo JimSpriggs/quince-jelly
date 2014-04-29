@@ -1,22 +1,53 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.signup;
 
-import org.hibernate.validator.constraints.*;
+import javax.validation.constraints.Size;
 
-import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Account;
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.ScriptAssert;
 
+@ScriptAssert(
+		lang = "javascript",
+		script = "_this.repeatPassword.equals(_this.password)",
+		message = SignupForm.PASSWORD_MISMATCH)
 public class SignupForm {
+	public static final String PASSWORD_MISMATCH = "account.password.mismatch.message";
+	
+    @NotBlank
+    @Size(max = 20)
+	private String firstName;
 
-	private static final String NOT_BLANK_MESSAGE = "{notBlank.message}";
-	private static final String EMAIL_MESSAGE = "{email.message}";
-
-    @NotBlank(message = SignupForm.NOT_BLANK_MESSAGE)
-	@Email(message = SignupForm.EMAIL_MESSAGE)
+    @NotBlank
+    @Size(max = 30)
+	private String surname;
+	
+    @NotBlank
+    @Email
 	private String email;
 
-    @NotBlank(message = SignupForm.NOT_BLANK_MESSAGE)
+    @NotBlank
 	private String password;
 
-    public String getEmail() {
+    @NotBlank
+	private String repeatPassword;
+
+    public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getSurname() {
+		return surname;
+	}
+
+	public void setSurname(String surname) {
+		this.surname = surname;
+	}
+
+	public String getEmail() {
 		return email;
 	}
 
@@ -30,5 +61,13 @@ public class SignupForm {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getRepeatPassword() {
+		return repeatPassword;
+	}
+
+	public void setRepeatPassword(String repeatPassword) {
+		this.repeatPassword = repeatPassword;
 	}
 }

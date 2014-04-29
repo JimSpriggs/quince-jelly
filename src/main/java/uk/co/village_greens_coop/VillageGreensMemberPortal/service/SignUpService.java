@@ -19,14 +19,10 @@ public class SignUpService {
 	@Autowired
 	private RoleDao roleRepository;
 
-	@Autowired
-	UserService userService;
-	
-	public void signup(String email, String password) {
+	public void signup(String firstName, String surname, String email, String password) {
 		// new users default to the basic ROLE_USER role
 		Role role = roleRepository.findByName("ROLE_USER");
-		Account account = new Account(email, password, role);
+		Account account = new Account(firstName, surname, email, password, role);
 		accountRepository.save(account);
-		userService.signin(account);
 	}
 }

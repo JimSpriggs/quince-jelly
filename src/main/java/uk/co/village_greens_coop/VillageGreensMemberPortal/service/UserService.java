@@ -5,7 +5,9 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,7 +18,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.AccountDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.RoleDao;
@@ -25,6 +26,8 @@ import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Role;
 
 @Service
 public class UserService implements UserDetailsService {
+
+	Logger logger = Logger.getLogger(UserService.class);
 	
 	@Autowired
 	private AccountDao accountRepository;
@@ -34,15 +37,15 @@ public class UserService implements UserDetailsService {
 
 	@PostConstruct	
 	protected void initialize() {
-//		accountRepository.save(new Account("user", "demo", "ROLE_USER"));
-//		accountRepository.save(new Account("admin", "admin", "ROLE_ADMIN"));
 	}
 	
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, LockedException {
 		Account account = accountRepository.findByEmail(username);
 		if(account == null) {
 			throw new UsernameNotFoundException("user not found");
+		} else if (!account.isActive()) {
+			throw new LockedException("AbstractUserDetailsAuthenticationProvider.locked");
 		}
 		return createUser(account);
 	}

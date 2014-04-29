@@ -58,7 +58,7 @@ public class UserServiceTest {
 	public void shouldReturnUserDetails() {
 		// arrange
 		Role role = new Role("ROLE_USER", "Basic user with no privileged access");
-		Account demoUser = new Account("user@example.com", "demo", role);
+		Account demoUser = new Account("Jim", "Spriggs", "user@example.com", "demo", role);
 		when(accountRepositoryMock.findByEmail("user@example.com")).thenReturn(demoUser);
 
 		// act

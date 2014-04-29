@@ -26,17 +26,19 @@ public class AccessDeniedController {
 
 	@RequestMapping(value = "credentials", method = RequestMethod.GET)
 	public String accessDeniedCredentials(RedirectAttributes ra) {
-//		model.addAttribute("errorMessage", "Sorry - the username and password are not recognised.");
-//		MessageHelper.addSuccessAttribute(ra, "signup.success");
 		MessageHelper.addErrorAttribute(ra, "signin.badcredentials");
 		return "redirect:/signin";
 	}
 	
 	@RequestMapping(value = "activate", method = RequestMethod.GET)
 	public String accessDeniedActivation(Model model, RedirectAttributes ra) {
-//		model.addAttribute("errorMessage", "Sorry - you haven't yet activated your account using the email we sent.");
-//		MessageHelper.addErrorAttribute(model, "Sorry - you haven't yet activated your account using the email we sent.");
 		MessageHelper.addErrorAttribute(ra, "signin.activate");
+		return "redirect:/signin";
+	}
+
+	@RequestMapping(value = "error", method = RequestMethod.GET)
+	public String accessDeniedError(Model model, RedirectAttributes ra) {
+		MessageHelper.addErrorAttribute(ra, "signin.error");
 		return "redirect:/signin";
 	}
 }

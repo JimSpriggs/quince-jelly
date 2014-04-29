@@ -44,8 +44,6 @@ public class UserService implements UserDetailsService {
 		Account account = accountRepository.findByEmail(username);
 		if(account == null) {
 			throw new UsernameNotFoundException("user not found");
-		} else if (!account.isActive()) {
-			throw new LockedException("AbstractUserDetailsAuthenticationProvider.locked");
 		}
 		return createUser(account);
 	}
@@ -59,7 +57,7 @@ public class UserService implements UserDetailsService {
 	}
 	
 	private User createUser(Account account) {
-		return new User(account.getEmail(), account.getPassword(), createAuthorities(account));
+		return new User(account.getEmail(), account.getPassword(), true, true, true, account.isActive(), createAuthorities(account));
 	}
 
 	private Set<GrantedAuthority> createAuthorities(Account account) {

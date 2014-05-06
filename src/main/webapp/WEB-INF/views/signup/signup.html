@@ -17,7 +17,7 @@
 <form class="form-narrow form-horizontal" method="post" th:action="@{/signup}" th:object="${signupForm}">
     <!-- /* Show general error message when form contains errors */ -->
     <th:block th:if="${#fields.hasErrors('${signupForm.*}')}">
-        <div th:replace="fragments/alert :: alert (type='danger', message='Form contains errors. Please try again.')">Alert</div>
+        <div th:replace="fragments/alert :: alert (type='danger', message='There is a problem with some of the information you provided.  Please amend the marked fields, and try again.')">Alert</div>
     </th:block>
     <fieldset>
         <legend>Village Greens Sign-Up</legend>

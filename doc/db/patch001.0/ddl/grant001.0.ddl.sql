@@ -6,3 +6,5 @@ GRANT ALL ON account_role TO vguser;
 GRANT USAGE ON account_role_id_seq TO vguser;
 GRANT SELECT ON role TO vguser;
 GRANT USAGE ON role_id_seq TO vguser;
+GRANT ALL ON account_activation TO vguser;
+GRANT USAGE ON account_activation_id_seq TO vguser;

@@ -11,6 +11,6 @@ CREATE TABLE account
 	password        varchar(200)         not null,
 	creation_dt	    timestamp			 not null,
 	active          boolean				 not null,
-	activation_dt   boolean,
+	activation_dt   timestamp,
 	CONSTRAINT email_uk              UNIQUE(email)
 );

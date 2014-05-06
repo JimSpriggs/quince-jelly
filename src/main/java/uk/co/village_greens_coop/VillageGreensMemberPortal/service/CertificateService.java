@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,11 +21,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailSender;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import uk.co.village_greens_coop.VillageGreensMemberPortal.email.EmailAttachment;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.email.EmailDetail;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.utils.Utils;
 
@@ -51,7 +50,7 @@ public class CertificateService {
 	private static final Logger LOG = LoggerFactory.getLogger(CertificateService.class);
 	
 	@Autowired
-	private MailSender mailSender;
+	private EmailService emailService;
 
 	@Autowired
 	private MemberService memberService;
@@ -163,58 +162,37 @@ public class CertificateService {
 	
 	public void sendCertificatesToMembers(Map<Member, String> membersCerts, String emailTo) {
 		
-		List<MimeMessage> messageList = new ArrayList<MimeMessage>();
-		try {
-			final JavaMailSender javaMailSender = (JavaMailSender)mailSender;
-			for (Map.Entry<Member, String> memberCert : membersCerts.entrySet()) {
+		for (Map.Entry<Member, String> memberCert : membersCerts.entrySet()) {
 	
-				Member member = memberCert.getKey();
-				String certFileName = memberCert.getValue();
-				
-				String email = member.getEmail();
-				if (email == null || email.equals("")){
-					LOG.warn("No email address for certificate {}", member.getId());
-					continue;
-				}
-				
-				final MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-				final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true);
-				message.setFrom("info@village-greens-coop.co.uk", "Village Greens Info");
-				String sendingEmailTo = member.getEmail(); 
-				if (emailTo != null && !emailTo.equals("")) {
-					sendingEmailTo = emailTo;
-				}
-				message.setTo(sendingEmailTo);
-				LOG.info("Sending certificate {} to {}", member.getId(), sendingEmailTo);
-				message.setSubject("Your Village Greens Share Certificate");
-				message.setText(member.getSalutation(false) + "\n\n"
-						+ "Attached please find your certificate to confirm shares purchased in Village Greens (Prestwich) Co-operative Ltd.\n\n"
-						+ "We want to take this opportunity to say a huge thank you for your support and investment, and we are only weeks away from opening the doors on this exciting new community venture as the lease has now been signed.\n\n"
-						+ "Together we have made this happen, and this is just the beginning.\n\n\n"
-						+ "The Directors of Village Greens\n"
-						+ "www.village-greens-coop.co.uk\n\n\n"
-						+ "NB If you have not already done so then please let Janet know if you wish to be registered for 50% tax relief with HMRC at: janet@village-greens-coop.co.uk\n\n\n");
-				message.addAttachment(certFileName, new File("/Users/john/dev/" + certFileName));
-				messageList.add(mimeMessage);
+			Member member = memberCert.getKey();
+			String certFileName = memberCert.getValue();
+
+			String email = member.getEmail();
+			if (email == null || email.equals("")){
+				LOG.warn("No email address for certificate {}", member.getId());
+				continue;
 			}
 			
-			if (messageList.size() > 0) {
-				// send the messages in bulk
-				LOG.info("Sending {} messages...", messageList.size());
-				javaMailSender.send(messageList.toArray(new MimeMessage[messageList.size()]));
-				LOG.info("Sent!");
-				
-				// if all sent successfully, mark as sent
-				for (Member member : membersCerts.keySet()) {
-					memberService.markCertificateSent(member);
-				}
-			}
-			
-		} catch (MessagingException e) {
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			String emailBody = 
+				member.getSalutation(false) + "\n\n"
+				+ "Attached please find your certificate to confirm shares purchased in Village Greens (Prestwich) Co-operative Ltd.\n\n"
+				+ "Together we have made this happen, and this is just the beginning.\n\n\n"
+				+ "We want to take this opportunity to say a huge thank you for your support and investment, and we are only weeks away from opening the doors on this exciting new community venture as the lease has now been signed.\n\n"
+				+ "The Directors of Village Greens\n"
+				+ "www.village-greens-coop.co.uk\n\n\n"
+				+ "NB If you have not already done so then please let Janet know if you wish to be registered for 50% tax relief with HMRC at: janet@village-greens-coop.co.uk\n\n\n";
+							
+			EmailDetail emailDetail = new EmailDetail(
+									member.getEmail(), 
+									"info@village-greens-coop.co.uk", 
+									"Village Greens Info",
+									"Your Village Greens Share Certificate",
+									emailBody,
+									new EmailAttachment(certFileName, "/Users/john/dev/" + certFileName));
+
+			LOG.info("Sending certification email via emailService for member {}" + member.getId());
+			emailService.sendEmail(emailDetail);
+			memberService.markCertificateSent(member);
 		}
 	}
 

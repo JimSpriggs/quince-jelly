@@ -43,7 +43,7 @@ public class Account implements java.io.Serializable {
 	@JsonIgnore
 	private String password;
 
-	@Column
+	@Column(name = "active")
 	private Boolean active = Boolean.FALSE; 
 	
 	@Column(name = "creation_dt")

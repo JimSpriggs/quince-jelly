@@ -6,5 +6,5 @@ CREATE TABLE account_activation
 	creation_dt TIMESTAMP NOT NULL,
 	access_key varchar(40) NOT NULL,
 	FOREIGN KEY (account_id) REFERENCES account (id) ON DELETE CASCADE,
-    CONSTRAINT access_key_uk UNIQUE(access_key)
+    CONSTRAINT activation_access_key_uk UNIQUE(access_key)
 );

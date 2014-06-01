@@ -92,8 +92,8 @@ public class SignupController {
 				}
 			}
 		}
-		
 	}
+
 	private void validateUniqueEmail(String email, Errors errors) {
 		if (accountRepository.findByEmail(email) != null) {
 			errors.rejectValue("email", "error.duplicate.account.email", new String[] { email }, null);

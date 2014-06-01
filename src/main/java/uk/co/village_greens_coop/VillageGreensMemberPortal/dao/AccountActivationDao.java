@@ -26,6 +26,11 @@ public class AccountActivationDao {
 		return accountActivation;
 	}
 	
+	@Transactional
+	public void delete(AccountActivation accountActivation) {
+		entityManager.remove(accountActivation);
+	}
+	
 	@Transactional(readOnly = true)
 	public AccountActivation findByAccessKey(String accessKey) {
 		try {

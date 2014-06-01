@@ -11,6 +11,7 @@
 <body>
 <div th:replace="fragments/header :: header">&nbsp;</div>
 <div class="container">
+<div class="col-sm-8 col-sm-offset-2">
     <!-- /* Handle the flash message */-->
     <th:block th:if="${message != null}">
         <!-- /* The message code is returned from the @Controller */ -->
@@ -18,6 +19,7 @@
     </th:block>
     <img src="/resources/images/Certificate-VG-Logo.png" th:src="@{/resources/images/Certificate-VG-Logo.png}" />
     <p>Welcome.</p>
+</div>
 </div>
 </body>
 </html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="favicon.ico" rel="shortcut icon" />
+    <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
+    <link href="../../../resources/css/AdminLTE.css" rel="stylesheet" media="screen" th:href="@{/resources/css/AdminLTE.css}"/>
+</head>
+<body>
+		    <!-- Left side column. contains the logo and sidebar -->
+		<aside class="left-side sidebar-offcanvas" th:fragment="admin-sidebar">
+		    <!-- sidebar: style can be found in sidebar.less -->
+		    <section class="sidebar">
+		        <!-- Sidebar user panel -->
+<!-- 		        <div class="user-panel">
+		            <div class="pull-left image">
+		                <img th:src="@{/resources/img/avatar3.png}" src="/resources/img/avatar3.png" class="img-circle" alt="User Image" />
+		            </div>
+		            <div class="pull-left info">
+		                <p>Hello, Jane</p>
+		
+		                <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+		            </div>
+		        </div>
+ -->		        <!-- search form -->
+<!-- 		        <form action="#" method="get" class="sidebar-form">
+		            <div class="input-group">
+		                <input type="text" name="q" class="form-control" placeholder="Search..."/>
+		                <span class="input-group-btn">
+		                    <button type='submit' name='seach' id='search-btn' class="btn btn-flat"><i class="fa fa-search"></i></button>
+		                </span>
+		            </div>
+		        </form>
+ -->		        <!-- /.search form -->
+		        <!-- sidebar menu: : style can be found in sidebar.less -->
+		        <ul class="sidebar-menu">
+		            <li class="active">
+		                <a href="dashboard">
+		                    <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+		                </a>
+		            </li>
+		            <li>
+		                <a href="members">
+		                    <i class="fa fa-dashboard"></i> <span>Members</span>
+		                </a>
+		            </li>
+		            <li>
+		                <a href="members">
+		                    <i class="fa fa-dashboard"></i> <span>Surveys</span>
+		                </a>
+		            </li>
+		            <li>
+		                <a href="pages/calendar.html">
+		                    <i class="fa fa-calendar"></i> <span>Calendar</span>
+		                    <small class="badge pull-right bg-red">3</small>
+		                </a>
+		            </li>
+		            <li>
+		                <a href="pages/mailbox.html">
+		                    <i class="fa fa-envelope"></i> <span>Mailbox</span>
+		                    <small class="badge pull-right bg-yellow">12</small>
+		                </a>
+		            </li>
+		        </ul>
+		    </section>
+		    <!-- /.sidebar -->
+		</aside>
+</body>
+</html>

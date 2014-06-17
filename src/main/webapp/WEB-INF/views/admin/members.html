@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title th:text="#{coop.title} + ' - ' + #{signin.title}">Sign In</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="../favicon.ico" rel="shortcut icon" />
+    <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
+    <link href="../../../resources/css/core.css" rel="stylesheet" media="screen" th:href="@{/resources/css/core.css}" />
+	<link href="../../../resources/css/font-awesome.css" rel="stylesheet" type="text/css" media="screen" th:href="@{/resources/css/font-awesome.css}" />
+	<link href="../../../resources/css/ionicons.min.css" rel="stylesheet" type="text/css" media="screen" th:href="@{/resources/css/ionicons.min.css}" />
+	<link href="../../../resources/css/datatables/dataTables.bootstrap.css" rel="stylesheet" type="text/css" th:href="@{/resources/css/datatables/dataTables.bootstrap.css}" />
+    <link href="../../../resources/css/AdminLTE.css" rel="stylesheet" media="screen" th:href="@{/resources/css/AdminLTE.css}"/>
+</head>
+<body class="skin-village-green">
+<div th:replace="fragments/header :: header">Header</div>
+	<div class="wrapper row-offcanvas row-offcanvas-left">
+		<aside th:replace="fragments/admin-sidebar :: admin-sidebar">Admin Sidebar</aside>
+
+	    <!-- Right side column. Contains the navbar and content of the page -->
+	    <aside class="right-side">                
+	        <!-- Content Header (Page header) -->
+	        <section class="content-header">
+	            <h1>
+	                Members
+	                <small>Member Management</small>
+	            </h1>
+	            <ol class="breadcrumb">
+	                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+	                <li><a href="#">Admin</a></li>
+	                <li class="active">Members</li>
+	            </ol>
+	        </section>
+	
+	        <!-- Main content -->
+	        <section class="content">
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="box">
+							<div class="box-header">
+								<h3 class="box-title">Members</h3>                                    
+							</div><!-- /.box-header -->
+							<div class="box-body table-responsive">
+								<table id="membersTable" class="table table-bordered table-hover">
+									<thead>
+										<tr>
+											<th>Member No</th>
+											<th>Title</th>
+											<th>First Name</th>
+											<th>Surname</th>
+											<th>Organisation</th>
+											<th>Email Address</th>
+											<th>Date of Birth</th>
+											<th>Investment</th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+							</div>
+						</div><!-- ./box -->
+					</div><!-- col-xs-12 -->
+				</div><!-- ./row -->
+	        </section><!-- /.content -->
+	    </aside><!-- /.right-side -->
+	</div><!-- ./wrapper -->
+
+
+<!-- jQuery 2.0.2 -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+<!-- jQuery UI 1.10.3 -->
+<script th:src="@{/resources/js/jquery-ui-1.10.3.min.js}" src="../../../resources/js/jquery-ui-1.10.3.min.js" type="text/javascript"></script>
+<!-- Bootstrap -->
+<script th:src="@{/resources/js/bootstrap.min.js}" src="../../../resources/js/bootstrap.min.js" type="text/javascript"></script>
+
+<!-- Data Tables -->
+<script th:src="@{/resources/js/plugins/datatables/jquery.dataTables.js}" src="../../../resources/js/plugins/datatables/jquery.dataTables.js" type="text/javascript"></script>
+<script th:src="@{/resources/js/plugins/datatables/dataTables.bootstrap.js}" src="../../../resources/js/plugins/datatables/dataTables.bootstrap.js" type="text/javascript"></script>
+
+<!-- AdminLTE App -->
+<script th:src="@{/resources/js/vg-admin.js}" src="../../../resources/js/vg-admin.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#membersTable').dataTable( {
+	    "ajax": {
+	    	"url": "memberRows",
+	    	"dataSrc": "memberRows",
+	    	"type": "GET"
+	    },
+	    "columns": [
+	        { "data": "id" },
+	        { "data": "title" },
+	        { "data": "firstName" },
+	        { "data": "surname" },
+	        { "data": "organisation" },
+	        { "data": "email" },
+	        { "data": "dob" },
+	        { "data": "totalInvestment" }
+	    ]
+	});
+});
+</script>
+
+</body>
+</html>

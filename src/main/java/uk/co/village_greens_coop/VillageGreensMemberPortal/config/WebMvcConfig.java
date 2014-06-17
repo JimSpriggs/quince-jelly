@@ -1,5 +1,7 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.config;
 
+import javax.servlet.ServletContext;
+
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

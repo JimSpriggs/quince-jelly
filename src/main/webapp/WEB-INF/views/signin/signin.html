@@ -3,10 +3,16 @@
 <head>
     <title th:text="#{coop.title} + ' - ' + #{signin.title}">Sign In</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="favicon.ico" rel="shortcut icon" />
     <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
     <link href="../../../resources/css/core.css" rel="stylesheet" media="screen" th:href="@{/resources/css/core.css}" />
+	<link href="../../../resources/css/font-awesome.css" rel="stylesheet" type="text/css" media="screen" th:href="@{/resources/css/font-awesome.css}" />
+	<link href="../../../resources/css/ionicons.min.css" rel="stylesheet" type="text/css" media="screen" th:href="@{/resources/css/ionicons.min.css}" />
+    <link href="../../../resources/css/AdminLTE.css" rel="stylesheet" media="screen" th:href="@{/resources/css/AdminLTE.css}"/>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="../../../resources/js/bootstrap.min.js" th:src="@{/resources/js/bootstrap.min.js}"></script>
 </head>
-<body bgcolor="#CFC4B0">
+<body class="skin-village-green">
 <div th:replace="fragments/header :: header">Header</div>
 	<!-- a little space under the header -->
 	<div class="row">
@@ -26,19 +32,19 @@
     <fieldset>
         <legend>Please Sign In to Village Greens Members</legend>
         <div class="form-group">
-            <label for="inputEmail" class="col-lg-4 control-label">Email</label>
-            <div class="col-lg-8">
+            <label for="inputEmail" class="col-md-4 control-label">Email</label>
+            <div class="col-md-8">
                 <input type="text" class="form-control" id="inputEmail" placeholder="Email" name="j_username" />
             </div>
         </div>
         <div class="form-group">
-            <label for="inputPassword" class="col-lg-4 control-label">Password</label>
-            <div class="col-lg-8">
+            <label for="inputPassword" class="col-md-4 control-label">Password</label>
+            <div class="col-md-8">
                 <input type="password" class="form-control" id="inputPassword" placeholder="Password" name="j_password" />
             </div>
         </div>
         <div class="form-group">
-            <div class="col-lg-offset-4 col-lg-8">
+            <div class="col-md-offset-4 col-md-8">
                 <div class="checkbox">
                     <label>
                         <input type="checkbox" name="_spring_security_remember_me" /> Remember me
@@ -47,19 +53,24 @@
             </div>
         </div>
         <div class="form-group">
-            <div class="col-lg-offset-4 col-lg-8">
+            <div class="col-md-offset-4 col-md-8">
                 <button type="submit" class="btn btn-default">Sign in</button>
             </div>
         </div>
         <div class="form-group">
-            <div class="col-lg-offset-4 col-lg-8">
+            <div class="col-md-offset-4 col-md-8">
                 <p><a href="forgottenPassword" th:href="@{/forgottenPassword}">I've forgotten my password!</a></p>
             </div>
-            <div class="col-lg-offset-4 col-lg-8">
+            <div class="col-md-offset-4 col-md-8">
                 <p><a href="signup" th:href="@{/signup}">Sign up for a member account</a></p>
             </div>
         </div>
     </fieldset>
 </form>
+<script>
+$( document ).ready(function() {
+    $('#inputEmail').focus();
+});	
+</script>
 </body>
 </html>

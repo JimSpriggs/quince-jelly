@@ -5,6 +5,7 @@ DROP TABLE member;
 CREATE TABLE member
 (
 	id        serial          PRIMARY KEY,
+	memberno        
 	title           varchar(20),
 	firstname       varchar(30),
 	surname         varchar(30),	

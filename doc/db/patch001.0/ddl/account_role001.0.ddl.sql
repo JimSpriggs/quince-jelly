@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS account_role;
-CREATE TABLE account_role
+DROP TABLE IF EXISTS member_payment;
+CREATE TABLE member_payment
 (
 	id          serial  PRIMARY KEY,
 	account_id  bigint  NOT NULL,

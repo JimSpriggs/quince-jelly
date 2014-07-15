@@ -2,12 +2,17 @@ package uk.co.village_greens_coop.VillageGreensMemberPortal.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -15,14 +20,21 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "member")
-@NamedQuery(name = Member.FIND_BY_SURNAME, query = "select m from Member m where m.surname = :surname")
+@NamedQueries({
+	@NamedQuery(name = Member.FIND_BY_SURNAME, query = "select m from Member m where m.surname = :surname"),
+	@NamedQuery(name = Member.FIND_BY_STATUS, 
+		query = "select m from Member m LEFT JOIN FETCH m.memberTelephones where member_status_cd = :memberStatus order by m.memberno, m.id"),
+})
 public class Member implements java.io.Serializable {
 
 	public static final String FIND_BY_SURNAME = "Member.findBySurname";
+	public static final String FIND_BY_STATUS = "Member.findByMemberStatus";
 
 	@Id
 	@GeneratedValue
 	private Long id;
+	@Column 
+	Long memberno;
 	@Column
 	private String title;
 	@Column
@@ -55,9 +67,14 @@ public class Member implements java.io.Serializable {
 	private Date certificateGenerated;
 	@Column
 	private Date certificateSent;
+	@Column(name = "member_status_cd")
+	private String memberStatus;
+	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="member")
+	private Set<MembershipPayment> membershipPayments;
+	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="member")
+	private Set<MemberTelephone> memberTelephones;
 	
-	
-    protected Member() {
+	protected Member() {
 	}
 
 	public Member(String title, String firstName,
@@ -243,8 +260,40 @@ public class Member implements java.io.Serializable {
 	public void setCertificateGenerated(Date certificateGenerated) {
 		this.certificateGenerated = certificateGenerated;
 	}
-	
-    @Override
+
+    public String getMemberStatus() {
+		return memberStatus;
+	}
+
+	public void setMemberStatus(String memberStatus) {
+		this.memberStatus = memberStatus;
+	}
+
+    public Long getMemberno() {
+		return memberno;
+	}
+
+	public void setMemberno(Long memberno) {
+		this.memberno = memberno;
+	}
+
+	public Set<MembershipPayment> getMembershipPayments() {
+		return membershipPayments;
+	}
+
+	public void setMembershipPayments(Set<MembershipPayment> membershipPayments) {
+		this.membershipPayments = membershipPayments;
+	}
+
+	public Set<MemberTelephone> getMemberTelephones() {
+		return memberTelephones;
+	}
+
+	public void setMemberTelephones(Set<MemberTelephone> memberTelephones) {
+		this.memberTelephones = memberTelephones;
+	}
+
+	@Override
     public String toString() {
         return new ToStringBuilder(this)
         		.append("memberno", id)

@@ -27,6 +27,7 @@ public class MemberDao {
 	public Member find(Serializable id) {
 		return entityManager.find(Member.class,  id);
 	}
+	
 	public Member findBySurname(String surname) {
 		return entityManager.createNamedQuery(Member.FIND_BY_SURNAME, Member.class)
 				.setParameter("surname", surname)
@@ -35,7 +36,13 @@ public class MemberDao {
 
 	@SuppressWarnings("unchecked")
 	public List<Member> getAll() {
-		return (List<Member>)entityManager.createQuery("from Member m order by m.id")
+		return (List<Member>)entityManager.createQuery("from Member m order by m.memberno, m.id")
+				.getResultList();
+	}
+
+	public List<Member> getByMemberStatus(String memberStatus) {
+		return (List<Member>)entityManager.createNamedQuery(Member.FIND_BY_STATUS, Member.class)
+				.setParameter("memberStatus", memberStatus)
 				.getResultList();
 	}
 

@@ -11,7 +11,12 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "role")
 @NamedQuery(name = Role.FIND_BY_NAME, query = "select r from Role r where r.name = :name")
-public class Role {
+public class Role implements java.io.Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1541907211606028691L;
 
 	public static final String FIND_BY_NAME = "Role.findByName";
 

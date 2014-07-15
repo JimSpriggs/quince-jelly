@@ -1,0 +1,5 @@
+.input-group[class*="col-"] {
+    float: left;
+    padding-right: 15px;
+    padding-left: 15px;
+}

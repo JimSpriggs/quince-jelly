@@ -6,15 +6,19 @@ import java.util.Date;
 import org.springframework.stereotype.Component;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.utils.MemberUtils;
 
 @Component
 public class MemberRow {
 
 	private Long id;
+	private Long memberNo;
+	private String memberStatus;
 	private String title;
 	private String firstName;
 	private String surname;
 	private String organisation;
+	private String displayName;
 	private String email;
 	private String addressLine1;
 	private String addressLine2;
@@ -33,6 +37,7 @@ public class MemberRow {
 	
 	public MemberRow(Member member) {
 		this.id = member.getId();
+		this.memberNo = member.getMemberno();
 		this.title = member.getTitle();
 		this.firstName = member.getFirstName();
 		this.surname = member.getSurname();
@@ -49,6 +54,8 @@ public class MemberRow {
 		this.seis = member.getSeis();
 		this.certificateGenerated = member.getCertificateGenerated();
 		this.certificateSent = member.getCertificateSent();
+		this.memberStatus = member.getMemberStatus();
+		setDisplayName();
 	}
 
 	public Long getId() {
@@ -125,20 +132,28 @@ public class MemberRow {
 
 	public void setTitle(String title) {
 		this.title = title;
+		setDisplayName();
 	}
 
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
+		setDisplayName();
 	}
 
 	public void setSurname(String surname) {
 		this.surname = surname;
+		setDisplayName();
 	}
 
 	public void setOrganisation(String organisation) {
 		this.organisation = organisation;
+		setDisplayName();
 	}
 
+	private void setDisplayName() {
+		this.displayName = MemberUtils.getDisplayName(organisation, firstName, surname);
+	}
+	
 	public void setEmail(String email) {
 		this.email = email;
 	}
@@ -185,5 +200,25 @@ public class MemberRow {
 
 	public void setCertificateSent(Date certificateSent) {
 		this.certificateSent = certificateSent;
+	}
+
+	public Long getMemberNo() {
+		return memberNo;
+	}
+
+	public void setMemberNo(Long memberNo) {
+		this.memberNo = memberNo;
+	}
+
+	public String getMemberStatus() {
+		return memberStatus;
+	}
+
+	public void setMemberStatus(String memberStatus) {
+		this.memberStatus = memberStatus;
+	}
+
+	public String getDisplayName() {
+		return displayName;
 	}
 }

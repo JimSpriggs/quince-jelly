@@ -15,10 +15,15 @@ public class MemberAPIService {
 
 	@Autowired 
 	private MemberService memberService;
-	
-	public MemberRows getAllMemberRows() {
+
+	public MemberRows getMemberRows(String memberStatus) {
 		List<MemberRow> memberRows = new ArrayList<MemberRow>();
-		List<Member> members = memberService.getAll();
+		List<Member> members = null;
+		if ("ALL".equals(memberStatus)) {
+			members = memberService.getAll();
+		} else {
+			members = memberService.getByMemberStatus(memberStatus);
+		}
 		if (members != null) {
 			for (Member member : members) {
 				MemberRow memberRow = new MemberRow(member);

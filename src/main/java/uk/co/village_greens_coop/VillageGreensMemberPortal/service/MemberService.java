@@ -24,8 +24,19 @@ public class MemberService {
 	protected void initialize() {
 	}
 	
+	public Member getById(long id) {
+		Member member = memberRepository.find(id);
+		return member;
+	}
+	
 	public List<Member> getAll() {
 		List<Member> membersList = memberRepository.getAll();
+		
+		return membersList;
+	}
+
+	public List<Member> getByMemberStatus(String memberStatus) {
+		List<Member> membersList = memberRepository.getByMemberStatus(memberStatus);
 		
 		return membersList;
 	}

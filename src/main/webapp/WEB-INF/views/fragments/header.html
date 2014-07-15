@@ -32,7 +32,7 @@
 					<ul class="dropdown-menu">
 					    <!-- User image -->
 					    <li class="user-header bg-light-blue">
-					        <img th:src="@{/resources/img/avatar3.png}" src="img/avatar3.png" class="img-circle" alt="User Image" />
+					        <img th:src="@{/resources/img/anonymous_avatar.gif}" src="img/avatar3.png" class="img-circle" alt="User Image" />
 					        <p>
 					           <span th:text="${session.currentAccount.firstName + ' ' + session.currentAccount.surname}">Jane Doe</span>
 					            <small th:text="${'Member since ' + #calendars.format(session.currentAccount.creationDate,'MMMM yyyy')}">Member since July 1970</small>
@@ -41,7 +41,7 @@
 					    <!-- Menu Footer-->
 					        <li class="user-footer">
 					            <div class="pull-left">
-					                <a href="/profile" th:href="@{/profile}" class="btn btn-default btn-flat">Profile</a>
+					                <a href="#" class="btn btn-default btn-flat">Profile</a>
 					            </div>
 					            <div class="pull-right">
 					                <a href="/logout" th:href="@{/logout}" class="btn btn-default btn-flat">Sign out</a>

@@ -7,7 +7,7 @@
 </head>
 <body>
 		    <!-- Left side column. contains the logo and sidebar -->
-		<aside class="left-side sidebar-offcanvas" th:fragment="admin-sidebar">
+		<aside class="left-side sidebar-offcanvas" th:fragment="admin-sidebar(activeMenu, activeSubmenu)">
 		    <!-- sidebar: style can be found in sidebar.less -->
 		    <section class="sidebar">
 		        <!-- Sidebar user panel -->
@@ -33,19 +33,27 @@
  -->		        <!-- /.search form -->
 		        <!-- sidebar menu: : style can be found in sidebar.less -->
 		        <ul class="sidebar-menu">
-		            <li class="active">
-		                <a href="dashboard">
+		            <li class="active" th:class="${activeMenu == 'dashboard'} ? 'active'">
+		                <a th:href="@{/admin/dashboard}" href="dashboard">
 		                    <i class="fa fa-dashboard"></i> <span>Dashboard</span>
 		                </a>
 		            </li>
-		            <li>
-		                <a href="members">
-		                    <i class="fa fa-dashboard"></i> <span>Members</span>
-		                </a>
+		            <li class="treeview" th:class="${activeMenu == 'members'} ? 'treeview active' : 'treeview'" >
+   		                <a href="#">
+							<i class="fa fa-user"></i>
+							<span>Members</span>
+							<i class="fa fa-angle-down pull-right"></i>
+	   	                </a>
+						<ul class="treeview-menu">
+							<li th:class="${activeSubmenu == 'ALL'} ? 'active'"><a th:href="@{/admin/allMembers}" href="allMembers.html"><i class="fa fa-angle-double-right"></i>All Members</a></li>
+							<li th:class="${activeSubmenu == 'FULL'} ? 'active'"><a th:href="@{/admin/fullMembers}" href="fullMembers.html"><i class="fa fa-angle-double-right"></i>Full Members</a></li>
+							<li th:class="${activeSubmenu == 'PART'} ? 'active'"><a th:href="@{/admin/partialMembers}" href="partialMembers.html"><i class="fa fa-angle-double-right"></i>Part-paid Members</a></li>
+							<li th:class="${activeSubmenu == 'UNPAID'} ? 'active'"><a th:href="@{/admin/unpaidMembers}" href="unpaidMembers.html"><i class="fa fa-angle-double-right"></i>Unpaid Members</a></li>
+						</ul>
 		            </li>
 		            <li>
-		                <a href="members">
-		                    <i class="fa fa-dashboard"></i> <span>Surveys</span>
+		                <a href="surveys">
+		                    <i class="fa fa-bar-chart-o"></i> <span>Surveys</span>
 		                </a>
 		            </li>
 		            <li>

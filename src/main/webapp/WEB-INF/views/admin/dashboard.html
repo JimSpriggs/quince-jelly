@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title th:text="#{coop.title} + ' - ' + #{signin.title}">Sign In</title>
+    <title th:text="#{coop.title} + ' - ' + #{signin.title}">Admin Dashboard</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link href="../favicon.ico" rel="shortcut icon" />
     <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
@@ -13,7 +13,7 @@
 <body class="skin-village-green">
 <div th:replace="fragments/header :: header">Header</div>
 	<div class="wrapper row-offcanvas row-offcanvas-left">
-		<aside th:replace="fragments/admin-sidebar :: admin-sidebar">Admin Sidebar</aside>
+		<aside th:replace="fragments/admin-sidebar :: admin-sidebar('dashboard','')">Admin Sidebar</aside>
 
 	    <!-- Right side column. Contains the navbar and content of the page -->
 	    <aside class="right-side">                
@@ -33,11 +33,26 @@
 	        <!-- Main content -->
 	        <section class="content">
 				<div class="row">
-					<div class="col-lg-3 col-xs-6">
+					<div class="col-lg-3 col-xs-3">
+						<!-- small box -->
+						<div class="small-box bg-aqua">
+							<div class="inner">
+								<h3>390</h3>
+								<p>All Members</p>
+							</div>
+							<div class="icon">
+								<i class="ion ion-person-stalker"></i>
+							</div>
+							<a href="members" class="small-box-footer">
+							More info <i class="fa fa-arrow-circle-right"></i>
+							</a>
+						</div>
+					</div><!-- ./col -->
+					<div class="col-lg-3 col-xs-3">
 						<!-- small box -->
 						<div class="small-box bg-green">
 							<div class="inner">
-								<h3>390</h3>
+								<h3>341</h3>
 								<p>Full Members</p>
 							</div>
 							<div class="icon">
@@ -48,12 +63,89 @@
 							</a>
 						</div>
 					</div><!-- ./col -->
-					<div class="col-lg-3 col-xs-6">
+					<div class="col-lg-3 col-xs-3">
+						<!-- small box -->
+						<div class="small-box bg-yellow">
+							<div class="inner">
+								<h3>36</h3>
+								<p>Part-paid Members</p>
+							</div>
+							<div class="icon">
+								<i class="ion ion-person-stalker"></i>
+							</div>
+							<a href="members" class="small-box-footer">
+							More info <i class="fa fa-arrow-circle-right"></i>
+							</a>
+						</div>
+					</div><!-- ./col -->
+					<div class="col-lg-3 col-xs-3">
+						<!-- small box -->
+						<div class="small-box bg-red">
+							<div class="inner">
+								<h3>35</h3>
+								<p>Unpaid Members</p>
+							</div>
+							<div class="icon">
+								<i class="ion ion-person-stalker"></i>
+							</div>
+							<a href="members" class="small-box-footer">
+							More info <i class="fa fa-arrow-circle-right"></i>
+							</a>
+						</div>
+					</div><!-- ./col -->
+				</div> <!-- row -->
+				<div class="row">
+					<div class="col-lg-3 col-xs-3">
 						<!-- small box -->
 						<div class="small-box bg-aqua">
 							<div class="inner">
 								<h3>&pound;95,035</h3>
 								<p>Total Investment</p>
+							</div>
+							<div class="icon">
+								<i class="fa fa-money"></i>
+							</div>
+							<a href="members" class="small-box-footer">
+							More info <i class="fa fa-arrow-circle-right"></i>
+							</a>
+						</div>
+					</div><!-- ./col -->
+					<div class="col-lg-3 col-xs-3">
+						<!-- small box -->
+						<div class="small-box bg-green">
+							<div class="inner">
+								<h3>&pound;87,250</h3>
+								<p>Paid in full</p>
+							</div>
+							<div class="icon">
+								<i class="fa fa-money"></i>
+							</div>
+							<a href="members" class="small-box-footer">
+							More info <i class="fa fa-arrow-circle-right"></i>
+							</a>
+						</div>
+					</div><!-- ./col -->
+					<div class="col-lg-3 col-xs-3">
+						<!-- small box -->
+						<div class="small-box bg-yellow">
+							<div class="inner">
+								<h3>&pound;4,875</h3>
+								<p>Part-payments</p>
+							</div>
+							<div class="icon">
+								<i class="fa fa-money"></i>
+							</div>
+							<a href="members" class="small-box-footer">
+							More info <i class="fa fa-arrow-circle-right"></i>
+							</a>
+						</div>
+					</div><!-- ./col -->
+					<div class="col-lg-3 col-xs-3">
+						<!-- small box -->
+						<div class="small-box bg-red">
+							<div class="inner">
+								<h3>&pound;8,700</h3>
+								<p>Unpaid pledges</p>
 							</div>
 							<div class="icon">
 								<i class="fa fa-money"></i>

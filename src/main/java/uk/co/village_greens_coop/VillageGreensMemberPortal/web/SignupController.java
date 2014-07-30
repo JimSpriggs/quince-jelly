@@ -28,7 +28,6 @@ public class SignupController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SignupController.class);
 	private static final String SIGNUP_VIEW_NAME = "signup/signup";
-	private static final String SIGNIN_VIEW_NAME = "signin/signin";
 
 	@Autowired
 	private AccountDao accountRepository;

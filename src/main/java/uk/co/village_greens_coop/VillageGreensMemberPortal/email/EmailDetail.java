@@ -1,7 +1,6 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.email;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class EmailDetail {
 	private String toAddress;

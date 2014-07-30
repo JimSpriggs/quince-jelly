@@ -1,12 +1,15 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.form;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.NotBlank;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.MemberTelephone;
@@ -14,6 +17,7 @@ import uk.co.village_greens_coop.VillageGreensMemberPortal.utils.MemberUtils;
 
 public class MemberForm {
 
+	private String updateState;
 	private Long id;
 	private Long memberNo;
 	private String memberStatus;
@@ -50,19 +54,23 @@ public class MemberForm {
     @Size(max = 10)
 	private String dob;
     
-    @NotBlank
+    @NotNull
 	private Integer totalInvestment;
     
 	private Boolean rollCall;
 
 	private Boolean seis;
 
-	private String telephone;
+	@Valid
+	private List<TelephoneForm> telephones = new ArrayList<TelephoneForm>();
 	
 	public MemberForm() {
+		this.updateState = "N";
 	}
 	
+	@SuppressWarnings("unchecked")
 	public MemberForm(Member member) {
+		this.updateState = "U";
 		this.id = member.getId();
 		this.memberNo = member.getMemberno();
 		this.title = member.getTitle();
@@ -80,13 +88,22 @@ public class MemberForm {
 		this.rollCall = member.getRollCall();
 		this.seis = member.getSeis();
 		this.memberStatus = member.getMemberStatus();
-		Set<MemberTelephone> telephones = member.getMemberTelephones();
-		if (telephones != null && telephones.size() > 0) {
-			Iterator<MemberTelephone> iterator = telephones.iterator();
-			this.telephone = iterator.next().getTelephoneNumber();
-		} else {
-			this.telephone = "";
+		Set<MemberTelephone> memberTelephones = member.getMemberTelephones();
+		for (MemberTelephone memberTelephone: memberTelephones) {
+			TelephoneForm telephoneForm = new TelephoneForm(
+								memberTelephone.getId(),
+								memberTelephone.getTelephoneNumber(),
+								memberTelephone.getTelephoneType().getTelephoneType());
+			this.telephones.add(telephoneForm);
 		}
+		if (this.telephones.size() > 1) {
+			Collections.sort(this.telephones);
+		}
+		
+		// add a new empty telephone to the form, with id 0 
+		TelephoneForm tf = new TelephoneForm();
+		tf.setId(0L);
+		this.telephones.add(tf);
 		setDisplayName();
 	}
 
@@ -238,12 +255,20 @@ public class MemberForm {
 		this.seis = seis;
 	}
 
-	public String getTelephone() {
-		return telephone;
+	public List<TelephoneForm> getTelephones() {
+		return telephones;
 	}
 
-	public void setTelephone(String telephone) {
-		this.telephone = telephone;
+	public void setTelephones(List<TelephoneForm> telephones) {
+		this.telephones = telephones;
+	}
+
+	public String getUpdateState() {
+		return updateState;
+	}
+
+	public void setUpdateState(String updateState) {
+		this.updateState = updateState;
 	}
 	
 }

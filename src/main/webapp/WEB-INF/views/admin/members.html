@@ -83,7 +83,8 @@
 $(document).ready(function() {
 	var memberStatusUrlParam = 'memberStatus=' + /*[[${memberStatus}]]*/ 'FULL';
 	var membersTable = $('#membersTable').dataTable( {
-	    "ajax": {
+	    "stateSave": true,
+		"ajax": {
 	    	"url": "memberRows?" + memberStatusUrlParam,
 	    	"dataSrc": "memberRows",
 	    	"type": "GET"

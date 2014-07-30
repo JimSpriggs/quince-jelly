@@ -1038,6 +1038,9 @@ body > .header .logo .icon {
   border-color: #f56954 !important;
   box-shadow: none;
 }
+.form-group.has-an-error label {
+  color: #f56954;
+}
 /* Input group */
 .input-group .input-group-addon {
   border-radius: 0;

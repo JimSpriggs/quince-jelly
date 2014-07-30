@@ -23,7 +23,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @NamedQueries({
 	@NamedQuery(name = Member.FIND_BY_SURNAME, query = "select m from Member m where m.surname = :surname"),
 	@NamedQuery(name = Member.FIND_BY_STATUS, 
-		query = "select m from Member m LEFT JOIN FETCH m.memberTelephones where member_status_cd = :memberStatus order by m.memberno, m.id"),
+		query = "select DISTINCT m from Member m LEFT JOIN FETCH m.memberTelephones mt where member_status_cd = :memberStatus order by m.memberno, m.id, mt.id"),
 })
 public class Member implements java.io.Serializable {
 
@@ -293,6 +293,16 @@ public class Member implements java.io.Serializable {
 		this.memberTelephones = memberTelephones;
 	}
 
+	public MemberTelephone addNewTelephone(String telephoneNumber, TelephoneType telephoneType) {
+		MemberTelephone mt = new MemberTelephone(this, telephoneNumber, telephoneType);
+		memberTelephones.add(mt);
+		return mt;
+	}
+	
+	public void deleteTelephone(MemberTelephone mt) {
+		memberTelephones.remove(mt);
+	}
+	
 	@Override
     public String toString() {
         return new ToStringBuilder(this)

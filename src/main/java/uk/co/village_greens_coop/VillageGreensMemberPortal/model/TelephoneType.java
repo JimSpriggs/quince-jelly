@@ -8,7 +8,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "telephone_type")
-@NamedQuery(name = TelephoneType.FIND_BY_DESCRIPTION, query = "select tt from TelephoneType tt where tt.description = :description")
+@NamedQuery(name = TelephoneType.FIND_BY_TYPE, query = "select tt from TelephoneType tt where tt.telephoneType = :telephoneType")
 public class TelephoneType implements java.io.Serializable {
 
 	/**
@@ -16,7 +16,7 @@ public class TelephoneType implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = -6737072063895112734L;
 
-	public static final String FIND_BY_DESCRIPTION = "TelephoneType.findByDescription";
+	public static final String FIND_BY_TYPE = "TelephoneType.findByType";
 
 	@Id
 	@Column(name = "telephone_type_cd")

@@ -20,6 +20,9 @@ public class MemberDao {
 	
 	@Transactional
 	public Member save(Member member) {
+		if (entityManager.contains(member)) {
+			entityManager.merge(member);
+		} 
 		entityManager.persist(member);
 		return member;
 	}

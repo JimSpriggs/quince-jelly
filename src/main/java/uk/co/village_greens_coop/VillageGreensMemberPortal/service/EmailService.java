@@ -2,8 +2,6 @@ package uk.co.village_greens_coop.VillageGreensMemberPortal.service;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -19,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.email.EmailAttachment;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.email.EmailDetail;
-import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 
 @Service
 public class EmailService {

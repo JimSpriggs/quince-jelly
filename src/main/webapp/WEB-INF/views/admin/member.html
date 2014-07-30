@@ -36,7 +36,9 @@
 				<div class="row">
 					<div class="col-xs-12">
 <!-- form start -->
-<form class="form-horizontal" method="post" th:action="@{/updateMember}" th:object="${memberForm}">
+<form class="form-horizontal" method="post" th:action="@{member}" th:object="${memberForm}">
+	<input type="hidden" th:field="*{id}" />
+	<input type="hidden" th:field="*{updateState}" />
     <!-- /* Show general error message when form contains errors */ -->
     <th:block th:if="${#fields.hasErrors('${memberForm.*}')}">
         <div th:replace="fragments/alert :: alert (type='danger', message='There is a problem with some of the information you provided.  Please amend the marked fields, and try again.')">Alert</div>
@@ -128,16 +130,66 @@
 		            <div class="col-md-6 input-group">
 		            	<span class="input-group-addon"><i class="fa fa-envelope"></i></span>
 		                <input type="text" class="form-control" id="email" placeholder="Email address" th:field="*{email}" />
-		                <span class="help-block" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Please supply a value</span>
 		            </div>
+		            <span class="help-block" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Please supply a value</span>
 		        </div>
-		        <div class="form-group" th:classappend="${#fields.hasErrors('telephone')}? 'has-error'">
-		            <label for="telephone" class="col-md-2 control-label">Telephone</label>
-		            <div class="col-md-3 input-group">
-		            	<span class="input-group-addon"><i class="fa fa-phone"></i></span>
-		                <input type="text" class="form-control" id="telephone" placeholder="Telephone" th:field="*{telephone}" />
-		                <span class="help-block" th:if="${#fields.hasErrors('telephone')}" th:errors="*{telephone}">Please supply a value</span>
-		            </div>
+		        <div class="form-group"
+		        	th:classappend="${telephoneErrors != null} ? 'has-an-error'">
+	            	<label class="col-md-2 control-label">Telephone Numbers</label>
+			        <div id="telephoneRowsDiv" class="col-md-10">
+			        	<!-- ensure changes to the html for the telephoneRow are reflected in vg-admin.js -->
+				        <div class="row" id="telephoneRow" 
+				        		th:attrappend="id=__${stat.index}__"
+				        		th:classappend="*{telephones[__${stat.index}__].updateState} == 'D' ? 'hide'"
+				        		th:each="phone, stat : *{telephones}">
+				        	<div>
+					            <div class="col-md-4 input-group"
+					            	th:classappend="${#fields.hasErrors('telephones[__${stat.index}__].telephoneNumber')}? 'has-error'">
+						            	<span class="input-group-addon"><i class="fa fa-phone"></i></span>
+						                <input type="text" class="form-control" placeholder="Telephone" th:field="*{telephones[__${stat.index}__].telephoneNumber}" />
+					            </div>
+					            <div class="col-md-3"
+					            	th:classappend="${#fields.hasErrors('telephones[__${stat.index}__].telephoneType')}? 'has-error'">
+					                <select class="form-control" th:field="*{telephones[__${stat.index}__].telephoneType}">
+						                 <option value="">Select...</option>
+						                 <option value="HOME">Home</option>
+						                 <option value="WORK">Work</option>
+						                 <option value="MOBILE">Mobile</option>
+						            </select>
+								</div>
+					            <div id="addTelephoneDiv_" 
+									th:attrappend="id=__${stat.index}__"
+					            	th:if="*{telephones[__${stat.index}__].updateState} == 'N'" class="col-md-3">
+						            <span>
+										<button 
+											id="addTelephoneBtn_"
+											th:attrappend="id=__${stat.index}__"
+											class="btn btn-success btn-flat add-more-telephones" type="button"><i class="fa fa-plus-circle"></i></button>
+	                                </span>
+									<script th:inline="javascript">
+									/*<![CDATA[*/
+										var nextTelephoneId = /*[[${stat.index}]]*/ 1;
+									/*]]>*/
+									</script>
+					            </div>
+					            <div id="removeTelephoneDiv_" 
+									th:attrappend="id=__${stat.index}__" 
+									th:class="*{telephones[__${stat.index}__].updateState == 'N'} ? 'col-md-3 hide' : 'col-md-3'">
+						            <span>
+										<button id="removeTelephoneBtn_"
+											th:attrappend="id=__${stat.index}__"
+											class="btn btn-danger btn-flat remove-telephones" type="button"><i class="fa fa-minus-circle"></i></button>
+	                                </span>
+					            </div>
+					            <input type="hidden" th:field="*{telephones[__${stat.index}__].id}" />
+					            <input type="hidden" th:field="*{telephones[__${stat.index}__].updateState}" />
+					        </div>
+				        </div>
+	                </div>
+			    </div>
+		        <div class="col-md-10 col-md-offset-2 has-an-error"
+		        	th:if="${telephoneErrors != null}">
+		        	<label class="form-group text-danger has-an-error">Please supply values for the missing fields above</label>
 		        </div>
 			</fieldset>
 		</div>
@@ -186,6 +238,10 @@
 			</fieldset>
 		</div> <!-- box-body -->
 	</div> <!-- box -->
+<div class="pull-right"> 
+<button type="button" class="btn btn-lg btn-default">Cancel</button>
+<button type="submit" class="btn btn-lg btn-primary">Save Changes</button>
+</div>
 </form>
 <!-- form end -->
 					</div><!-- col-xs-12 -->

@@ -126,8 +126,8 @@ $(function() {
         checkboxClass: 'icheckbox_minimal',
         radioClass: 'iradio_minimal'
     });
-
 });
+
 function fix_sidebar() {
     //Make sure the body tag has the .fixed class
     if (!$("body").hasClass("fixed")) {
@@ -1047,3 +1047,80 @@ $(window).load(function() {
         })
     }
 })(window.jQuery || window.Zepto);
+
+$(document).ready(function(){
+
+	var addMoreTelephonesClickFunction = function(e) {
+		e.preventDefault();
+
+		// id of current div will be addTelephoneBtn_XXXXX
+		var telephoneId = this.id.slice(16);
+		
+		nextTelephoneId = nextTelephoneId + 1;
+		
+		var newDivHtml = '<div class="row" id="telephoneRow' + nextTelephoneId + '">';
+			newDivHtml += '<div class="col-md-4 input-group">';
+			newDivHtml += '<span class="input-group-addon"><i class="fa fa-phone"></i></span>';
+			newDivHtml += '<input type="text" class="form-control" placeholder="Telephone" id="telephones' + nextTelephoneId + '.telephoneNumber" name="telephones[' + nextTelephoneId + '].telephoneNumber" value="" />';
+			newDivHtml += '</div>';
+			newDivHtml += '<div class="col-md-3">';
+			newDivHtml += '<select class="form-control" id="telephones' + nextTelephoneId + '.telephoneType" name="telephones[' + nextTelephoneId + '].telephoneType">';
+			newDivHtml += '<option value="">Select...</option><option value="HOME">Home</option><option value="WORK">Work</option><option value="MOBILE">Mobile</option>';
+			newDivHtml += '</select>';
+			newDivHtml += '</div>';
+			newDivHtml += '<div id="addTelephoneDiv_' + nextTelephoneId + '" class="col-md-3">';
+			newDivHtml += '<span>';
+			newDivHtml += '<button id="addTelephoneBtn_' + nextTelephoneId + '" ';
+			newDivHtml += 'class="btn btn-success btn-flat add-more-telephones" type="button"><i class="fa fa-plus-circle"></i></button>';
+			newDivHtml += '</span>';
+			newDivHtml += '</div>';
+			newDivHtml += '<div id="removeTelephoneDiv_' + nextTelephoneId + '" class="col-md-3 hide" '; 
+			newDivHtml += '<span>';
+			newDivHtml += '<button id="removeTelephoneBtn_' +nextTelephoneId + '" ';
+			newDivHtml += 'class="btn btn-danger btn-flat remove-telephones" type="button"><i class="fa fa-minus-circle"></i></button>';
+			newDivHtml += '</span>';
+			newDivHtml += '</div>';
+
+			newDivHtml += '<input type="hidden" id="telephones' + nextTelephoneId + '.id" name="telephones[' + nextTelephoneId + '].id" value="0" />';
+			newDivHtml += '<input type="hidden" id="telephones' + nextTelephoneId + '.updateState" name="telephones[' + nextTelephoneId + '].updateState" value="N" />';
+			newDivHtml += '</div>';
+
+//		alert(newDivHtml);
+//		alert("Current DIV #telephoneRow" + telephoneId);
+		var newDiv = $(newDivHtml);
+//		$("#telephoneRow" + telephoneId).after(newDiv);
+		$("#telephoneRowsDiv").append(newDiv);
+		newDiv.find('input:first').focus();
+		// hide the div which contains the add telephone button (the one that was just clicked)
+		$("#addTelephoneDiv_" + telephoneId).addClass('hide');
+		$("#removeTelephoneDiv_" + telephoneId).removeClass('hide');
+		$("#addTelephoneBtn_" + nextTelephoneId).click(addMoreTelephonesClickFunction);
+		$("#removeTelephoneBtn_" + nextTelephoneId).click(removeTelephoneClickFunction);
+		var telephoneInputToFocus = $("#telephones" + nextTelephoneId + ".telephoneNumber");
+		telephoneInputToFocus.focus();
+//		alert("Adding another lot " + nextTelephoneId)
+	};
+	
+	var removeTelephoneClickFunction = function(e){
+		e.preventDefault();
+		// id will be removeTelephoneBtn_XXXXX
+		var telephoneId = this.id.slice(19);
+		
+        var updateStateField = $("#telephones" + telephoneId + "\\.updateState");
+        var updateState = updateStateField.val();
+//		alert("Update state: " + updateState);
+		// if the number has been added, just delete its row
+		if (updateState === "N") {
+			$("#telephoneRow" + telephoneId).remove();
+		} else {
+			// otherwise set the update state to D, so it gets deleted
+			$("#telephoneRow" + telephoneId).addClass('hide');
+			updateStateField.val('D');
+		}
+	};
+	
+	$(".add-more-telephones").click(addMoreTelephonesClickFunction);
+	
+	$(".remove-telephones").click(removeTelephoneClickFunction);
+	
+});

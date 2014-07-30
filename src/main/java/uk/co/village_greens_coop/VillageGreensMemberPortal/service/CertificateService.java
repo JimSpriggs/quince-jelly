@@ -1,11 +1,9 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.service;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,14 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.mail.MailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -176,8 +170,8 @@ public class CertificateService {
 			String emailBody = 
 				member.getSalutation(false) + "\n\n"
 				+ "Attached please find your certificate to confirm shares purchased in Village Greens (Prestwich) Co-operative Ltd.\n\n"
-				+ "Together we have made this happen, and this is just the beginning.\n\n\n"
-				+ "We want to take this opportunity to say a huge thank you for your support and investment, and we are only weeks away from opening the doors on this exciting new community venture as the lease has now been signed.\n\n"
+				+ "Together we have made this happen, and this is just the beginning.\n\n"
+				+ "We want to take this opportunity to say a huge thank you for your support and investment.\n\n"
 				+ "The Directors of Village Greens\n"
 				+ "www.village-greens-coop.co.uk\n\n\n"
 				+ "NB If you have not already done so then please let Janet know if you wish to be registered for 50% tax relief with HMRC at: janet@village-greens-coop.co.uk\n\n\n";

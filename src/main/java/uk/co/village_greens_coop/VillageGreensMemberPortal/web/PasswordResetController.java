@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import uk.co.village_greens_coop.VillageGreensMemberPortal.model.PasswordReset;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.service.SignUpService;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.signup.ForgottenPasswordForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.signup.PasswordResetForm;

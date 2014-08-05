@@ -1,5 +1,7 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -11,8 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,8 +23,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.MemberForm;
-import uk.co.village_greens_coop.VillageGreensMemberPortal.form.validation.MemberFormValidator;
-import uk.co.village_greens_coop.VillageGreensMemberPortal.form.validation.TelephoneFormValidator;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.MemberRows;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.service.MemberAPIService;
@@ -121,13 +120,23 @@ public class AdminController {
 			Model model,
 			HttpServletRequest request) {
     	
-    	// perform deeper validation of the member form (particulalry the nested list of TelephoneForms
+    	// perform deeper validation of the member form (particularly the nested list of TelephoneForms
 //    	MemberFormValidator mfv = new MemberFormValidator(new TelephoneFormValidator());
 //    	mfv.validate(memberForm, errors);
     	
     	if (errors.hasErrors()) {
     		LOG.info("Errors in Member form");
-    		model.addAttribute("telephoneErrors", "true");
+    		List<FieldError> fieldErrors = errors.getFieldErrors();
+    		
+    		// look for any telephone field errors
+    		for (FieldError fieldError: fieldErrors) {
+    			if (fieldError.getField().startsWith("telephones")) {
+    	    		model.addAttribute("telephoneErrors", "true");
+    			} else if (fieldError.getField().startsWith("payments")) {
+    	    		model.addAttribute("paymentErrors", "true");
+    			}
+    		}
+    			
     		return "admin/member";
     	}
 

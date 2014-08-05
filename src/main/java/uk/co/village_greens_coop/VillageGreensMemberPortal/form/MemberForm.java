@@ -13,6 +13,7 @@ import org.hibernate.validator.constraints.Email;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.MemberTelephone;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.MembershipPayment;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.utils.MemberUtils;
 
 public class MemberForm {
@@ -64,11 +65,13 @@ public class MemberForm {
 	@Valid
 	private List<TelephoneForm> telephones = new ArrayList<TelephoneForm>();
 	
+	@Valid
+	private List<PaymentForm> payments = new ArrayList<PaymentForm>();
+
 	public MemberForm() {
 		this.updateState = "N";
 	}
 	
-	@SuppressWarnings("unchecked")
 	public MemberForm(Member member) {
 		this.updateState = "U";
 		this.id = member.getId();
@@ -104,6 +107,29 @@ public class MemberForm {
 		TelephoneForm tf = new TelephoneForm();
 		tf.setId(0L);
 		this.telephones.add(tf);
+		setDisplayName();
+
+		// Payments
+		Set<MembershipPayment> membershipPayments = member.getMembershipPayments();
+		for (MembershipPayment membershipPayment: membershipPayments) {
+			PaymentForm paymentForm = new PaymentForm(
+					membershipPayment.getId(),
+					membershipPayment.getPaymentAmount(),
+					membershipPayment.getPaymentMethod() != null ?
+							membershipPayment.getPaymentMethod().getPaymentMethod() : null,
+					membershipPayment.getDueDate(),
+					membershipPayment.getReceivedDate());
+			this.payments.add(paymentForm);
+		}
+		if (this.payments.size() > 1) {
+			Collections.sort(this.payments);
+		}
+		
+		// add a new empty payment to the form, with id 0 
+		PaymentForm pf = new PaymentForm();
+		pf.setId(0L);
+		this.payments.add(pf);
+		
 		setDisplayName();
 	}
 
@@ -263,6 +289,14 @@ public class MemberForm {
 		this.telephones = telephones;
 	}
 
+	public List<PaymentForm> getPayments() {
+		return payments;
+	}
+
+	public void setPayments(List<PaymentForm> payments) {
+		this.payments = payments;
+	}
+	
 	public String getUpdateState() {
 		return updateState;
 	}

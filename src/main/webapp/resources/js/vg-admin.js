@@ -1085,12 +1085,10 @@ $(document).ready(function(){
 			newDivHtml += '<input type="hidden" id="telephones' + nextTelephoneId + '.updateState" name="telephones[' + nextTelephoneId + '].updateState" value="N" />';
 			newDivHtml += '</div>';
 
-//		alert(newDivHtml);
-//		alert("Current DIV #telephoneRow" + telephoneId);
 		var newDiv = $(newDivHtml);
-//		$("#telephoneRow" + telephoneId).after(newDiv);
 		$("#telephoneRowsDiv").append(newDiv);
 		newDiv.find('input:first').focus();
+
 		// hide the div which contains the add telephone button (the one that was just clicked)
 		$("#addTelephoneDiv_" + telephoneId).addClass('hide');
 		$("#removeTelephoneDiv_" + telephoneId).removeClass('hide');
@@ -1098,7 +1096,6 @@ $(document).ready(function(){
 		$("#removeTelephoneBtn_" + nextTelephoneId).click(removeTelephoneClickFunction);
 		var telephoneInputToFocus = $("#telephones" + nextTelephoneId + ".telephoneNumber");
 		telephoneInputToFocus.focus();
-//		alert("Adding another lot " + nextTelephoneId)
 	};
 	
 	var removeTelephoneClickFunction = function(e){
@@ -1109,7 +1106,7 @@ $(document).ready(function(){
         var updateStateField = $("#telephones" + telephoneId + "\\.updateState");
         var updateState = updateStateField.val();
 //		alert("Update state: " + updateState);
-		// if the number has been added, just delete its row
+		// if the number has only been added by this session, just delete its row
 		if (updateState === "N") {
 			$("#telephoneRow" + telephoneId).remove();
 		} else {
@@ -1119,8 +1116,102 @@ $(document).ready(function(){
 		}
 	};
 	
+	var addMorePaymentsClickFunction = function(e) {
+		e.preventDefault();
+
+		// id of current div will be addPaymentBtn_XXXXX
+		var paymentId = this.id.slice(14);
+		
+		nextPaymentId = nextPaymentId + 1;
+		
+		var newDivHtml = '<div class="row" id="paymentRow' + nextPaymentId + '">';
+			newDivHtml += '<div>';
+			newDivHtml += '<div id="paymentReceivedDateDiv_' + nextPaymentId + '" class="col-md-3 input-group date">';
+			newDivHtml += '<span class="input-group-addon"><i class="fa fa-calendar"></i></span>';
+			newDivHtml += '<input type="text" class="form-control date-field" placeholder="Received" id="payments' + nextPaymentId + '.receivedDate" name="payments[' + nextPaymentId + '].receivedDate" value="" />';
+			newDivHtml += '</div>';
+			newDivHtml += '<div class="col-md-2 input-group">';
+			newDivHtml += '<span class="input-group-addon"><i class="fa fa-gbp"></i></span>';
+			newDivHtml += '<input type="text" class="form-control" placeholder="Amount" id="payments' + nextPaymentId + '.amount" name="payments[' + nextPaymentId + '].amount" value="" />';
+			newDivHtml += '</div>';
+			newDivHtml += '<div id="paymentDueDateDiv_' + nextPaymentId + '" class="col-md-3 input-group date">';
+			newDivHtml += '<span class="input-group-addon"><i class="fa fa-calendar"></i></span>';
+			newDivHtml += '<input type="text" class="form-control date-field" placeholder="Due" id="payments' + nextPaymentId + '.dueDate" name="payments[' + nextPaymentId + '].dueDate" value="" />';
+			newDivHtml += '</div>';
+			newDivHtml += '<div class="col-md-2">';
+			newDivHtml += '<select class="form-control" id="payments' + nextPaymentId + '.paymentMethod" name="payments[' + nextPaymentId + '].paymentMethod">';
+			newDivHtml += '<option value="">Select...</option><option value="BACS">BACS</option><option value="CHEQUE">Cheque</option><option value="CASH">Cash</option>';
+			newDivHtml += '</select>';
+			newDivHtml += '</div>';
+			newDivHtml += '<div id="addPaymentDiv_' + nextPaymentId + '" class="col-md-2">';
+			newDivHtml += '<span>';
+			newDivHtml += '<button id="addPaymentBtn_' + nextPaymentId + '" ';
+			newDivHtml += 'class="btn btn-success btn-flat add-more-payments" type="button"><i class="fa fa-plus-circle"></i></button>';
+			newDivHtml += '</span>';
+			newDivHtml += '</div>';
+			newDivHtml += '<div id="removePaymentDiv_' + nextPaymentId + '" class="col-md-2 hide" '; 
+			newDivHtml += '<span>';
+			newDivHtml += '<button id="removePaymentBtn_' +nextPaymentId + '" ';
+			newDivHtml += 'class="btn btn-danger btn-flat remove-payments" type="button"><i class="fa fa-minus-circle"></i></button>';
+			newDivHtml += '</span>';
+			newDivHtml += '</div>';
+
+			newDivHtml += '<input type="hidden" id="payments' + nextPaymentId + '.id" name="payments[' + nextPaymentId + '].id" value="0" />';
+			newDivHtml += '<input type="hidden" id="telephones' + nextPaymentId + '.updateState" name="telephones[' + nextPaymentId + '].updateState" value="N" />';
+			newDivHtml += '</div>';
+			newDivHtml += '</div>';
+
+		var newDiv = $(newDivHtml);
+		$("#paymentRowsDiv").append(newDiv);
+		newDiv.find('input:first').focus();
+		// hide the div which contains the add payment button (the one that was just clicked)
+		$("#addPaymentDiv_" + paymentId).addClass('hide');
+		$("#removePaymentDiv_" + paymentId).removeClass('hide');
+		$("#addPaymentBtn_" + nextPaymentId).click(addMorePaymentsClickFunction);
+		$("#removePaymentBtn_" + nextPaymentId).click(removePaymentClickFunction);
+		$('#paymentReceivedDateDiv_' + nextPaymentId).datepicker({
+		    format: "dd/mm/yyyy",
+		    todayBtn: "linked",
+		    multidate: false,
+		    autoclose: true,
+		    todayHighlight: true
+		});	
+		$('#paymentDueDateDiv_' + nextPaymentId).datepicker({
+		    format: "dd/mm/yyyy",
+		    todayBtn: "linked",
+		    multidate: false,
+		    autoclose: true,
+		    todayHighlight: true
+		});	
+
+//		var paymentInputToFocus = $("#payments" + nextPaymentId + ".amount");
+//		paymentInputToFocus.focus();
+	};
+	
+	var removePaymentClickFunction = function(e){
+		e.preventDefault();
+		// id will be removePaymentBtn_XXXX
+		var paymentId = this.id.slice(17);
+		
+        var updateStateField = $("#payments" + paymentId + "\\.updateState");
+        var updateState = updateStateField.val();
+//		alert("Update state: " + updateState);
+		// if the payment has only been added by this session, just delete its row
+		if (updateState === "N") {
+			$("#paymentRow" + paymentId).remove();
+		} else {
+			// otherwise set the update state to D, so it gets deleted
+			$("#paymentRow" + paymentId).addClass('hide');
+			updateStateField.val('D');
+		}
+	};
+	
 	$(".add-more-telephones").click(addMoreTelephonesClickFunction);
 	
+	$(".add-more-payments").click(addMorePaymentsClickFunction);
+
 	$(".remove-telephones").click(removeTelephoneClickFunction);
+
+	$(".remove-payments").click(removePaymentClickFunction);
 	
 });

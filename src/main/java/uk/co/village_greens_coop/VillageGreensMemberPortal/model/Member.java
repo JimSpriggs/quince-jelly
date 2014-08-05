@@ -23,7 +23,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @NamedQueries({
 	@NamedQuery(name = Member.FIND_BY_SURNAME, query = "select m from Member m where m.surname = :surname"),
 	@NamedQuery(name = Member.FIND_BY_STATUS, 
-		query = "select DISTINCT m from Member m LEFT JOIN FETCH m.memberTelephones mt where member_status_cd = :memberStatus order by m.memberno, m.id, mt.id"),
+		query = "select DISTINCT m from Member m where member_status_cd = :memberStatus order by m.memberno")
+//		query = "select DISTINCT m from Member m LEFT JOIN FETCH m.memberTelephones mt where member_status_cd = :memberStatus order by m.memberno, m.id, mt.id"),
 })
 public class Member implements java.io.Serializable {
 
@@ -301,6 +302,20 @@ public class Member implements java.io.Serializable {
 	
 	public void deleteTelephone(MemberTelephone mt) {
 		memberTelephones.remove(mt);
+	}
+	
+	public MembershipPayment addNewPayment(
+								BigDecimal amount, 
+								Date dueDate, 
+								Date receivedDate, 
+								PaymentMethod paymentMethod) {
+		MembershipPayment mp = new MembershipPayment(this, amount, dueDate, receivedDate, paymentMethod);
+		membershipPayments.add(mp);
+		return mp;
+	}
+	
+	public void deletePayment(MembershipPayment mp) {
+		membershipPayments.remove(mp);
 	}
 	
 	@Override

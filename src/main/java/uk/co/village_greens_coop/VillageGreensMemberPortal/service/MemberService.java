@@ -14,11 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.MemberDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.MemberTelephoneDao;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.MembershipPaymentDao;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.PaymentMethodDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.TelephoneTypeDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.MemberForm;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.form.PaymentForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.TelephoneForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.MemberTelephone;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.MembershipPayment;
 
 @Service
 @Transactional(readOnly = true)
@@ -36,7 +40,13 @@ public class MemberService {
 	private MemberTelephoneDao memberTelephoneRepository;
 
 	@Autowired
+	private MembershipPaymentDao membershipPaymentRepository;
+
+	@Autowired
 	private TelephoneTypeDao telephoneTypeRepository;
+
+	@Autowired
+	private PaymentMethodDao paymentMethodRepository;
 
 	@PostConstruct	
 	protected void initialize() {
@@ -134,6 +144,32 @@ public class MemberService {
 	    		}
 	    	}
     	}
+    	if (mf.getPayments() != null) {
+	    	for (PaymentForm pf : mf.getPayments()) {
+	    		MembershipPayment mp = null;
+	    		
+	    		if (pf.getId() != null) {
+	    			if (pf.getId().longValue() != 0) {
+	    				mp = locateMembershipPayment(member, pf.getId());
+		    			if ("D".equals(pf.getUpdateState())) {
+		    				member.deletePayment(mp);
+		    				membershipPaymentRepository.delete(mp);
+		    			} else if ("U".equals(pf.getUpdateState())) {
+		    				mp.setPaymentAmount(pf.getAmount());
+		    				mp.setDueDate(pf.getDueDate());
+		    				mp.setReceivedDate(pf.getReceivedDate());
+		    				mp.setPaymentMethod(paymentMethodRepository.findByMethod(pf.getPaymentMethod()));
+		    			}
+	    			} else if ("N".equals(pf.getUpdateState())) {
+	    				if (pf.getAmount() != null) {
+	    					mp = member.addNewPayment(pf.getAmount(), pf.getDueDate(), pf.getReceivedDate(), paymentMethodRepository.findByMethod(pf.getPaymentMethod()));
+	    				}
+	    			}
+	    		} else {
+	    			LOG.error("Null value detected of MembershipPayment.id");
+	    		}
+	    	}
+    	}
     }
     
     private MemberTelephone locateMemberTelephone(Member member, Long id) {
@@ -141,6 +177,17 @@ public class MemberService {
     		for (MemberTelephone mt : member.getMemberTelephones()) {
     			if (mt.getId().equals(id)) {
     				return mt;
+    			}
+    		}
+    	}
+    	return null;
+    }
+
+    private MembershipPayment locateMembershipPayment(Member member, Long id) {
+    	if (member.getMembershipPayments() != null) {
+    		for (MembershipPayment mp : member.getMembershipPayments()) {
+    			if (mp.getId().equals(id)) {
+    				return mp;
     			}
     		}
     	}

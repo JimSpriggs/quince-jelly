@@ -56,6 +56,8 @@ public class AdminController {
     @ResponseStatus(value = HttpStatus.OK)
     public String getAllMembers(HttpServletRequest request, Model model) {
     	model.addAttribute("memberStatus", "ALL");
+    	request.getSession().setAttribute("memberStatus", "ALL");
+    	addMemberModelAttributes("ALL", model);
     	return "admin/members";
     }
     
@@ -64,6 +66,7 @@ public class AdminController {
     public String getFullMembers(HttpServletRequest request, Model model) {
     	model.addAttribute("memberStatus", "FULL");
     	request.getSession().setAttribute("memberStatus", "FULL");
+    	addMemberModelAttributes("FULL", model);
     	return "admin/members";
     }
     
@@ -72,6 +75,7 @@ public class AdminController {
     public String getPartialMembers(HttpServletRequest request, Model model) {
     	model.addAttribute("memberStatus", "PART");
     	request.getSession().setAttribute("memberStatus", "PART");
+    	addMemberModelAttributes("PART", model);
     	return "admin/members";
     }
     
@@ -80,6 +84,7 @@ public class AdminController {
     public String getUnpaidMembers(HttpServletRequest request, Model model) {
     	model.addAttribute("memberStatus", "UNPAID");
     	request.getSession().setAttribute("memberStatus", "UNPAID");
+    	addMemberModelAttributes("UNPAID", model);
     	return "admin/members";
     }
     
@@ -91,6 +96,30 @@ public class AdminController {
     	return memberAPIService.getMemberRows(memberStatus);
     }
     
+    private void addMemberModelAttributes(String memberStatus, Model model) {
+    	String returnUrl = "/admin/";
+    	String breadcrumbMembersDescription = " Members";
+    	if (memberStatus.equals("ALL")) {
+    		returnUrl += "allMembers";
+    		breadcrumbMembersDescription = "All" + breadcrumbMembersDescription;
+    	} else if (memberStatus.equals("PART")) {
+    		returnUrl += "partialMembers";
+    		breadcrumbMembersDescription = "Part-paid" + breadcrumbMembersDescription;;
+    	} else if (memberStatus.equals("FULL")) {
+    		returnUrl += "fullMembers";
+    		breadcrumbMembersDescription = "Full" + breadcrumbMembersDescription;;
+    	} else if (memberStatus.equals("UNPAID")) {
+    		returnUrl += "unpaidMembers";
+    		breadcrumbMembersDescription = "Unpaid" + breadcrumbMembersDescription;;
+    	} else if (memberStatus.equals("NEW")) {
+    		returnUrl += "addMember";
+    		breadcrumbMembersDescription = "Add Member";
+    	}
+    	
+    	model.addAttribute("returnUrl", returnUrl);
+    	model.addAttribute("breadcrumbMembersDescription", breadcrumbMembersDescription);
+    }
+
     @RequestMapping(value = "member", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     public String getMember(
@@ -103,11 +132,23 @@ public class AdminController {
     		MemberForm mf = new MemberForm(member);
         	model.addAttribute("memberForm", mf);
         	request.getSession().setAttribute("memberId", id);
+        	addMemberModelAttributes(memberStatus, model);
         	return "admin/member";
     	} else {
     		//TODO add an error message, the id wasn't found
     		return "redirect:allMembers";
     	}
+    }
+    
+    @RequestMapping(value = "addMember", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String addMember(
+    		HttpServletRequest request, Model model) {
+
+   		MemberForm mf = new MemberForm();
+        model.addAttribute("memberForm", mf);
+        addMemberModelAttributes("NEW", model);
+        return "admin/member";
     }
     
     @RequestMapping(value = "member", method = RequestMethod.POST)
@@ -143,7 +184,7 @@ public class AdminController {
     	if (memberForm.getUpdateState().equals("U")) {
         	memberService.updateMemberFromForm(memberForm);
     	} else if (memberForm.getUpdateState().equals("N")) {
-    		//TODO handle new members
+        	memberService.createMemberFromForm(memberForm);
     	}
     	
     	String memberStatus = (String)request.getSession().getAttribute("memberStatus");

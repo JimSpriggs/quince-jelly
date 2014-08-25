@@ -32,7 +32,7 @@ public class MemberForm {
     @Size(max = 30)
 	private String surname;
 
-    @Size(max = 50)
+    @Size(max = 200)
     private String organisation;
     
 	private String displayName;
@@ -58,9 +58,9 @@ public class MemberForm {
     @NotNull
 	private Integer totalInvestment;
     
-	private Boolean rollCall;
+	private Boolean rollCall = Boolean.TRUE;
 
-	private Boolean seis;
+	private Boolean seis = Boolean.FALSE;
 
 	@Valid
 	private List<TelephoneForm> telephones = new ArrayList<TelephoneForm>();
@@ -70,6 +70,8 @@ public class MemberForm {
 
 	public MemberForm() {
 		this.updateState = "N";
+		addNewEmptyTelephoneNumber();
+		addNewEmptyPayment();
 	}
 	
 	public MemberForm(Member member) {
@@ -102,13 +104,8 @@ public class MemberForm {
 		if (this.telephones.size() > 1) {
 			Collections.sort(this.telephones);
 		}
+		addNewEmptyTelephoneNumber();
 		
-		// add a new empty telephone to the form, with id 0 
-		TelephoneForm tf = new TelephoneForm();
-		tf.setId(0L);
-		this.telephones.add(tf);
-		setDisplayName();
-
 		// Payments
 		Set<MembershipPayment> membershipPayments = member.getMembershipPayments();
 		for (MembershipPayment membershipPayment: membershipPayments) {
@@ -124,13 +121,23 @@ public class MemberForm {
 		if (this.payments.size() > 1) {
 			Collections.sort(this.payments);
 		}
-		
+		addNewEmptyPayment();
+
+		setDisplayName();
+	}
+
+	private void addNewEmptyTelephoneNumber() {
+		// add a new empty telephone to the form, with id 0 
+		TelephoneForm tf = new TelephoneForm();
+		tf.setId(0L);
+		this.telephones.add(tf);
+	}
+
+	private void addNewEmptyPayment() {
 		// add a new empty payment to the form, with id 0 
 		PaymentForm pf = new PaymentForm();
 		pf.setId(0L);
 		this.payments.add(pf);
-		
-		setDisplayName();
 	}
 
 	private void setDisplayName() {

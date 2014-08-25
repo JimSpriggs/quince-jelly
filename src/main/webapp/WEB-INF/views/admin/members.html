@@ -25,9 +25,9 @@
 	                <small>Member Management</small>
 	            </h1>
 	            <ol class="breadcrumb">
-	                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-	                <li><a href="#">Admin</a></li>
-	                <li class="active">Members</li>
+	                <li><a th:href="@{/admin/dashboard}" href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+	                <li><a th:href="@{/admin/dashboard}" href="#">Admin</a></li>
+	                <li class="active" th:text="${breadcrumbMembersDescription}">Members</li>
 	            </ol>
 	        </section>
 	

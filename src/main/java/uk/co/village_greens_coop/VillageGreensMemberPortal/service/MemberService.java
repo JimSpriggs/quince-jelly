@@ -105,6 +105,14 @@ public class MemberService {
 		return member;
 	}
 	
+	@Transactional
+	public Member createMemberFromForm(MemberForm mf) {
+		Member member = new Member();
+		updateMember(member, mf);
+		memberRepository.save(member);
+		return member;
+	}
+	
     private void updateMember(Member member, MemberForm mf) {
     	member.setTitle(mf.getTitle());
     	member.setFirstName(mf.getFirstName());
@@ -169,6 +177,27 @@ public class MemberService {
 	    			LOG.error("Null value detected of MembershipPayment.id");
 	    		}
 	    	}
+    	}
+    	
+    	if (member.getMembershipPayments() != null) {
+    		BigDecimal totalPayments = new BigDecimal(0L);
+    		for (MembershipPayment mp : member.getMembershipPayments()) {
+    			if (mp.getReceivedDate() != null) {
+    				totalPayments = totalPayments.add(mp.getPaymentAmount());
+    			}
+    		}
+    		
+    		if (totalPayments.compareTo(new BigDecimal(0L)) == 0) {
+    			member.setMemberStatus("UNPAID");
+    		} else {
+    			if (totalPayments.compareTo(member.getTotalInvestment()) >= 0) {
+        			member.setMemberStatus("FULL");
+    			} else {
+        			member.setMemberStatus("PART");
+    			}
+    		}
+    	} else {
+			member.setMemberStatus("UNPAID");
     	}
     }
     

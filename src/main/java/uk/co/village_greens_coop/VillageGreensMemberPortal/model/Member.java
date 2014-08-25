@@ -2,6 +2,7 @@ package uk.co.village_greens_coop.VillageGreensMemberPortal.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -9,6 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -32,7 +34,7 @@ public class Member implements java.io.Serializable {
 	public static final String FIND_BY_STATUS = "Member.findByMemberStatus";
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@Column 
 	Long memberno;
@@ -71,18 +73,19 @@ public class Member implements java.io.Serializable {
 	@Column(name = "member_status_cd")
 	private String memberStatus;
 	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="member")
-	private Set<MembershipPayment> membershipPayments;
+	private Set<MembershipPayment> membershipPayments = new HashSet<MembershipPayment>();
 	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="member")
-	private Set<MemberTelephone> memberTelephones;
+	private Set<MemberTelephone> memberTelephones = new HashSet<MemberTelephone>();
 	
-	protected Member() {
+	public Member() {
 	}
 
 	public Member(String title, String firstName,
 			String surname, String email, 
 			String addressLine1, String addressLine2,
 			String addressLine3, String addressLine4, String postcode,
-			String dob, BigDecimal totalInvestment, Boolean rollCall) {
+			String dob, BigDecimal totalInvestment, Boolean rollCall,
+			Boolean seis) {
 		super();
 		this.title = title;
 		this.firstName = firstName;
@@ -96,6 +99,7 @@ public class Member implements java.io.Serializable {
 		this.dob = dob;
 		this.totalInvestment = totalInvestment;
 		this.rollCall = rollCall;
+		this.seis = seis;
 	}
 
 	public Long getId() {

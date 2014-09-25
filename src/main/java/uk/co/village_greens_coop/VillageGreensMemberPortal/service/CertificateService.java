@@ -6,9 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -16,27 +13,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.email.EmailAttachment;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.email.EmailDetail;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.utils.Utils;
 
-import com.itextpdf.text.Chunk;
-import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Font.FontFamily;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
-import com.itextpdf.text.pdf.PdfWriter;
 
 @Service
 public class CertificateService {
@@ -49,109 +36,127 @@ public class CertificateService {
 	@Autowired
 	private MemberService memberService;
 
-	public byte[] generateCertificate(Member member) {
-		byte[] retval = null;
+//	public byte[] generateCertificate(Member member) {
+//		byte[] retval = null;
+//		
+//		Document document = new Document(PageSize.A4.rotate());
+//		Font fcaFont = new Font(FontFamily.HELVETICA, 10);
+//		Font fieldLabelFont = new Font(FontFamily.HELVETICA, 12);
+//		Font fieldValueFont = new Font(FontFamily.HELVETICA, 12, Font.BOLD);
+//		
+//        try {
+//        	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//            PdfWriter.getInstance(document, baos);
+//            
+//            Image image = null;
+//            try {
+//                image = Image.getInstance(Utils.getClassPathResourceIntoByteArray("images/Certificate-VG-Logo.png"));
+//	            document.open();
+//            } catch (IOException ioe) {
+//            	LOG.error("IOException getting image and opening new PDF document ", ioe);
+//            	return retval;
+//            }
+//
+//            image.setAlignment(Element.ALIGN_CENTER);
+//            document.add(image);
+//            
+//            Paragraph paragraph1 = new Paragraph();
+//            paragraph1.setSpacingAfter(25);
+//            paragraph1.setAlignment(Element.ALIGN_LEFT);
+//            paragraph1.setIndentationLeft(25);
+//            paragraph1.setIndentationRight(25);
+//
+//            Chunk fcaChunk1 = new Chunk(
+//            		"Village Greens (Prestwich) Co-operative Ltd is a Co-operative Society "
+//            		+ "incorporated under the Industrial and Provident Societies Act 1965.",
+//            		fcaFont);
+//            Chunk fcaChunk2 = new Chunk(
+//            		"Registered with the Financial Conduct Authority. Registered No : 32113R",
+//            		fcaFont);
+//            paragraph1.add(fcaChunk1);
+//            paragraph1.add(Chunk.NEWLINE);
+//            paragraph1.add(fcaChunk2);
+//            
+//            Paragraph paragraph2 = new Paragraph();
+//            paragraph2.setSpacingAfter(25);
+//            paragraph2.setAlignment(Element.ALIGN_LEFT);
+//            paragraph2.setIndentationLeft(25);
+//            paragraph2.setIndentationRight(25);
+//            
+//            Chunk shareCertNumberChunk1 = new Chunk("Share Certificate Number: ", fieldLabelFont);
+//            paragraph2.add(shareCertNumberChunk1);
+//            Chunk shareCertNumberChunk2 = new Chunk(new DecimalFormat("00000").format(member.getId()), fieldValueFont);
+//            paragraph2.add(shareCertNumberChunk2);
+//
+//            document.add(paragraph1);
+//            document.add(paragraph2);
+//            
+//            document.close(); // no need to close PDFwriter?
+//
+//            retval = baos.toByteArray();
+//        } catch (DocumentException e) {
+//            e.printStackTrace();
+//        }
+//        
+//        return retval;
+//	}
+	
+//	@Transactional
+//	public List<Member> generateMemberCertificates(int limit, String emailTo) {
+//		List<Member> membersList = memberService.getAllAwaitingCertificate();
+//		LOG.info("Generating {} certificates...", membersList.size());
+//
+//		Map<Member, String> membersCerts = new HashMap<Member, String>();
+//		
+//		for (Member member : membersList) {
+//			String certFile = null;
+//			try {
+//				certFile = generateMemberCertificate(member);
+//				memberService.markCertificateGenerated(member);
+//			} catch (FileNotFoundException fnfe) {
+//				fnfe.printStackTrace();
+//			} catch (IOException ioe) {
+//				ioe.printStackTrace();
+//			}
+//			
+//			// if we generated a cert, and there is an email address for the member, send the cert
+//			if (certFile != null) { // && member.getEmail() != null && !member.getEmail().equals("")) {
+//				membersCerts.put(member,  certFile);
+//			}
+//		}
+//		
+//		if (!membersCerts.isEmpty()) {
+//			sendCertificatesToMembers(membersCerts, emailTo);
+//		}
+//		
+//		return memberService.getAll();
+//	}
+
+	public boolean generateMemberCertificate(Member member) {
+		try {
+			FileOutputStream fos;
+			String fileName = getCertificateFullFileName(member);
+			fos = new FileOutputStream(fileName);
+			byte[] certificateBytes = generateCertificateFromTemplate(member, "VG-Share-Certificate-04.pdf");
+			fos.write(certificateBytes);
+			fos.close();
+			LOG.info("Certificate generated for member {}: {}", member.getId(), fileName);
+			return true;
+		} catch (FileNotFoundException e) {
+			LOG.error("FileNotFoundException caught generating certificate for member id {}", member.getId(), e);
+		} catch (IOException e) {
+			LOG.error("IOException caught generating certificate for member id {}", member.getId(), e);
+		}
 		
-		Document document = new Document(PageSize.A4.rotate());
-		Font fcaFont = new Font(FontFamily.HELVETICA, 10);
-		Font fieldLabelFont = new Font(FontFamily.HELVETICA, 12);
-		Font fieldValueFont = new Font(FontFamily.HELVETICA, 12, Font.BOLD);
-		
-        try {
-        	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            PdfWriter.getInstance(document, baos);
-            
-            Image image = null;
-            try {
-                image = Image.getInstance(Utils.getClassPathResourceIntoByteArray("images/Certificate-VG-Logo.png"));
-	            document.open();
-            } catch (IOException ioe) {
-            	LOG.error("IOException getting image and opening new PDF document ", ioe);
-            	return retval;
-            }
-
-            image.setAlignment(Element.ALIGN_CENTER);
-            document.add(image);
-            
-            Paragraph paragraph1 = new Paragraph();
-            paragraph1.setSpacingAfter(25);
-            paragraph1.setAlignment(Element.ALIGN_LEFT);
-            paragraph1.setIndentationLeft(25);
-            paragraph1.setIndentationRight(25);
-
-            Chunk fcaChunk1 = new Chunk(
-            		"Village Greens (Prestwich) Co-operative Ltd is a Co-operative Society "
-            		+ "incorporated under the Industrial and Provident Societies Act 1965.",
-            		fcaFont);
-            Chunk fcaChunk2 = new Chunk(
-            		"Registered with the Financial Conduct Authority. Registered No : 32113R",
-            		fcaFont);
-            paragraph1.add(fcaChunk1);
-            paragraph1.add(Chunk.NEWLINE);
-            paragraph1.add(fcaChunk2);
-            
-            Paragraph paragraph2 = new Paragraph();
-            paragraph2.setSpacingAfter(25);
-            paragraph2.setAlignment(Element.ALIGN_LEFT);
-            paragraph2.setIndentationLeft(25);
-            paragraph2.setIndentationRight(25);
-            
-            Chunk shareCertNumberChunk1 = new Chunk("Share Certificate Number: ", fieldLabelFont);
-            paragraph2.add(shareCertNumberChunk1);
-            Chunk shareCertNumberChunk2 = new Chunk(new DecimalFormat("00000").format(member.getId()), fieldValueFont);
-            paragraph2.add(shareCertNumberChunk2);
-
-            document.add(paragraph1);
-            document.add(paragraph2);
-            
-            document.close(); // no need to close PDFwriter?
-
-            retval = baos.toByteArray();
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        }
-        
-        return retval;
+		return false;
 	}
 	
-	@Transactional
-	public List<Member> generateMemberCertificates(int limit, String emailTo) {
-		List<Member> membersList = memberService.getAllAwaitingCertificate(limit);
-		LOG.info("Generating {} certificates...", membersList.size());
-
-		Map<Member, String> membersCerts = new HashMap<Member, String>();
-		
-		for (Member member : membersList) {
-			String certFile = null;
-			try {
-				certFile = generateMemberCertificate(member);
-				memberService.markCertificateGenerated(member);
-			} catch (FileNotFoundException fnfe) {
-				fnfe.printStackTrace();
-			} catch (IOException ioe) {
-				ioe.printStackTrace();
-			}
-			
-			// if we generated a cert, and there is an email address for the member, send the cert
-			if (certFile != null) { // && member.getEmail() != null && !member.getEmail().equals("")) {
-				membersCerts.put(member,  certFile);
-			}
-		}
-		
-		if (!membersCerts.isEmpty()) {
-			sendCertificatesToMembers(membersCerts, emailTo);
-		}
-		
-		return memberService.getAll();
+	public String getCertificateFileName(Member member) {
+		return String.format("VillageGreensMemberCertificate-%d.pdf", member.getMemberno());
 	}
-
-	public String generateMemberCertificate(Member member) throws IOException {
-		String certFileName = String.format("VillageGreensMemberCertificate-%d.pdf", member.getId());
-		FileOutputStream fos = new FileOutputStream(String.format("/Users/john/dev/" + certFileName, member.getId()));
-		byte[] certificateBytes = generateCertificateFromTemplate(member, "VG-Share-Certificate-04.pdf");
-		fos.write(certificateBytes);
-		fos.close();
-		return certFileName;
+	
+	public String getCertificateFullFileName(Member member) {
+		return String.format("/VillageGreensMembers/certificates/" + getCertificateFileName(member));
 	}
 	
 	public void sendCertificatesToMembers(Map<Member, String> membersCerts, String emailTo) {
@@ -245,13 +250,13 @@ public class CertificateService {
 			content.setFontAndSize(bfSmall, 16F);
 			content.setRGBColorFill(71, 55, 41);
 			content.showTextAligned(PdfContentByte.ALIGN_RIGHT, 
-					new DecimalFormat("0").format(member.getId()),
+					new DecimalFormat("0").format(member.getMemberno()),
 					718,132,0);
 			content.showTextAligned(PdfContentByte.ALIGN_RIGHT, 
 					new DecimalFormat("###,###").format(member.getTotalInvestment()),
 					718,98,0);
 			content.showTextAligned(PdfContentByte.ALIGN_RIGHT, 
-					String.format("%s", new SimpleDateFormat("dd MMMM yyyy").format(new Date())),
+					String.format("%s", new SimpleDateFormat("dd MMMM yyyy").format(member.getCertificateGenerated())),
 					380,98,0);
 			
 			content.endText();

@@ -1,10 +1,12 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.dao;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,10 +58,17 @@ public class MemberDao {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Member> getAllAwaitingCertificate(int limit) {
-		return (List<Member>)entityManager.createQuery("from Member m where m.certificateGenerated IS NULL order by m.id")
-				.setFirstResult(0)
-				.setMaxResults(limit)
+	public List<Member> getAllAwaitingCertificate() {
+		return (List<Member>)entityManager.createQuery("from Member m where member_status_cd = 'FULL' and m.certificateGenerated IS NULL order by m.id")
+//				.setFirstResult(0)
+//				.setMaxResults(limit)
 				.getResultList();
+	}
+	
+	public Member generateMemberNoAndSave(Member member) {
+		Query q = entityManager.createNativeQuery("SELECT nextval('member_no_seq')");
+		BigInteger memberNo = (BigInteger)q.getSingleResult();
+		member.setMemberno(memberNo.longValue());
+		return save(member);
 	}
 }

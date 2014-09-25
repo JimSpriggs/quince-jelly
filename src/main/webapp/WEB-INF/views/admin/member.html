@@ -23,8 +23,15 @@
 	    <aside class="right-side">                
 	        <!-- Content Header (Page header) -->
 	        <section class="content-header">
+<div th:if="${memberForm.updateState != 'N' and memberForm.memberNo == null}" class="pull-left"> 
+							<button id="certifyButton" class="btn btn-sm btn-success">Certify</button>&nbsp;
+</div>
+<div th:if="${memberForm.updateState != 'N' and memberForm.memberNo != null and memberForm.certificateGenerated == null}" class="pull-left"> 
+							<button id="certifyButton" class="btn btn-sm btn-success">Reissue Certificate</button>&nbsp;
+</div>
 	            <h1 th:if="${memberForm.updateState == 'N'}">New Member</h1>
-	            <h1 th:if="${memberForm.updateState != 'N'}" th:text="${'#' + memberForm.memberNo + ' - ' + memberForm.displayName}">Mr Tom Danger</h1>
+	            <h1 th:if="${memberForm.updateState != 'N' and memberForm.memberNo != null}" th:text="${'#' + memberForm.memberNo + ' - ' + memberForm.displayName}">Mr Tom Danger</h1>
+	            <h1 th:if="${memberForm.updateState != 'N' and memberForm.memberNo == null}" th:text="${' ' + memberForm.displayName}">Mr Tom Danger</h1>
 	            <ol class="breadcrumb">
 	                <li><a th:href="@{/admin/dashboard}" href="#"><i class="fa fa-dashboard"></i> Home</a></li>
 	                <li><a th:href="@{/admin/dashboard}" href="#">Admin</a></li>
@@ -383,6 +390,11 @@ $(document).ready(function() {
     });
     $('#cancelButton').click(function() {
     	window.location = /*[[@{${returnUrl}}]]*/ '/admin/allMembers';
+    });
+    $('#certifyButton').click(function() {
+	    var id = /*[[${memberForm.id}]]*/ 1;
+	    var certifyUrl = /*[[@{/admin/certifyMember}]]*/ '/admin/certifyMember';
+    	window.location = certifyUrl + '?id=' + id;
     });
 });
 /*]]>*/

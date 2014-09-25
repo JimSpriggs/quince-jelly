@@ -70,7 +70,7 @@ body > .header {
 }
 @media screen and (min-width: 992px) {
   .left-side {
-    top: 50px;
+    top: 70px;
   }
   /*Right side strech mode*/
   .right-side.strech {
@@ -109,7 +109,7 @@ body.fixed .navbar {
   right: 0;
 }
 body.fixed .wrapper {
-  margin-top: 50px;
+  margin-top: 70px;
 }
 /* Content */
 .content {
@@ -921,6 +921,14 @@ body > .header .logo .icon {
 .navbar-nav > .user-menu > .dropdown-menu > li.user-footer .btn-default {
   color: #666666;
 }
+
+.navbar-brand {
+float: left;
+padding: 0px 0px;
+font-size: 18px;
+line-height: 50px;
+}
+
 /* Add fade animation to dropdown menus */
 .open > .dropdown-menu {
   animation-name: fadeAnimation;
@@ -2735,6 +2743,12 @@ Component: timeline
   background: rgba(0, 0, 0, 0.1);
   color: #618f24; 
 }
+
+.nav > li > a {
+	line-height: 50px;
+	padding: 10px 15px;
+}
+
 .skin-village-green .navbar .navbar-right > .nav {
   margin-right: 10px;
 }

@@ -13,12 +13,12 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/" th:href="@{/}">Village Greens Members</a>
+            <a class="navbar-brand" href="/" th:href="@{/}"><img class="logo-img" th:src="@{/resources/images/vg-logo-70.png}" src="../../../resources/images/vg-logo-70.png" /></a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li th:if="${#authorization.expression('isAuthenticated()')}"><a href="#surveys" th:href="@{/topics}">Surveys</a></li>
-                <li th:if="${#authorization.expression('isAuthenticated()')}"><a href="#admin" th:href="@{/admin/dashboard}">Admin</a></li>
+                <li th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"><a href="#admin" th:href="@{/admin/dashboard}">Admin</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li th:if="${#authorization.expression('!isAuthenticated()')}"><a href="/signin" th:href="@{/signin}">Sign in</a></li>

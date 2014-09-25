@@ -21,6 +21,8 @@ public class MemberAPIService {
 		List<Member> members = null;
 		if ("ALL".equals(memberStatus)) {
 			members = memberService.getAll();
+		} else if ("CERTIFIABLE".equals(memberStatus)) {
+			members = memberService.getAllAwaitingCertificate();
 		} else {
 			members = memberService.getByMemberStatus(memberStatus);
 		}

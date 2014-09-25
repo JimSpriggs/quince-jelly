@@ -30,14 +30,14 @@ public class MemberController {
 		return "members/members";
 	}
 	
-	@RequestMapping(value = "members", method = RequestMethod.POST)
-	public String generateCertificates(
-			CertificateGenerationParameters certificateGenerationParameters, Model model) {
-		List<Member> list = certificateService.generateMemberCertificates(
-				certificateGenerationParameters.getBatchSize(),
-				certificateGenerationParameters.getSendEmailsTo());
-		model.addAttribute("members", list);
-		return "members/members";
-	}
-
+//	@RequestMapping(value = "members", method = RequestMethod.POST)
+//	public String generateCertificates(
+//			CertificateGenerationParameters certificateGenerationParameters, Model model) {
+//		List<Member> list = certificateService.generateMemberCertificates(
+//				certificateGenerationParameters.getBatchSize(),
+//				certificateGenerationParameters.getSendEmailsTo());
+//		model.addAttribute("members", list);
+//		return "members/members";
+//	}
+//
 }

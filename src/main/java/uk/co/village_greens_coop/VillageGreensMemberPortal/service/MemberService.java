@@ -5,10 +5,12 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,8 +75,8 @@ public class MemberService {
 		return memberRepository.getAllEmailable();
 	}
 	
-	public List<Member> getAllAwaitingCertificate(int limit) {
-		return memberRepository.getAllAwaitingCertificate(limit);
+	public List<Member> getAllAwaitingCertificate() {
+		return memberRepository.getAllAwaitingCertificate();
 	}
 	
 	@Transactional
@@ -113,7 +115,47 @@ public class MemberService {
 		return member;
 	}
 	
+	private boolean hasChanged(String memberVal, String formVal) {
+		if (memberVal == null && formVal == null) {
+			return false;
+		}
+		if (memberVal == null && formVal != null) {
+			return true;
+		}
+		if (memberVal != null && formVal == null) {
+			return true;
+		}
+		if (memberVal.trim().equals(formVal.trim())) {
+			return false;
+		}
+		return true;
+	}
+	
+	private boolean hasChanged(BigDecimal memberVal, Integer formVal) {
+		if (memberVal == null && formVal == null) {
+			return false;
+		}
+		if (memberVal == null && formVal != null) {
+			return true;
+		}
+		if (memberVal != null && formVal == null) {
+			return true;
+		}
+		if (memberVal.intValue() == formVal.intValue()) {
+			return false;
+		}
+		return true;
+	}
+	
     private void updateMember(Member member, MemberForm mf) {
+    	if (hasChanged(member.getTitle(), mf.getTitle()) ||
+    			hasChanged(member.getFirstName(), mf.getFirstName()) ||
+    			hasChanged(member.getSurname(), mf.getSurname()) ||
+    			hasChanged(member.getOrganisation(), mf.getOrganisation()) ||
+    			hasChanged(member.getTotalInvestment(), mf.getTotalInvestment())) {
+    		// need to reissue certificate, so set its generated date to null
+    		member.setCertificateGenerated(null);
+    	}
     	member.setTitle(mf.getTitle());
     	member.setFirstName(mf.getFirstName());
     	member.setSurname(mf.getSurname());
@@ -222,4 +264,31 @@ public class MemberService {
     	}
     	return null;
     }
+    
+	@Transactional
+	public Member certifyMember(long id) {
+		Member member = getById(id);
+		if (member.getMemberno() == null) {
+			memberRepository.generateMemberNoAndSave(member);
+		}
+		member.setCertificateGenerated(new Date());
+		memberRepository.save(member);
+		if (certificateService.generateMemberCertificate(member)) {
+			return member;
+		}
+		return null;
+	}
+	
+	public FileSystemResource getCertificateForDownload(long id, HttpServletResponse response) {
+		FileSystemResource fsr = null;
+		
+		Member member = getById(id);
+		if (member != null) {
+			String fileName = certificateService.getCertificateFileName(member);
+			response.setHeader( "Content-Disposition", "attachment;filename=" + fileName);
+			fsr = new FileSystemResource(certificateService.getCertificateFullFileName(member));
+		}
+		return fsr;
+	}
+	
 }

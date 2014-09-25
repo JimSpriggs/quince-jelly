@@ -3,11 +3,13 @@ package uk.co.village_greens_coop.VillageGreensMemberPortal.web;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -70,6 +72,15 @@ public class AdminController {
     	return "admin/members";
     }
     
+    @RequestMapping(value = "certifiableMembers", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String getCertifiableMembers(HttpServletRequest request, Model model) {
+    	model.addAttribute("memberStatus", "CERTIFIABLE");
+    	request.getSession().setAttribute("memberStatus", "CERTIFIABLE");
+    	addMemberModelAttributes("CERTIFIABLE", model);
+    	return "admin/members";
+    }
+    
     @RequestMapping(value = "partialMembers", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     public String getPartialMembers(HttpServletRequest request, Model model) {
@@ -108,6 +119,9 @@ public class AdminController {
     	} else if (memberStatus.equals("FULL")) {
     		returnUrl += "fullMembers";
     		breadcrumbMembersDescription = "Full" + breadcrumbMembersDescription;;
+    	} else if (memberStatus.equals("CERTIFIABLE")) {
+    		returnUrl += "certifiableMembers";
+    		breadcrumbMembersDescription = "Uncertified Full" + breadcrumbMembersDescription;;
     	} else if (memberStatus.equals("UNPAID")) {
     		returnUrl += "unpaidMembers";
     		breadcrumbMembersDescription = "Unpaid" + breadcrumbMembersDescription;;
@@ -201,5 +215,36 @@ public class AdminController {
     	}
     	
     	return "redirect:/admin/" + returnString;
+    }
+    
+    @RequestMapping(value = "certifyMember", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String certifyMember(
+    		@RequestParam(value = "id") Long id,
+    		HttpServletRequest request, Model model) {
+
+    	Member member = memberService.certifyMember(id);
+    	if (member != null) {
+    		MemberForm mf = new MemberForm(member);
+        	model.addAttribute("memberForm", mf);
+        	request.getSession().setAttribute("memberId", id);
+        	addMemberModelAttributes((String)request.getSession().getAttribute("memberStatus"), model);
+        	return "admin/member";
+    	} else {
+    		//TODO add an error message, the id wasn't found
+    		return "redirect:allMembers";
+    	}
+    }
+
+    @RequestMapping(value = "certificate", method = RequestMethod.GET )
+    @ResponseStatus(value = HttpStatus.OK)
+    @ResponseBody
+    public FileSystemResource viewCertificate(
+    		@RequestParam(value = "id") Long id,
+    		HttpServletRequest request, 
+    		HttpServletResponse response,
+    		Model model) {
+
+    	return memberService.getCertificateForDownload(id, response);
     }
 }

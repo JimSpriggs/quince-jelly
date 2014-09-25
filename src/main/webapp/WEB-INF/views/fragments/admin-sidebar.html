@@ -38,7 +38,9 @@
 		                    <i class="fa fa-dashboard"></i> <span>Dashboard</span>
 		                </a>
 		            </li>
-		            <li class="treeview" th:class="${activeMenu == 'members'} ? 'treeview active' : 'treeview'" >
+		            <li class="treeview"
+		            	th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
+		            	th:class="${activeMenu == 'members'} ? 'treeview active' : 'treeview'" >
    		                <a href="#">
 							<i class="fa fa-user"></i>
 							<span>Members</span>
@@ -51,7 +53,8 @@
 								</a>
 							</li>
 							<li th:class="${activeSubmenu == 'ALL'} ? 'active'"><a th:href="@{/admin/allMembers}" href="allMembers.html"><i class="fa fa-angle-double-right"></i>All Members</a></li>
-							<li th:class="${activeSubmenu == 'FULL'} ? 'active'"><a th:href="@{/admin/fullMembers}" href="fullMembers.html"><i class="fa fa-angle-double-right"></i>Full Members</a></li>
+							<li th:class="${activeSubmenu == 'FULL'} ? 'active'"><a th:href="@{/admin/fullMembers}" href="fullMembers.html"><i class="fa fa-angle-double-right"></i>All Full Members</a></li>
+							<li th:class="${activeSubmenu == 'CERTIFIABLE'} ? 'active'"><a th:href="@{/admin/certifiableMembers}" href="certifiableMembers.html"><i class="fa fa-angle-double-right"></i>Uncertified Full Members</a></li>
 							<li th:class="${activeSubmenu == 'PART'} ? 'active'"><a th:href="@{/admin/partialMembers}" href="partialMembers.html"><i class="fa fa-angle-double-right"></i>Part-paid Members</a></li>
 							<li th:class="${activeSubmenu == 'UNPAID'} ? 'active'"><a th:href="@{/admin/unpaidMembers}" href="unpaidMembers.html"><i class="fa fa-angle-double-right"></i>Unpaid Members</a></li>
 						</ul>

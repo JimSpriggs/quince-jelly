@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Role;
 
 @Repository
@@ -37,5 +38,14 @@ public class RoleDao {
 			LOG.error("Exception finding role {}", name, e);
 			return null;
 		}
+	}
+	
+	@Transactional
+	public Role save(Role role) {
+		if (entityManager.contains(role)) {
+			entityManager.merge(role);
+		} 
+		entityManager.persist(role);
+		return role;
 	}
 }

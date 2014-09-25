@@ -1,6 +1,7 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.model.api;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.stereotype.Component;
@@ -29,7 +30,7 @@ public class MemberRow {
 	private BigDecimal totalInvestment;
 	private Boolean rollCall;
 	private Boolean seis;
-	private Date certificateGenerated;
+	private String certificateGenerated;
 	private Date certificateSent;
 	
 	public MemberRow() {
@@ -52,7 +53,7 @@ public class MemberRow {
 		this.totalInvestment = member.getTotalInvestment();
 		this.rollCall = member.getRollCall();
 		this.seis = member.getSeis();
-		this.certificateGenerated = member.getCertificateGenerated();
+		this.certificateGenerated = member.getCertificateGenerated() == null ? "" : new SimpleDateFormat("dd/MM/yyyy").format(member.getCertificateGenerated());
 		this.certificateSent = member.getCertificateSent();
 		this.memberStatus = member.getMemberStatus();
 		setDisplayName();
@@ -118,7 +119,7 @@ public class MemberRow {
 		return seis;
 	}
 
-	public Date getCertificateGenerated() {
+	public String getCertificateGenerated() {
 		return certificateGenerated;
 	}
 
@@ -194,7 +195,7 @@ public class MemberRow {
 		this.seis = seis;
 	}
 
-	public void setCertificateGenerated(Date certificateGenerated) {
+	public void setCertificateGenerated(String certificateGenerated) {
 		this.certificateGenerated = certificateGenerated;
 	}
 

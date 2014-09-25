@@ -13,7 +13,7 @@ import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 @Configuration
-@Profile("default")
+//@Profile("default")
 public class JavaMailConfig implements MailConfig {
 
     @Value("${mail.host}")

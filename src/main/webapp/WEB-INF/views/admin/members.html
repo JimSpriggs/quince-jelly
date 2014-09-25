@@ -43,11 +43,10 @@
 								<table id="membersTable" class="table table-bordered table-hover">
 									<thead>
 										<tr>
-											<th>Member No</th>
 											<th>Name</th>
-											<th>Status</th>
+											<th>Member No</th>
+											<th>Certified</th>
 											<th>Email Address</th>
-											<th>Date of Birth</th>
 											<th>Investment</th>
 										</tr>
 									</thead>
@@ -91,12 +90,40 @@ $(document).ready(function() {
 	    },
 	    "columns": [
 	        { "data": "memberNo" },
-	        { "data": "displayName" },
-	        { "data": "memberStatus" },
+            { "data": "displayName" },
+	        { "data": "certificateGenerated" },
 	        { "data": "email" },
-	        { "data": "dob" },
 	        { "data": "totalInvestment" }
-	    ]
+	    ],
+	    "columnDefs": [ {
+	    		"targets": 0,
+	    		"type": "numeric"
+			}, {
+	        "targets": 3,
+	        "data": "email",
+	        "render": function ( data, type, full, meta ) {
+	          return '<a href="mailto:'+data+'">' + data + '</a>';
+	        }
+	      }, {
+		     "targets": 4,
+	         "data": "totalInvestment",
+	         "type": "number",
+	         "render": function ( data, type, full, meta ) {
+		           return '&pound;' + data;
+		       }
+	      }, {
+			     "targets": 2,
+		         "data": "certificateGenerated",
+		         "render": function ( data, type, full, meta ) {
+			           if (data != "") {
+				       	   var viewCertUrl = /*[[@{/admin/certificate}]]*/ '/admin/certificate';
+			        	   return '<a href="' + viewCertUrl + '?id=' + full.id + '">' + data + '</a>';
+			           } else {
+			        	   return '&nbsp;';
+			           }
+			           return '';
+			       }
+	      } ]
 	});
 	
 	$("#membersTable tbody").delegate("tr", "click", function() {

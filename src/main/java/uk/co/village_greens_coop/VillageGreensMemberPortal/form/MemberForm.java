@@ -2,6 +2,7 @@ package uk.co.village_greens_coop.VillageGreensMemberPortal.form;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -62,6 +63,8 @@ public class MemberForm {
 
 	private Boolean seis = Boolean.FALSE;
 
+	private Date certificateGenerated;
+	
 	@Valid
 	private List<TelephoneForm> telephones = new ArrayList<TelephoneForm>();
 	
@@ -90,6 +93,7 @@ public class MemberForm {
 		this.postcode = member.getPostcode();
 		this.dob = member.getDob();
 		this.totalInvestment = member.getTotalInvestment().intValue();
+		this.certificateGenerated = member.getCertificateGenerated();
 		this.rollCall = member.getRollCall();
 		this.seis = member.getSeis();
 		this.memberStatus = member.getMemberStatus();
@@ -311,5 +315,12 @@ public class MemberForm {
 	public void setUpdateState(String updateState) {
 		this.updateState = updateState;
 	}
-	
+
+	public Date getCertificateGenerated() {
+		return certificateGenerated;
+	}
+
+	public void setCertificateGenerated(Date certificateGenerated) {
+		this.certificateGenerated = certificateGenerated;
+	}
 }

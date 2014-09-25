@@ -60,5 +60,15 @@
 			<type>1</type>
 			<location>/Users/john/Google Drive/Dev/Village Greens/doc/db/patch001.0/ddl/db001.9.ddl.sql</location>
 		</link>
+		<link>
+			<name>doc/db/patch001.1/dml/member_telephone001.1.dml.sql</name>
+			<type>1</type>
+			<location>/Users/john/Google Drive/Dev/Village Greens/doc/db/patch001.1/dml/member_telephone001.1.dml.sql</location>
+		</link>
+		<link>
+			<name>doc/db/patch001.1/dml/membership_payment001.1.dml.sql</name>
+			<type>1</type>
+			<location>/Users/john/Google Drive/Dev/Village Greens/doc/db/patch001.1/dml/membership_payment001.1.dml.sql</location>
+		</link>
 	</linkedResources>
 </projectDescription>

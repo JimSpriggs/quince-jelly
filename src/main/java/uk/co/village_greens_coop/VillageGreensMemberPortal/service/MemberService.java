@@ -1,6 +1,7 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +26,7 @@ import uk.co.village_greens_coop.VillageGreensMemberPortal.form.TelephoneForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.MemberTelephone;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.MembershipPayment;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.MemberRow;
 
 @Service
 @Transactional(readOnly = true)
@@ -59,24 +61,50 @@ public class MemberService {
 		return member;
 	}
 	
-	public List<Member> getAll() {
-		List<Member> membersList = memberRepository.getAll();
-		
-		return membersList;
-	}
-
-	public List<Member> getByMemberStatus(String memberStatus) {
-		List<Member> membersList = memberRepository.getByMemberStatus(memberStatus);
-		
-		return membersList;
-	}
-
-	public List<Member> getAllEmailable() {
-		return memberRepository.getAllEmailable();
+	private List<MemberRow> convertMembersToMemberRows(List<Member> members) {
+		List<MemberRow> memberRows = new ArrayList<MemberRow>();
+		if (members != null) {
+			for (Member member: members) {
+				memberRows.add(new MemberRow(member));
+			}
+		}
+		return memberRows;
 	}
 	
-	public List<Member> getAllAwaitingCertificate() {
-		return memberRepository.getAllAwaitingCertificate();
+	public List<MemberRow> getAll() {
+		List<Member> membersList = memberRepository.getAll();
+		
+		return convertMembersToMemberRows(membersList);
+	}
+
+	public List<MemberRow> getByMemberStatus(String memberStatus) {
+		List<Member> membersList = memberRepository.getByMemberStatus(memberStatus);
+		
+		return convertMembersToMemberRows(membersList);
+	}
+
+	public List<MemberRow> getAllEmailable() {
+		List<Member> membersList = memberRepository.getAllEmailable();
+		
+		return convertMembersToMemberRows(membersList);
+	}
+	
+	public List<MemberRow> getAllAwaitingCertificate() {
+		List<Member> membersList = memberRepository.getAllAwaitingCertificate();
+		
+		return convertMembersToMemberRows(membersList);
+	}
+	
+	public List<MemberRow> getAllOverdue() {
+		return memberRepository.getAllOverdue();
+	}
+	
+	public List<MemberRow> getUnpaidMembers() {
+		return memberRepository.getUnpaidMembers();
+	}
+	
+	public List<MemberRow> getPartPaidMembers() {
+		return memberRepository.getPartPaidMembers();
 	}
 	
 	@Transactional
@@ -268,13 +296,30 @@ public class MemberService {
 	@Transactional
 	public Member certifyMember(long id) {
 		Member member = getById(id);
-		if (member.getMemberno() == null) {
-			memberRepository.generateMemberNoAndSave(member);
+		if (member != null) {
+			if (member.getMemberno() == null) {
+				memberRepository.generateMemberNoAndSave(member);
+			}
+			member.setCertificateGenerated(new Date());
+			memberRepository.save(member);
+			if (certificateService.generateMemberCertificate(member)) {
+				certificateService.sendCertificateToMember(member);
+				return member;
+			}
 		}
-		member.setCertificateGenerated(new Date());
-		memberRepository.save(member);
-		if (certificateService.generateMemberCertificate(member)) {
-			return member;
+		return null;
+	}
+	
+	@Transactional
+	public Member recertifyMember(long id) {
+		Member member = getById(id);
+		if (member != null) {
+			member.setCertificateGenerated(new Date());
+			memberRepository.save(member);
+			if (certificateService.generateMemberCertificate(member)) {
+				certificateService.sendCertificateToMember(member);
+				return member;
+			}
 		}
 		return null;
 	}
@@ -290,5 +335,20 @@ public class MemberService {
 		}
 		return fsr;
 	}
-	
+
+	// can certify only if the member is a full member, and there is no existing certificate
+	public boolean canCertify(long id) {
+		Member member = getById(id);
+		return (member != null && 
+					"FULL".equals(member.getMemberStatus()) &&
+					member.getCertificateGenerated() == null);
+	}
+
+	// can recertify only if the member is a full member, and there is an existing certificate
+	public boolean canRecertify(long id) {
+		Member member = getById(id);
+		return (member != null && 
+					"FULL".equals(member.getMemberStatus()) &&
+					member.getCertificateGenerated() != null);
+	}
 }

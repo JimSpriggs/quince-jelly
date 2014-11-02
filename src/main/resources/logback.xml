@@ -31,6 +31,8 @@
 	<logger name="uk.co.village_greens_coop.VillageGreensMemberPortal" level="ALL" />
 	<logger name="org.springframework.security" level="ALL" />
 	<logger name="org.springframework.context" level="ALL" />
+	<logger name="org.hibernate.SQL" level="TRACE" />
+	<logger name="org.hibernate.type" level="TRACE" />
 
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />

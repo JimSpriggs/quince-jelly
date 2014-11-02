@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.email.EmailAttachment;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.email.EmailDetail;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.StockEmail;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.utils.Utils;
 
 import com.itextpdf.text.DocumentException;
@@ -157,6 +158,26 @@ public class CertificateService {
 	
 	public String getCertificateFullFileName(Member member) {
 		return String.format("/VillageGreensMembers/certificates/" + getCertificateFileName(member));
+	}
+	
+	public void sendCertificateToMember(Member member) {
+		String fileName = getCertificateFileName(member);
+		String fullFileName = getCertificateFullFileName(member);
+		EmailDetail emailDetail = emailService.getStockEmailDetail(StockEmail.EMAIL_PURPOSE_MEMBER_CERTIFICATE);
+		if (emailDetail != null) {
+			emailDetail.setTemplate(emailDetail.getTemplate().replaceAll("\\$\\{salutation\\}", member.getSalutation(false)));
+			emailDetail.setFromAddress("info@village-greens-coop.co.uk");
+			emailDetail.setToAddress(member.getEmail());
+			emailDetail.setFromDisplay("Village Greens Info");
+			EmailAttachment[] atts = new EmailAttachment[1];
+			atts[0] = new EmailAttachment(fileName, fullFileName);
+			emailDetail.setAttachments(atts);
+			LOG.info("Sending certification email via emailService for member {}" + member.getId());
+			emailService.sendEmail(emailDetail);
+			memberService.markCertificateSent(member);
+		} else {
+			LOG.error("No stock email found to send certificate to member {}", member.getId());
+		}
 	}
 	
 	public void sendCertificatesToMembers(Map<Member, String> membersCerts, String emailTo) {

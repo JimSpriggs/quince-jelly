@@ -10,6 +10,8 @@ public class EmailDetail {
 	private String template;
 	private EmailAttachment[] attachments;
 
+	public EmailDetail() {}
+	
 	public EmailDetail(String toAddress, String fromAddress,
 			String fromDisplay, String subject, String template) {
 		super();

@@ -14,9 +14,12 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.StockEmailDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.email.EmailAttachment;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.email.EmailDetail;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.StockEmail;
 
 @Service
 public class EmailService {
@@ -25,6 +28,21 @@ public class EmailService {
 
 	@Autowired
 	private MailSender mailSender;
+	
+	@Autowired
+	private StockEmailDao stockEmailRepository;
+	
+	@Transactional(readOnly = true)
+	public EmailDetail getStockEmailDetail(String purpose) {
+		StockEmail email = stockEmailRepository.findByPurpose(purpose);
+		if (email != null) {
+			EmailDetail emailDetail = new EmailDetail();
+			emailDetail.setSubject(email.getEmailSubject());
+			emailDetail.setTemplate(email.getEmailBody());
+			return emailDetail;
+		}
+		return null;
+	}
 	
 	@Async
 	public void sendEmail(EmailDetail emailDetail) {

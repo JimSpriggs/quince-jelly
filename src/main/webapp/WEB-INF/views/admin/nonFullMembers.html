@@ -48,6 +48,8 @@
 											<th>Certified</th>
 											<th>Email Address</th>
 											<th>Investment</th>
+											<th>Paid</th>
+											<th>Overdue</th>
 											<th>Certificate Sent</th>
 										</tr>
 									</thead>
@@ -95,6 +97,8 @@ $(document).ready(function() {
 	        { "data": "certificateGenerated" },
 	        { "data": "email" },
 	        { "data": "totalInvestment" },
+	        { "data": "amountPaid" },
+	        { "data": "amountOverdue" },
 	        { "data": "certificateSent" }
 	    ],
 	    "columnDefs": [ {
@@ -113,6 +117,20 @@ $(document).ready(function() {
 	         "render": function ( data, type, full, meta ) {
 		           return '&pound;' + data;
 		       }
+	      }, {
+			     "targets": 5,
+		         "data": "amountPaid",
+		         "type": "number",
+		         "render": function ( data, type, full, meta ) {
+			           return '&pound;' + data;
+			       }
+	      }, {
+			     "targets": 6,
+		         "data": "amountOverdue",
+		         "type": "number",
+		         "render": function ( data, type, full, meta ) {
+			           return '&pound;' + data;
+			       }
 	      }, {
 			     "targets": 2,
 		         "data": "certificateGenerated",

@@ -3,8 +3,6 @@ package uk.co.village_greens_coop.VillageGreensMemberPortal.form;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import org.hibernate.validator.constraints.NotBlank;
-
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.validation.ScriptAssertFieldError;
 
 @ScriptAssertFieldError.List({

@@ -11,40 +11,31 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Role;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.StockEmail;
 
 @Repository
 @Transactional(readOnly = true)
-public class RoleDao {
+public class StockEmailDao {
 
-	private static final Logger LOG = LoggerFactory.getLogger(RoleDao.class);
+	private static final Logger LOG = LoggerFactory.getLogger(StockEmailDao.class);
 	
 	@PersistenceContext
 	private EntityManager entityManager;
 	
 	@SuppressWarnings("unchecked")
-	public List<Role> getAll() {
-		return (List<Role>)entityManager.createQuery("from Role r order by r.id")
+	public List<StockEmail> getAll() {
+		return (List<StockEmail>)entityManager.createQuery("from StockEmail se order by se.id")
 			.getResultList();
 	}
 	
-	public Role findByName(String name) {
+	public StockEmail findByPurpose(String purpose) {
 		try {
-			return entityManager.createNamedQuery(Role.FIND_BY_NAME, Role.class)
-					.setParameter("name", name)
+			return entityManager.createNamedQuery(StockEmail.FIND_BY_PURPOSE, StockEmail.class)
+					.setParameter("emailPurpose", purpose)
 					.getSingleResult();
 		} catch (PersistenceException e) {
-			LOG.error("Exception finding role {}", name, e);
+			LOG.error("Exception finding StockEmail with purpose {}", purpose, e);
 			return null;
 		}
-	}
-	
-	@Transactional
-	public Role save(Role role) {
-		if (entityManager.contains(role)) {
-			entityManager.merge(role);
-		} 
-		entityManager.persist(role);
-		return role;
 	}
 }

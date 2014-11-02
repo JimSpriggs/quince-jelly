@@ -23,11 +23,11 @@
 	    <aside class="right-side">                
 	        <!-- Content Header (Page header) -->
 	        <section class="content-header">
-<div th:if="${memberForm.updateState != 'N' and memberForm.memberNo == null}" class="pull-left"> 
+<div th:if="${canCertify}" class="pull-left"> 
 							<button id="certifyButton" class="btn btn-sm btn-success">Certify</button>&nbsp;
 </div>
-<div th:if="${memberForm.updateState != 'N' and memberForm.memberNo != null and memberForm.certificateGenerated == null}" class="pull-left"> 
-							<button id="certifyButton" class="btn btn-sm btn-success">Reissue Certificate</button>&nbsp;
+<div th:if="${canRecertify}" class="pull-left"> 
+							<button id="recertifyButton" class="btn btn-sm btn-success">Reissue Certificate</button>&nbsp;
 </div>
 	            <h1 th:if="${memberForm.updateState == 'N'}">New Member</h1>
 	            <h1 th:if="${memberForm.updateState != 'N' and memberForm.memberNo != null}" th:text="${'#' + memberForm.memberNo + ' - ' + memberForm.displayName}">Mr Tom Danger</h1>
@@ -395,6 +395,11 @@ $(document).ready(function() {
 	    var id = /*[[${memberForm.id}]]*/ 1;
 	    var certifyUrl = /*[[@{/admin/certifyMember}]]*/ '/admin/certifyMember';
     	window.location = certifyUrl + '?id=' + id;
+    });
+    $('#recertifyButton').click(function() {
+	    var id = /*[[${memberForm.id}]]*/ 1;
+	    var recertifyUrl = /*[[@{/admin/recertifyMember}]]*/ '/admin/recertifyMember';
+    	window.location = recertifyUrl + '?id=' + id;
     });
 });
 /*]]>*/

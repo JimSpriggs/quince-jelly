@@ -2,7 +2,7 @@ package uk.co.village_greens_coop.VillageGreensMemberPortal.model.api;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.TimeZone;
 
 import org.springframework.stereotype.Component;
 
@@ -28,10 +28,12 @@ public class MemberRow {
 	private String postcode;
 	private String dob;
 	private BigDecimal totalInvestment;
+	private BigDecimal amountPaid;
+	private BigDecimal amountOverdue;
 	private Boolean rollCall;
 	private Boolean seis;
 	private String certificateGenerated;
-	private Date certificateSent;
+	private String certificateSent;
 	
 	public MemberRow() {
 	}
@@ -51,10 +53,14 @@ public class MemberRow {
 		this.postcode = member.getPostcode();
 		this.dob = member.getDob();
 		this.totalInvestment = member.getTotalInvestment();
+		this.amountPaid = new BigDecimal(0);
+		this.amountOverdue = new BigDecimal(0);
 		this.rollCall = member.getRollCall();
 		this.seis = member.getSeis();
-		this.certificateGenerated = member.getCertificateGenerated() == null ? "" : new SimpleDateFormat("dd/MM/yyyy").format(member.getCertificateGenerated());
-		this.certificateSent = member.getCertificateSent();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));
+		this.certificateGenerated = member.getCertificateGenerated() == null ? "" : sdf.format(member.getCertificateGenerated());
+		this.certificateSent = member.getCertificateSent() == null ? "" : sdf.format(member.getCertificateSent());
 		this.memberStatus = member.getMemberStatus();
 		setDisplayName();
 	}
@@ -123,7 +129,7 @@ public class MemberRow {
 		return certificateGenerated;
 	}
 
-	public Date getCertificateSent() {
+	public String getCertificateSent() {
 		return certificateSent;
 	}
 
@@ -199,7 +205,7 @@ public class MemberRow {
 		this.certificateGenerated = certificateGenerated;
 	}
 
-	public void setCertificateSent(Date certificateSent) {
+	public void setCertificateSent(String certificateSent) {
 		this.certificateSent = certificateSent;
 	}
 
@@ -222,4 +228,26 @@ public class MemberRow {
 	public String getDisplayName() {
 		return displayName;
 	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public BigDecimal getAmountPaid() {
+		return amountPaid;
+	}
+
+	public void setAmountPaid(BigDecimal amountPaid) {
+		this.amountPaid = amountPaid;
+	}
+
+	public BigDecimal getAmountOverdue() {
+		return amountOverdue;
+	}
+
+	public void setAmountOverdue(BigDecimal amountOverdue) {
+		this.amountOverdue = amountOverdue;
+	}
+
+	
 }

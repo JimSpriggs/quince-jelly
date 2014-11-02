@@ -25,8 +25,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.MemberForm;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Dashboard;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.MemberRows;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.service.DashboardService;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.service.MemberAPIService;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.service.MemberService;
 
@@ -35,6 +37,9 @@ import uk.co.village_greens_coop.VillageGreensMemberPortal.service.MemberService
 public class AdminController {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(AdminController.class);
+	
+	@Autowired
+	private DashboardService dashboardService;
 	
 	@Autowired
 	private MemberService memberService;
@@ -48,9 +53,15 @@ public class AdminController {
 //    	binder.setValidator(new MemberFormValidator(new TelephoneFormValidator()));
 //    }
 
+	@ModelAttribute
+	public Dashboard getDashboardValues() {
+    	Dashboard dashboard = dashboardService.getDashboardFigures();
+    	return dashboard;
+	}
+	
     @RequestMapping(value = "dashboard", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
-    public String getAdminDashboard(HttpServletRequest request) {
+    public String getAdminDashboard(HttpServletRequest request, Model model) {
     	return "admin/dashboard";
     }
 
@@ -87,7 +98,7 @@ public class AdminController {
     	model.addAttribute("memberStatus", "PART");
     	request.getSession().setAttribute("memberStatus", "PART");
     	addMemberModelAttributes("PART", model);
-    	return "admin/members";
+    	return "admin/nonFullMembers";
     }
     
     @RequestMapping(value = "unpaidMembers", method = RequestMethod.GET)
@@ -96,7 +107,16 @@ public class AdminController {
     	model.addAttribute("memberStatus", "UNPAID");
     	request.getSession().setAttribute("memberStatus", "UNPAID");
     	addMemberModelAttributes("UNPAID", model);
-    	return "admin/members";
+    	return "admin/nonFullMembers";
+    }
+    
+    @RequestMapping(value = "overduePayments", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String getMembersWithOverduePayments(HttpServletRequest request, Model model) {
+    	model.addAttribute("memberStatus", "OVERDUE");
+    	request.getSession().setAttribute("memberStatus", "OVERDUE");
+    	addMemberModelAttributes("OVERDUE", model);
+    	return "admin/nonFullMembers";
     }
     
     @RequestMapping(value = "memberRows", method = RequestMethod.GET)
@@ -110,21 +130,25 @@ public class AdminController {
     private void addMemberModelAttributes(String memberStatus, Model model) {
     	String returnUrl = "/admin/";
     	String breadcrumbMembersDescription = " Members";
+    	
     	if (memberStatus.equals("ALL")) {
     		returnUrl += "allMembers";
     		breadcrumbMembersDescription = "All" + breadcrumbMembersDescription;
     	} else if (memberStatus.equals("PART")) {
     		returnUrl += "partialMembers";
-    		breadcrumbMembersDescription = "Part-paid" + breadcrumbMembersDescription;;
+    		breadcrumbMembersDescription = "Part-paid" + breadcrumbMembersDescription;
     	} else if (memberStatus.equals("FULL")) {
     		returnUrl += "fullMembers";
-    		breadcrumbMembersDescription = "Full" + breadcrumbMembersDescription;;
+    		breadcrumbMembersDescription = "Full" + breadcrumbMembersDescription;
     	} else if (memberStatus.equals("CERTIFIABLE")) {
     		returnUrl += "certifiableMembers";
-    		breadcrumbMembersDescription = "Uncertified Full" + breadcrumbMembersDescription;;
+    		breadcrumbMembersDescription = "Uncertified Full" + breadcrumbMembersDescription;
     	} else if (memberStatus.equals("UNPAID")) {
     		returnUrl += "unpaidMembers";
-    		breadcrumbMembersDescription = "Unpaid" + breadcrumbMembersDescription;;
+    		breadcrumbMembersDescription = "Unpaid" + breadcrumbMembersDescription;
+    	} else if (memberStatus.equals("OVERDUE")) {
+    		returnUrl += "overdueMembers";
+    		breadcrumbMembersDescription = "Overdue" + breadcrumbMembersDescription;
     	} else if (memberStatus.equals("NEW")) {
     		returnUrl += "addMember";
     		breadcrumbMembersDescription = "Add Member";
@@ -147,6 +171,9 @@ public class AdminController {
         	model.addAttribute("memberForm", mf);
         	request.getSession().setAttribute("memberId", id);
         	addMemberModelAttributes(memberStatus, model);
+        	
+        	model.addAttribute("canCertify", Boolean.toString(memberService.canCertify(id)));
+        	model.addAttribute("canRecertify", Boolean.toString(memberService.canRecertify(id)));
         	return "admin/member";
     	} else {
     		//TODO add an error message, the id wasn't found
@@ -223,8 +250,27 @@ public class AdminController {
     		@RequestParam(value = "id") Long id,
     		HttpServletRequest request, Model model) {
 
-    	Member member = memberService.certifyMember(id);
-    	if (member != null) {
+    	if (memberService.canCertify(id)) {
+    		Member member = memberService.certifyMember(id);
+    		MemberForm mf = new MemberForm(member);
+        	model.addAttribute("memberForm", mf);
+        	request.getSession().setAttribute("memberId", id);
+        	addMemberModelAttributes((String)request.getSession().getAttribute("memberStatus"), model);
+        	return "admin/member";
+    	} else {
+    		//TODO add an error message, the id wasn't found
+    		return "redirect:allMembers";
+    	}
+    }
+
+    @RequestMapping(value = "recertifyMember", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String recertifyMember(
+    		@RequestParam(value = "id") Long id,
+    		HttpServletRequest request, Model model) {
+
+    	if (memberService.canRecertify(id)) {
+    		Member member = memberService.recertifyMember(id);
     		MemberForm mf = new MemberForm(member);
         	model.addAttribute("memberForm", mf);
         	request.getSession().setAttribute("memberId", id);

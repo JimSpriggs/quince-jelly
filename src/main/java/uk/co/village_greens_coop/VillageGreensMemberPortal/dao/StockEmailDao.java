@@ -22,6 +22,20 @@ public class StockEmailDao {
 	@PersistenceContext
 	private EntityManager entityManager;
 	
+	@Transactional
+	public StockEmail save(StockEmail stockEmail) {
+		if (entityManager.contains(stockEmail)) {
+			entityManager.merge(stockEmail);
+		} 
+		entityManager.persist(stockEmail);
+		return stockEmail;
+	}
+	
+	@Transactional
+	public void delete(StockEmail stockEmail) {
+		entityManager.remove(stockEmail);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<StockEmail> getAll() {
 		return (List<StockEmail>)entityManager.createQuery("from StockEmail se order by se.id")
@@ -35,6 +49,17 @@ public class StockEmailDao {
 					.getSingleResult();
 		} catch (PersistenceException e) {
 			LOG.error("Exception finding StockEmail with purpose {}", purpose, e);
+			return null;
+		}
+	}
+
+	public StockEmail findById(Long id) {
+		try {
+			return entityManager.createNamedQuery(StockEmail.FIND_BY_ID, StockEmail.class)
+					.setParameter("id", id)
+					.getSingleResult();
+		} catch (PersistenceException e) {
+			LOG.error("Exception finding StockEmail with id {}", id, e);
 			return null;
 		}
 	}

@@ -96,6 +96,14 @@
 							</li>
 						</ul>
 		            </li>
+		            <li th:class="${activeMenu == 'emails'} ? 'active'">
+		                <a th:href="@{/admin/emails}" 
+		                	href="emails">
+		                    <i class="fa fa-envelope"></i> <span>Member Emails</span>
+		                    <small class="badge pull-right alert-info"
+		                    	th:text="${dashboard.stockEmailCount}">1</small>
+		                </a>
+		            </li>
 		            <li>
 		                <a href="surveys">
 		                    <i class="fa fa-bar-chart-o"></i> <span>Surveys</span>
@@ -105,12 +113,6 @@
 		                <a href="pages/calendar.html">
 		                    <i class="fa fa-calendar"></i> <span>Calendar</span>
 		                    <small class="badge pull-right bg-red">3</small>
-		                </a>
-		            </li>
-		            <li>
-		                <a href="pages/mailbox.html">
-		                    <i class="fa fa-envelope"></i> <span>Mailbox</span>
-		                    <small class="badge pull-right bg-yellow">12</small>
 		                </a>
 		            </li>
 		        </ul>

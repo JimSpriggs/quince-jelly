@@ -25,10 +25,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.MemberForm;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.form.SendStockEmailForm;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.form.StockEmailForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Dashboard;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.StockEmail;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.MemberRows;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.service.DashboardService;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.service.EmailService;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.service.MemberAPIService;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.service.MemberService;
 
@@ -46,6 +50,9 @@ public class AdminController {
 	
 	@Autowired
 	private MemberAPIService memberAPIService;
+	
+	@Autowired
+	private EmailService emailService;
 	
 //    @InitBinder("memberForm")
 //    private void initBinder(WebDataBinder binder) {
@@ -293,4 +300,122 @@ public class AdminController {
 
     	return memberService.getCertificateForDownload(id, response);
     }
+
+    @RequestMapping(value = "emails", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String getEmailsList(HttpServletRequest request, Model model) {
+    	List<StockEmailForm> emailForms = emailService.getAllEmails();
+    	model.addAttribute("emails", emailForms);
+    	return "admin/emails";
+    }
+
+    @RequestMapping(value = "addEmail", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String addEmail(
+    		HttpServletRequest request, Model model) {
+
+   		StockEmailForm sef = new StockEmailForm();
+        model.addAttribute("stockEmailForm", sef);
+        return "admin/email";
+    }
+    
+    @RequestMapping(value = "editEmail", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String getStockEmail(
+    		@RequestParam(value = "id") Long id,
+    		HttpServletRequest request, Model model) {
+
+    	StockEmail stockEmail = emailService.getStockEmailById(id);
+    	if (stockEmail != null) {
+    		StockEmailForm sef = new StockEmailForm(stockEmail);
+        	model.addAttribute("stockEmailForm", sef);
+        	request.getSession().setAttribute("stockEmailId", id);
+        	
+        	return "admin/email";
+    	} else {
+    		//TODO add an error message, the id wasn't found
+    		return "redirect:emails";
+    	}
+    }
+    
+    @RequestMapping(value = "deleteEmail", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String deleteStockEmail(
+    		@RequestParam(value = "id") Long id,
+    		HttpServletRequest request, Model model) {
+
+    	emailService.deleteStockEmail(id);
+    	return "redirect:emails";
+    }
+    
+    @RequestMapping(value = "email", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String saveEmail(
+    		@Valid @ModelAttribute (value = "stockEmailForm") StockEmailForm stockEmailForm,
+			BindingResult result, 
+			Errors errors, 
+			RedirectAttributes ra,
+			Model model,
+			HttpServletRequest request) {
+    	
+    	if (errors.hasErrors()) {
+    		LOG.info("Errors in StockEmailForm");
+    		List<FieldError> fieldErrors = errors.getFieldErrors();
+    		
+    		return "admin/email";
+    	}
+
+    	if (stockEmailForm.getUpdateState().equals("U")) {
+        	emailService.updateStockEmail(stockEmailForm);
+    	} else if (stockEmailForm.getUpdateState().equals("N")) {
+        	emailService.createStockEmail(stockEmailForm);
+    	}
+    	
+    	return "redirect:emails";
+    }
+ 
+    @RequestMapping(value = "sendEmail", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String getSendEmailForm(
+    		@RequestParam(value = "id") Long id,
+    		HttpServletRequest request, Model model) {
+
+    	StockEmail stockEmail = emailService.getStockEmailById(id);
+    	if (stockEmail != null) {
+    		SendStockEmailForm sef = new SendStockEmailForm(stockEmail);
+        	model.addAttribute("sendStockEmailForm", sef);
+        	
+        	return "admin/sendEmail";
+    	} else {
+    		//TODO add an error message, the id wasn't found
+    		return "redirect:emails";
+    	}
+    }
+
+    @RequestMapping(value = "sendEmail", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String sendEmail(
+    		@Valid @ModelAttribute (value = "sendStockEmailForm") SendStockEmailForm sendStockEmailForm,
+			BindingResult result, 
+			Errors errors, 
+			RedirectAttributes ra,
+			Model model,
+			HttpServletRequest request) {
+    	
+    	if (errors.hasErrors()) {
+    		LOG.info("Errors in SendStockEmailForm");
+    		List<FieldError> fieldErrors = errors.getFieldErrors();
+    		
+    		return "admin/email";
+    	}
+
+    	String emailPurpose = sendStockEmailForm.getEmailPurpose();
+    	int numRequested = emailService.sendStockEmail(sendStockEmailForm);
+    	
+    	if (numRequested != -1) {
+    		ra.addFlashAttribute("message", String.format("%s email queued successfully for %d member(s)", emailPurpose, numRequested));
+    	}
+    	return "redirect:emails";
+    }
+    
 }

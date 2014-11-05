@@ -9,6 +9,7 @@ public class EmailDetail {
 	private String subject;
 	private String template;
 	private EmailAttachment[] attachments;
+	private String error;
 
 	public EmailDetail() {}
 	
@@ -73,6 +74,12 @@ public class EmailDetail {
 	}
 	public void setAttachments(EmailAttachment[] attachments) {
 		this.attachments = attachments;
+	}
+	public String getError() {
+		return error;
+	}
+	public void setError(String error) {
+		this.error = error;
 	}
 
 	@Override

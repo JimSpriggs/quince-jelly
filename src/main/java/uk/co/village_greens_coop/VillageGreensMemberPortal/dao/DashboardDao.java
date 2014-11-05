@@ -101,4 +101,12 @@ public class DashboardDao {
 		BigInteger count = (BigInteger) q.getSingleResult();
 		dashboard.setCertifiableMembers(count.intValue());
 	}
+
+	public void getStockEmailCount(Dashboard dashboard) {
+		String countsQuery = 
+				"SELECT COUNT(*) FROM stock_email se";
+		Query q = entityManager.createNativeQuery(countsQuery);
+		BigInteger count = (BigInteger) q.getSingleResult();
+		dashboard.setStockEmailCount(count.intValue());
+	}
 }

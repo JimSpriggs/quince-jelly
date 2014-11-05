@@ -96,15 +96,15 @@ public class MemberService {
 	}
 	
 	public List<MemberRow> getAllOverdue() {
-		return memberRepository.getAllOverdue();
+		return memberRepository.getOverdueMemberRows();
 	}
 	
 	public List<MemberRow> getUnpaidMembers() {
-		return memberRepository.getUnpaidMembers();
+		return memberRepository.getUnpaidMemberRows();
 	}
 	
 	public List<MemberRow> getPartPaidMembers() {
-		return memberRepository.getPartPaidMembers();
+		return memberRepository.getPartPaidMemberRows();
 	}
 	
 	@Transactional

@@ -15,13 +15,15 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Entity
 @Table(name = "stock_email")
 @NamedQueries({
-	@NamedQuery(name = StockEmail.FIND_BY_PURPOSE, query = "select e from StockEmail e where e.emailPurpose = :emailPurpose")
+	@NamedQuery(name = StockEmail.FIND_BY_PURPOSE, query = "select e from StockEmail e where e.emailPurpose = :emailPurpose"),
+	@NamedQuery(name = StockEmail.FIND_BY_ID, query = "select e from StockEmail e where e.id = :id")
 })
 public class StockEmail implements java.io.Serializable {
 
 	public static final String EMAIL_PURPOSE_MEMBER_CERTIFICATE = "MEMBER_CERTIFICATE";
 	
 	public static final String FIND_BY_PURPOSE = "StockEmailfindByPurpose";
+	public static final String FIND_BY_ID = "StockEmailfindById";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

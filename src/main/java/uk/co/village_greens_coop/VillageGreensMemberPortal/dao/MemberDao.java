@@ -56,6 +56,11 @@ public class MemberDao {
 				.getResultList();
 	}
 
+	public List<Member> getCommitteeMembers() {
+		return (List<Member>)entityManager.createNamedQuery(Member.FIND_COMMITTEE_MEMBERS, Member.class)
+				.getResultList();
+	}
+
 	@SuppressWarnings("unchecked")
 	public List<Member> getAllEmailable() {
 		return (List<Member>)entityManager.createQuery("from Member m where email IS NOT NULL m order by m.id")
@@ -90,10 +95,14 @@ public class MemberDao {
 		Date now = new Date();
 		
 		// get a list of all payments
+		@SuppressWarnings("unchecked")
 		List<MembershipPayment> payments = (List<MembershipPayment>)entityManager.createQuery("from MembershipPayment mp ORDER BY mp.member")
 					.getResultList();
 
 		List<MemberRow> memberRows = new ArrayList<MemberRow>();
+		for (Member member: members) {
+			memberRows.add(new MemberRow(member));
+		}
 		
 		// now add payment values to the member rows
 		if (payments != null && payments.size() > 0) {
@@ -129,12 +138,19 @@ public class MemberDao {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<MemberRow> getAllOverdue() {
+	public List<Member> getAllPossiblyOverdueMembers() {
 		
 		// get a list of members who could be overdue
 		List<Member> members = (List<Member>)entityManager.createQuery("from Member m where member_status_cd IN ('UNPAID', 'PART')")
 				.getResultList();
 
+		return members;
+	}
+	
+	public List<MemberRow> getOverdueMemberRows() {
+
+		List<Member> members = getAllPossiblyOverdueMembers();
+		
 		List<MemberRow> rows = getMemberRowsWithRelatedPaymentInfo(members);
 		List<MemberRow> newRows = new ArrayList<MemberRow>();
 		
@@ -149,22 +165,52 @@ public class MemberDao {
 		return newRows;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public List<MemberRow> getPartPaidMembers() {
+	public List<Member> getOverdueMembers() {
+		List<Member> overdueMembers = new ArrayList<Member>();
+		List<Member> possiblyOverdueMembers = getAllPossiblyOverdueMembers();
+		List<MemberRow> overdueMemberRows = getOverdueMemberRows();
+		
+		if (overdueMemberRows.size() > 0) {
+			for(MemberRow memberRow: overdueMemberRows) {
+				Long memberRowId = memberRow.getId();
+				// find the corresponding member object
+				for (Member overdueMember: possiblyOverdueMembers) {
+					if (overdueMember.getId().equals(memberRowId)) {
+						// add it to the list
+						overdueMembers.add(overdueMember);
+						continue;
+					}
+				}
+			}
+		}
+		
+		return overdueMembers;
+	}
+	
+	public List<Member> getFullMembers() {
+		return getByMemberStatus("FULL");
+	}
+		
+	public List<Member> getPartPaidMembers() {
+		return getByMemberStatus("PART");
+	}
+		
+	public List<Member> getUnpaidMembers() {
+		return getByMemberStatus("UNPAID");
+	}
+
+	public List<MemberRow> getPartPaidMemberRows() {
 		
 		// get a list of members who could be overdue
-		List<Member> members = (List<Member>)entityManager.createQuery("from Member m where member_status_cd IN ('PART')")
-				.getResultList();
+		List<Member> members = getPartPaidMembers();
 
 		return getMemberRowsWithRelatedPaymentInfo(members);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public List<MemberRow> getUnpaidMembers() {
+	public List<MemberRow> getUnpaidMemberRows() {
 		
 		// get a list of members who could be overdue
-		List<Member> members = (List<Member>)entityManager.createQuery("from Member m where member_status_cd IN ('UNPAID')")
-				.getResultList();
+		List<Member> members = getUnpaidMembers();
 
 		return getMemberRowsWithRelatedPaymentInfo(members);
 	}

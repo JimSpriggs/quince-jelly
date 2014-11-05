@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title th:text="#{coop.title} + ' - ' + #{signin.title}">Member Management</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="../favicon.ico" rel="shortcut icon" />
+    <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
+    <link href="../../../resources/css/core.css" rel="stylesheet" media="screen" th:href="@{/resources/css/core.css}" />
+	<link href="../../../resources/css/font-awesome.css" rel="stylesheet" type="text/css" media="screen" th:href="@{/resources/css/font-awesome.css}" />
+	<link href="../../../resources/css/ionicons.min.css" rel="stylesheet" type="text/css" media="screen" th:href="@{/resources/css/ionicons.min.css}" />
+	<link href="../../../resources/css/datatables/dataTables.bootstrap.css" rel="stylesheet" type="text/css" th:href="@{/resources/css/datatables/dataTables.bootstrap.css}" />
+    <link href="../../../resources/css/AdminLTE.css" rel="stylesheet" media="screen" th:href="@{/resources/css/AdminLTE.css}"/>
+</head>
+<body class="skin-village-green">
+<div th:replace="fragments/header :: header">Header</div>
+	<div class="wrapper row-offcanvas row-offcanvas-left">
+		<aside th:replace="fragments/admin-sidebar :: admin-sidebar('emails','')">Admin Sidebar</aside>
+
+	    <!-- Right side column. Contains the navbar and content of the page -->
+	    <aside class="right-side">                
+	        <!-- Content Header (Page header) -->
+	        <section class="content-header">
+	            <h1>
+	                Member Email Templates
+	            </h1>
+	            <ol class="breadcrumb">
+	                <li><a th:href="@{/admin/dashboard}" href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+	                <li><a th:href="@{/admin/dashboard}" href="#">Admin</a></li>
+	                <li class="active" th:text="${breadcrumbMembersDescription}">Emails</li>
+	            </ol>
+	        </section>
+	
+	        <!-- Main content -->
+	        <section class="content">
+	        	<div th:unless="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+	        		<p class="lead">
+	        			For full access to Member Emails and other administrator functions, <a href="mailto:john@village-greens-coop.co.uk">contact the system administrator</a>.
+	        		</p>
+	        	</div>
+	        	<div th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+				    <th:block th:if="${message != null}">
+				        <div th:replace="fragments/alert :: alert (type='success', message='__${message}__')">Alert</div>
+				    </th:block>
+			        <div class="row"> 
+			            <div class="col-xs-2">
+			            	<strong>Purpose</strong>
+			            </div>
+			            <div class="col-xs-4">
+			            	<strong>Subject</strong>
+			            </div>
+			            <div class="col-xs-2">
+			            	<strong>Actions</strong>
+			            </div>
+				     </div>
+			         <div class="row" 
+			        	th:each="email, emailStat : ${emails}"
+			        	th:attrappend="id=__${emailStat.index}__">
+			            <div class="col-xs-2">
+			            	<p th:text="${emails[__${emailStat.index}__].emailPurpose}">Purpose</p>
+			            </div>
+			            <div class="col-xs-4">
+			            	<p th:text="${emails[__${emailStat.index}__].emailSubject}">Subject</p>
+			            </div>
+			            <div class="col-xs-2">
+							<span>
+								<button 
+									id="sendEmailBtn_"
+									th:attrappend="id=${emails[__${emailStat.index}__].id}"
+									class="btn btn-default btn-xs sendEmail" type="button"
+									data-toggle="tooltip" data-placement="bottom" title="Send Email...">
+									<i class="fa fa-envelope"></i>
+								</button>
+							</span>
+				            <span>
+								<button 
+									id="editEmailBtn_"
+									th:attrappend="id=${emails[__${emailStat.index}__].id}"
+									class="btn btn-default btn-xs editEmail" type="button"
+									data-toggle="tooltip" data-placement="bottom" title="Edit Email...">
+									<i class="fa fa-edit"></i>
+								</button>
+                            </span>
+				            <span>
+								<button 
+									id="deleteEmailBtn_"
+									th:attrappend="id=${emails[__${emailStat.index}__].id}"
+									class="btn btn-default btn-xs deleteEmail" type="button"
+									data-toggle="tooltip" data-placement="bottom" title="Delete Email">
+									<i class="fa fa-times"></i>
+								</button>
+                            </span>
+			            </div>
+				     </div>
+ 			         <div class="row">
+ 			         	<div class="col-xs-4">
+							<button 
+								id="addEmailBtn"
+								class="btn btn-default btn-md addEmail" type="button">Add Email
+							</button>
+						</div>
+			         </div>
+		        </div>
+	        </section><!-- /.content -->
+	    </aside><!-- /.right-side -->
+	</div><!-- ./wrapper -->
+
+
+<!-- jQuery 2.0.2 -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+<!-- jQuery UI 1.10.3 -->
+<script th:src="@{/resources/js/jquery-ui-1.10.3.min.js}" src="../../../resources/js/jquery-ui-1.10.3.min.js" type="text/javascript"></script>
+<!-- Bootstrap -->
+<script th:src="@{/resources/js/bootstrap.min.js}" src="../../../resources/js/bootstrap.min.js" type="text/javascript"></script>
+
+<!-- Data Tables -->
+<script th:src="@{/resources/js/plugins/datatables/jquery.dataTables.js}" src="../../../resources/js/plugins/datatables/jquery.dataTables.js" type="text/javascript"></script>
+<script th:src="@{/resources/js/plugins/datatables/dataTables.bootstrap.js}" src="../../../resources/js/plugins/datatables/dataTables.bootstrap.js" type="text/javascript"></script>
+
+<!-- AdminLTE App -->
+<script th:src="@{/resources/js/vg-admin.js}" src="../../../resources/js/vg-admin.js" type="text/javascript"></script>
+
+<!-- thymeleaf inlined script to include memberStatus url param -->
+<script th:inline="javascript">
+/*<![CDATA[*/
+$(document).ready(function() {
+	$('#addEmailBtn').click(function() {
+    	window.location = /*[[@{/admin/addEmail}]]*/ '/admin/addEmail';
+    });
+	
+	var removePaymentClickFunction = function(e){
+		e.preventDefault();
+		// id will be removePaymentBtn_XXXX
+		var paymentId = this.id.slice(17);
+		
+        var updateStateField = $("#payments" + paymentId + "\\.updateState");
+        var updateState = updateStateField.val();
+//		alert("Update state: " + updateState);
+		// if the payment has only been added by this session, just delete its row
+		if (updateState === "N") {
+			$("#paymentRow" + paymentId).remove();
+		} else {
+			// otherwise set the update state to D, so it gets deleted
+			$("#paymentRow" + paymentId).addClass('hide');
+			updateStateField.val('D');
+		}
+	};
+	
+	$('.sendEmail').click(function(e) {
+		e.preventDefault();
+		// id will be sendEmailBtn_XXX
+		var emailId = this.id.slice(13);
+	    var sendEmailUrl = /*[[@{/admin/sendEmail}]]*/ '/admin/sendEmail';
+    	window.location = sendEmailUrl + '?id=' + emailId;
+	});
+
+	$('.editEmail').click(function(e) {
+		e.preventDefault();
+		// id will be editEmailBtn_XXX
+		var emailId = this.id.slice(13);
+	    var editEmailUrl = /*[[@{/admin/editEmail}]]*/ '/admin/editEmail';
+    	window.location = editEmailUrl + '?id=' + emailId;
+	});
+
+	$('.deleteEmail').click(function(e) {
+		e.preventDefault();
+		// id will be deleteEmailBtn_XXX
+		var emailId = this.id.slice(15);
+	    var deleteEmailUrl = /*[[@{/admin/deleteEmail}]]*/ '/admin/deleteEmail';
+    	window.location = deleteEmailUrl + '?id=' + emailId;
+	});
+});
+/*]]>*/
+</script>
+
+</body>
+</html>

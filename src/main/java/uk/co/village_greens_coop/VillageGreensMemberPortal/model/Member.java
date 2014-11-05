@@ -25,13 +25,16 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @NamedQueries({
 	@NamedQuery(name = Member.FIND_BY_SURNAME, query = "select m from Member m where m.surname = :surname"),
 	@NamedQuery(name = Member.FIND_BY_STATUS, 
-		query = "select DISTINCT m from Member m where member_status_cd = :memberStatus order by m.memberno")
+		query = "select DISTINCT m from Member m where member_status_cd = :memberStatus order by m.memberno"),
 //		query = "select DISTINCT m from Member m LEFT JOIN FETCH m.memberTelephones mt where member_status_cd = :memberStatus order by m.memberno, m.id, mt.id"),
+	@NamedQuery(name = Member.FIND_COMMITTEE_MEMBERS, 
+		query = "select DISTINCT m from Member m where memberno IN (1, 2, 3, 4, 5, 6, 7) order by m.memberno")
 })
 public class Member implements java.io.Serializable {
 
 	public static final String FIND_BY_SURNAME = "Member.findBySurname";
 	public static final String FIND_BY_STATUS = "Member.findByMemberStatus";
+	public static final String FIND_COMMITTEE_MEMBERS = "Member.findCommitteeMembers";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -156,8 +159,8 @@ public class Member implements java.io.Serializable {
 		}
 	}
 
-	public String getSalutation(boolean formal) {
-		String retval = formal ? "Dear " : "Hi ";;
+	public String getUntitledSalutation(boolean formal) {
+		String retval = "";
 		if (organisation != null && !organisation.equals("")) {
 			retval += organisation;
 		} else {
@@ -167,6 +170,12 @@ public class Member implements java.io.Serializable {
 				retval += firstName;
 			}
 		}
+		return retval;
+	}
+
+	public String getSalutation(boolean formal) {
+		String retval = formal ? "Dear " : "Hi ";;
+		retval += getUntitledSalutation(formal);
 		return retval;
 	}
 

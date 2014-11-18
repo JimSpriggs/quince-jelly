@@ -17,13 +17,13 @@
 <body class="skin-village-green">
 <div th:replace="fragments/header :: header">Header</div>
 	<div class="wrapper row-offcanvas row-offcanvas-left">
-		<aside th:replace="fragments/admin-sidebar :: admin-sidebar('emails','')">Admin Sidebar</aside>
+		<aside th:replace="fragments/admin-sidebar :: admin-sidebar('emails','templates')">Admin Sidebar</aside>
 
 	    <!-- Right side column. Contains the navbar and content of the page -->
 	    <aside class="right-side">                
 	        <!-- Content Header (Page header) -->
 	        <section class="content-header">
-	            <h1 th:if="${stockEmailForm.updateState == 'N'}">New Email</h1>
+	            <h1 th:if="${stockEmailForm.updateState == 'N'}">New Email Template</h1>
 	            <h1 th:if="${stockEmailForm.updateState != 'N' and stockEmailForm.id != null}" th:text="${'#' + stockEmailForm.id + ' - ' + stockEmailForm.emailPurpose}">Email Purpose</h1>
 	            <ol class="breadcrumb">
 	                <li><a th:href="@{/admin/dashboard}" href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -66,16 +66,57 @@
 		        </div>
 		        <div class="form-group" th:classappend="${#fields.hasErrors('emailBody')}? 'has-error'">
 		            <label for="emailBody" class="col-md-2 control-label">Email Body</label>
-		            <div class="col-xs-8">
+		            <div class="col-xs-7">
 		                <textarea class="form-control" cols="60" rows="20" id="emailBody" placeholder="Email Body" th:field="*{emailBody}" />
 		                <span class="help-block" th:if="${#fields.hasErrors('emailBody')}" th:errors="*{emailBody}">Please supply a value</span>
 		            </div>
 		        </div>
+		        <div class="form-group">
+		            <label for="emailBody" class="col-md-2 control-label">Attachments</label>
+		            <div class="col-xs-3">
+		                <select class="form-control" size="8" multiple="true" id="availableDocuments">
+							<option th:each="document : *{availableDocuments}"
+									th:value="${{document.id}}"
+									th:text="${document.description}">
+								Available Documents
+							</option>
+						</select>		                
+		            </div>
+		            <div class="col-xs-1">
+		            	<div class="text-center">
+		            		<span> 
+								<button 
+									id="addDocumentsBtn"
+									class="btn btn-success btn-flat" type="button">
+									Attach <i class="fa fa-angle-right"></i>
+								</button>
+								<br />
+								<br />
+								<button 
+									id="removeDocumentsBtn"
+									class="btn btn-success btn-flat" type="button">
+									<i class="fa fa-angle-left"></i> Detach 
+								</button>
+							</span>
+						</div>
+		            </div>
+		            <div class="col-xs-3">
+		                <select class="form-control" size="8" multiple="true" id="selectedDocuments">
+							<option th:each="document : *{selectedDocuments}"
+									th:value="${{document.id}}"
+									th:text="${document.description}">
+								Attached Documents
+							</option>
+						</select>		                
+		            </div>
+		        </div>
+<div id="documentDiv" class="hide">
+</div>
 			</fieldset>
 		</div>
 	</div> <!-- box -->
 <div class="pull-left"> 
-<button type="submit" class="btn btn-lg btn-primary">Save</button>
+<button type="submit" id="saveButton" class="btn btn-lg btn-primary">Save</button>
 <button type="button" id="cancelButton" class="btn btn-lg btn-default">Cancel</button>
 </div>
 </form>
@@ -114,6 +155,37 @@
 $(document).ready(function() {
     $('#cancelButton').click(function() {
     	window.location = /*[[@{/admin/emails}]]*/ '/admin/emails';
+    });
+    
+    $('#addDocumentsBtn').click(function(){
+        $('#availableDocuments option:selected').each( function() {
+                $('#selectedDocuments').append("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>");
+            $(this).remove();
+        });
+    });
+    $('#removeDocumentsBtn').click(function(){
+        $('#selectedDocuments option:selected').each( function() {
+            $('#availableDocuments').append("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>");
+            $(this).remove();
+        });
+    });
+    
+    $('#saveButton').click(function() {
+    	newDivHtml = "";
+    	var i = 0;
+    	$("#availableDocuments > option").each(function() {
+        	newDivHtml += '<input type="hidden" id="availableDocuments' + i + '.id" name="availableDocuments[' + i + '].id" value="' + this.value + '" />';
+        	newDivHtml += '<input type="hidden" id="availableDocuments' + i + '.description" name="availableDocuments[' + i + '].description" value="' + this.text + '" />';
+        	i++;
+    	});		
+    	i = 0;
+    	$("#selectedDocuments > option").each(function() {
+        	newDivHtml += '<input type="hidden" id="selectedDocuments' + i + '.id" name="selectedDocuments[' + i + '].id" value="' + this.value + '" />';
+        	newDivHtml += '<input type="hidden" id="selectedDocuments' + i + '.description" name="selectedDocuments[' + i + '].description" value="' + this.text + '" />';
+        	i++;
+    	});		
+		var newDiv = $(newDivHtml);
+		$("#documentDiv").append(newDiv);
     });
 });
 /*]]>*/

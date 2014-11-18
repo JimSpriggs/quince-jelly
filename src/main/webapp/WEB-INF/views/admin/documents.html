@@ -14,19 +14,19 @@
 <body class="skin-village-green">
 <div th:replace="fragments/header :: header">Header</div>
 	<div class="wrapper row-offcanvas row-offcanvas-left">
-		<aside th:replace="fragments/admin-sidebar :: admin-sidebar('emails','templates')">Admin Sidebar</aside>
+		<aside th:replace="fragments/admin-sidebar :: admin-sidebar('documents','')">Admin Sidebar</aside>
 
 	    <!-- Right side column. Contains the navbar and content of the page -->
 	    <aside class="right-side">                
 	        <!-- Content Header (Page header) -->
 	        <section class="content-header">
 	            <h1>
-	                Member Email Templates
+	                Member Documents
 	            </h1>
 	            <ol class="breadcrumb">
-	                <li><a th:href="@{/admin/dashboard}" href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+	                <li><a th:href="@{/admin/dashboard}" href="#"><i class="fa fa-dashboard"></i>Home</a></li>
 	                <li><a th:href="@{/admin/dashboard}" href="#">Admin</a></li>
-	                <li class="active" th:text="${breadcrumbMembersDescription}">Emails</li>
+	                <li class="active" th:text="${breadcrumbMembersDescription}">Documents</li>
 	            </ol>
 	        </section>
 	
@@ -34,7 +34,7 @@
 	        <section class="content">
 	        	<div th:unless="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
 	        		<p class="lead">
-	        			For full access to Member Emails and other administrator functions, <a href="mailto:john@village-greens-coop.co.uk">contact the system administrator</a>.
+	        			For full access to Member Documents and other administrator functions, <a href="mailto:john@village-greens-coop.co.uk">contact the system administrator</a>.
 	        		</p>
 	        	</div>
 	        	<div th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
@@ -42,50 +42,35 @@
 				        <div th:replace="fragments/alert :: alert (type='success', message='__${message}__')">Alert</div>
 				    </th:block>
 			        <div class="row"> 
-			            <div class="col-xs-2">
-			            	<strong>Purpose</strong>
+			            <div class="col-xs-3">
+			            	<strong>Filename</strong>
 			            </div>
-			            <div class="col-xs-4">
-			            	<strong>Subject</strong>
+			            <div class="col-xs-3">
+			            	<strong>Description</strong>
 			            </div>
 			            <div class="col-xs-2">
-			            	<strong>Actions</strong>
+			            	<strong>Created</strong>
 			            </div>
 				     </div>
 			         <div class="row" 
-			        	th:each="email, emailStat : ${emails}"
-			        	th:attrappend="id=__${emailStat.index}__">
-			            <div class="col-xs-2">
-			            	<p th:text="${emails[__${emailStat.index}__].emailPurpose}">Purpose</p>
+			        	th:each="document, documentStat : ${documents}"
+			        	th:attrappend="id=__${documentStat.index}__">
+			            <div class="col-xs-3">
+			            	<p th:text="${documents[__${documentStat.index}__].filename}">Filename</p>
 			            </div>
-			            <div class="col-xs-4">
-			            	<p th:text="${emails[__${emailStat.index}__].emailSubject}">Subject</p>
+			            <div class="col-xs-3">
+			            	<p th:text="${documents[__${documentStat.index}__].description}">Description</p>
 			            </div>
 			            <div class="col-xs-2">
-							<span>
-								<button 
-									id="sendEmailBtn_"
-									th:attrappend="id=${emails[__${emailStat.index}__].id}"
-									class="btn btn-default btn-xs sendEmail" type="button"
-									data-toggle="tooltip" data-placement="bottom" title="Send Email...">
-									<i class="fa fa-envelope"></i>
-								</button>
-							</span>
+			            	<p th:text="${documents[__${documentStat.index}__].creationTimestamp}">Created</p>
+			            </div>
+			            <div class="col-xs-2">
 				            <span>
 								<button 
-									id="editEmailBtn_"
-									th:attrappend="id=${emails[__${emailStat.index}__].id}"
-									class="btn btn-default btn-xs editEmail" type="button"
-									data-toggle="tooltip" data-placement="bottom" title="Edit Email...">
-									<i class="fa fa-edit"></i>
-								</button>
-                            </span>
-				            <span>
-								<button 
-									id="deleteEmailBtn_"
-									th:attrappend="id=${emails[__${emailStat.index}__].id}"
-									class="btn btn-default btn-xs deleteEmail" type="button"
-									data-toggle="tooltip" data-placement="bottom" title="Delete Email">
+									id="deleteDocumentBtn_"
+									th:attrappend="id=${documents[__${documentStat.index}__].id}"
+									class="btn btn-default btn-xs deleteDocument" type="button"
+									data-toggle="tooltip" data-placement="bottom" title="Delete Document">
 									<i class="fa fa-times"></i>
 								</button>
                             </span>
@@ -94,8 +79,8 @@
  			         <div class="row">
  			         	<div class="col-xs-4">
 							<button 
-								id="addEmailBtn"
-								class="btn btn-default btn-md addEmail" type="button">Add Email
+								id="addDocumentBtn"
+								class="btn btn-default btn-md addDocument" type="button">Add Document
 							</button>
 						</div>
 			         </div>
@@ -123,50 +108,16 @@
 <script th:inline="javascript">
 /*<![CDATA[*/
 $(document).ready(function() {
-	$('#addEmailBtn').click(function() {
-    	window.location = /*[[@{/admin/addEmail}]]*/ '/admin/addEmail';
+	$('#addDocumentBtn').click(function() {
+    	window.location = /*[[@{/admin/addDocument}]]*/ '/admin/addDocument';
     });
 	
-	var removePaymentClickFunction = function(e){
+	$('.deleteDocument').click(function(e) {
 		e.preventDefault();
-		// id will be removePaymentBtn_XXXX
-		var paymentId = this.id.slice(17);
-		
-        var updateStateField = $("#payments" + paymentId + "\\.updateState");
-        var updateState = updateStateField.val();
-//		alert("Update state: " + updateState);
-		// if the payment has only been added by this session, just delete its row
-		if (updateState === "N") {
-			$("#paymentRow" + paymentId).remove();
-		} else {
-			// otherwise set the update state to D, so it gets deleted
-			$("#paymentRow" + paymentId).addClass('hide');
-			updateStateField.val('D');
-		}
-	};
-	
-	$('.sendEmail').click(function(e) {
-		e.preventDefault();
-		// id will be sendEmailBtn_XXX
-		var emailId = this.id.slice(13);
-	    var sendEmailUrl = /*[[@{/admin/sendEmail}]]*/ '/admin/sendEmail';
-    	window.location = sendEmailUrl + '?id=' + emailId;
-	});
-
-	$('.editEmail').click(function(e) {
-		e.preventDefault();
-		// id will be editEmailBtn_XXX
-		var emailId = this.id.slice(13);
-	    var editEmailUrl = /*[[@{/admin/editEmail}]]*/ '/admin/editEmail';
-    	window.location = editEmailUrl + '?id=' + emailId;
-	});
-
-	$('.deleteEmail').click(function(e) {
-		e.preventDefault();
-		// id will be deleteEmailBtn_XXX
-		var emailId = this.id.slice(15);
-	    var deleteEmailUrl = /*[[@{/admin/deleteEmail}]]*/ '/admin/deleteEmail';
-    	window.location = deleteEmailUrl + '?id=' + emailId;
+		// id will be deleteDocumentBtn_XXX
+		var documentId = this.id.slice(18);
+	    var deleteDocumentUrl = /*[[@{/admin/deleteDocument}]]*/ '/admin/deleteDocument';
+    	window.location = deleteDocumentUrl + '?id=' + documentId;
 	});
 });
 /*]]>*/

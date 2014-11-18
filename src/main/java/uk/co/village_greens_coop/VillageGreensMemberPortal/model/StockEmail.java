@@ -1,10 +1,19 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.model;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -34,6 +43,24 @@ public class StockEmail implements java.io.Serializable {
 	private String emailBody;
 	@Column(name = "email_subject_tx")
 	private String emailSubject;
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinTable(name = "stock_email_attachment", 
+				joinColumns = { 
+					@JoinColumn(
+							name = "stock_email_id", 
+							nullable = false, 
+							updatable = false
+					) 
+				}, 
+				inverseJoinColumns = { 
+					@JoinColumn(
+							name = "document_id", 
+							nullable = false, 
+							updatable = false
+					) 
+				}
+		)
+	private Set<Document> attachments = new TreeSet<Document>();
 	
 	public StockEmail() {
 	}
@@ -70,6 +97,22 @@ public class StockEmail implements java.io.Serializable {
 		this.emailSubject = emailSubject;
 	}
 
+	public Set<Document> getAttachments() {
+		return attachments;
+	}
+
+	public void setAttachments(Set<Document> attachments) {
+		this.attachments = attachments;
+	}
+	
+	public void addAttachment(Document document) {
+		if (attachments == null) {
+			attachments = new HashSet<Document>();
+		}
+		attachments.add(document);
+	}
+
+	
 	@Override
     public String toString() {
         return new ToStringBuilder(this)

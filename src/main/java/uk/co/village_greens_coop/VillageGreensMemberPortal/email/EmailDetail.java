@@ -72,7 +72,7 @@ public class EmailDetail {
 	public EmailAttachment[] getAttachments() {
 		return attachments;
 	}
-	public void setAttachments(EmailAttachment[] attachments) {
+	public void setAttachments(EmailAttachment... attachments) {
 		this.attachments = attachments;
 	}
 	public String getError() {

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title th:text="#{coop.title} + ' - ' + #{signin.title}">Edit Email</title>
+    <title th:text="#{coop.title} + ' - ' + #{signin.title}">Edit Document</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link href="../favicon.ico" rel="shortcut icon" />
     <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
@@ -17,18 +17,19 @@
 <body class="skin-village-green">
 <div th:replace="fragments/header :: header">Header</div>
 	<div class="wrapper row-offcanvas row-offcanvas-left">
-		<aside th:replace="fragments/admin-sidebar :: admin-sidebar('emails','templates')">Admin Sidebar</aside>
+		<aside th:replace="fragments/admin-sidebar :: admin-sidebar('documents','')">Admin Sidebar</aside>
 
 	    <!-- Right side column. Contains the navbar and content of the page -->
 	    <aside class="right-side">                
 	        <!-- Content Header (Page header) -->
 	        <section class="content-header">
-	            <h1 th:text="${'Send ' + sendStockEmailForm.emailPurpose + ' Email'}">Send Email</h1>
+	            <h1 th:if="${documentForm.updateState == 'N'}">New Document</h1>
+	            <h1 th:if="${documentForm.updateState != 'N' and documentForm.id != null}" th:text="${'#' + documentForm.description}">Document</h1>
 	            <ol class="breadcrumb">
 	                <li><a th:href="@{/admin/dashboard}" href="#"><i class="fa fa-dashboard"></i> Home</a></li>
 	                <li><a th:href="@{/admin/dashboard}" href="#">Admin</a></li>
-	                <li><a th:href="@{/admin/emails}" href="#">Emails</a></li>
-	                <li class="active">Send Email</li>
+	                <li><a th:href="@{/admin/documents}" href="#">Documents</a></li>
+	                <li class="active">Document</li>
 	            </ol>
 	        </section>
 	
@@ -37,74 +38,33 @@
 				<div class="row">
 					<div class="col-xs-12">
 <!-- form start -->
-<form class="form-horizontal" method="post" th:action="@{sendEmail}" th:object="${sendStockEmailForm}">
+<form class="form-horizontal" method="post" enctype="multipart/form-data" th:action="@{document}">
     <!-- /* Show general error message when form contains errors */ -->
-	<input type="hidden" th:field="*{emailId}" />
-	<input type="hidden" th:field="*{emailPurpose}" />
-	<input type="hidden" th:field="*{emailSubject}" />
-	<input type="hidden" th:field="*{emailBody}" />
-    <th:block th:if="${#fields.hasErrors('${sendStockEmailForm.*}')}">
+    <th:block th:if="${#fields.hasErrors('${documentForm.*}')}">
         <div th:replace="fragments/alert :: alert (type='danger', message='There is a problem with some of the information you provided.  Please amend the marked fields, and try again.')">Alert</div>
     </th:block>
 	<div class="box box-success">
 		<div class="box-body">
-			<fieldset>
-		        <legend>Recipients</legend>
+		    <fieldset>
+		        <legend th:if="${documentForm.updateState == 'N'}">New Document Details</legend>
+		        <legend th:if="${documentForm.updateState != 'N'}">Edit Document Details</legend>
 		        <div class="form-group">
-		            <div class="col-md-12">
-		            	<div class="checkbox">
-							<label>
-		                	<input type="checkbox" class="flat-green form-control" id="allMembers" th:field="*{allMembers}" />
-		                	All Members
-		                	</label>
-		                </div>
+		            <label for="file" class="col-md-2 control-label">Filename</label>
+		            <div class="col-xs-4">
+		                <input type="file" class="form-control" name="filename" id="filename" placeholder="File" />
 		            </div>
-		            <div class="col-md-12">
-		            	<div class="checkbox">
-							<label>
-		                	<input type="checkbox" class="flat-green form-control" id="fullMembers" th:field="*{fullMembers}" />
-		                	Full Members
-		                	</label>
-		                </div>
-		            </div>
-		            <div class="col-md-12">
-		            	<div class="checkbox">
-							<label>
-		                	<input type="checkbox" class="flat-green form-control" id="partMembers" th:field="*{partMembers}" />
-		                	Part-paid Members
-		                	</label>
-		                </div>
-		            </div>
-		            <div class="col-md-12">
-		            	<div class="checkbox">
-							<label>
-		                	<input type="checkbox" class="flat-green form-control" id="unpaidMembers" th:field="*{unpaidMembers}" />
-		                	Unpaid Members
-		                	</label>
-		                </div>
-		            </div>
-		            <div class="col-md-12">
-		            	<div class="checkbox">
-							<label>
-		                	<input type="checkbox" class="flat-green form-control" id="overdueMembers" th:field="*{overdueMembers}" />
-		                	Overdue Members
-		                	</label>
-		                </div>
-		            </div>
-		            <div class="col-md-12">
-		            	<div class="checkbox">
-							<label>
-		                	<input type="checkbox" class="flat-green form-control" id="committeeMembers" th:field="*{committeeMembers}" />
-		                	Committee Members (e.g. for testing)
-		                	</label>
-		                </div>
+		        </div>
+		        <div class="form-group">
+		            <label for="description" class="col-md-2 control-label">Description</label>
+		            <div class="col-xs-4">
+		                <input type="text" class="form-control" name="description" id="description" placeholder="Description" />
 		            </div>
 		        </div>
 			</fieldset>
-		</div> <!-- box-body -->
+		</div>
 	</div> <!-- box -->
 <div class="pull-left"> 
-<button type="submit" class="btn btn-lg btn-primary">Send</button>
+<button type="submit" id="saveButton" class="btn btn-lg btn-primary">Upload</button>
 <button type="button" id="cancelButton" class="btn btn-lg btn-default">Cancel</button>
 </div>
 </form>
@@ -141,13 +101,8 @@
 <script th:inline="javascript">
 /*<![CDATA[*/
 $(document).ready(function() {
-    $('input[type="checkbox"].flat-green, input[type="radio"].flat-green').iCheck({
-        checkboxClass: 'icheckbox_flat-green',
-        radioClass: 'iradio_flat-green'
-    });
-
     $('#cancelButton').click(function() {
-    	window.location = /*[[@{/admin/emails}]]*/ '/admin/emails';
+    	window.location = /*[[@{/admin/documents}]]*/ '/admin/documents';
     });
 });
 /*]]>*/

@@ -96,12 +96,24 @@
 							</li>
 						</ul>
 		            </li>
-		            <li th:class="${activeMenu == 'emails'} ? 'active'">
-		                <a th:href="@{/admin/emails}" 
-		                	href="emails">
-		                    <i class="fa fa-envelope"></i> <span>Member Emails</span>
+		            <li class="active" 
+		            	th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
+		            	th:class="${activeMenu == 'emails'} ? 'active'">
+		                <a th:href="@{/admin/emails}" href="emails">
+		                    <i class="fa fa-envelope"></i> 
+		                    <span>Email Templates</span>
 		                    <small class="badge pull-right alert-info"
 		                    	th:text="${dashboard.stockEmailCount}">1</small>
+		                </a>
+		            </li>
+		            <li class="active" 
+		            	th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"
+		            	th:class="${activeMenu == 'emails'} ? 'active'">
+		                <a th:href="@{/admin/documents}" href="documents">
+		                    <i class="fa fa-file"></i> 
+		                    <span>Member Documents</span>
+		                    <small class="badge pull-right alert-info"
+		                    	th:text="${dashboard.documentCount}">1</small>
 		                </a>
 		            </li>
 		            <li>

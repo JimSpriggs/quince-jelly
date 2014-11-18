@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -27,8 +29,10 @@ import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.StockEmailDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.StockEmailRequestDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.email.EmailAttachment;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.email.EmailDetail;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.form.DocumentForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.SendStockEmailForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.StockEmailForm;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Document;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.StockEmail;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.StockEmailRequest;
@@ -49,6 +53,9 @@ public class EmailService {
 	
 	@Autowired
 	private StockEmailRequestDao stockEmailRequestRepository;
+	
+	@Autowired
+	private DocumentService documentService;
 	
 	@Transactional(readOnly = true)
 	public EmailDetail getStockEmailDetail(String purpose) {
@@ -72,7 +79,7 @@ public class EmailService {
 		List<StockEmailForm> emailForms = new ArrayList<StockEmailForm>();
 		List<StockEmail> emails = stockEmailRepository.getAll();
 		for (StockEmail stockEmail: emails) {
-			emailForms.add(new StockEmailForm(stockEmail));
+			emailForms.add(new StockEmailForm(stockEmail, null, null));
 		}
 		return emailForms;
 	}
@@ -111,8 +118,30 @@ public class EmailService {
 		stockEmail.setEmailPurpose(sef.getEmailPurpose());
 		stockEmail.setEmailSubject(sef.getEmailSubject());
 		stockEmail.setEmailBody(sef.getEmailBody());
+		
+		if (sef.getSelectedDocuments() != null && sef.getSelectedDocuments().size() > 0) {
+			for (DocumentForm docForm: sef.getSelectedDocuments()) {
+				Document document = documentService.getById(docForm.getId());
+				stockEmail.getAttachments().add(document);
+			}
+		}
 		stockEmailRepository.save(stockEmail);
 		return stockEmail;
+	}
+
+	// given a set of DocumentForm objects (from a submitted form), return true if the given
+	// document matches one of the DocumentForms in the set (and removes it from the set)
+	private boolean checkDocumentSelectedAndRemove(Document document, List<DocumentForm> selectedDocuments) {
+		if (selectedDocuments != null) {
+			for (Iterator<DocumentForm> iterator = selectedDocuments.iterator(); iterator.hasNext();) {
+				DocumentForm docForm = iterator.next();
+				if (document.getId().equals(docForm.getId())) {
+					iterator.remove();
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	@Transactional
@@ -121,6 +150,23 @@ public class EmailService {
 		stockEmail.setEmailPurpose(sef.getEmailPurpose());
 		stockEmail.setEmailSubject(sef.getEmailSubject());
 		stockEmail.setEmailBody(sef.getEmailBody());
+		
+		// first work out which current documents need to be removed
+		for (Iterator<Document> iterator = stockEmail.getAttachments().iterator(); iterator.hasNext();) {
+			Document document = iterator.next();
+			if (!checkDocumentSelectedAndRemove(document, sef.getSelectedDocuments())) {
+				iterator.remove();
+			}
+		}
+		
+		// now the selected documents list contains only those documents which need to be added
+		if (sef.getSelectedDocuments() != null && sef.getSelectedDocuments().size() > 0) {
+			for (DocumentForm docForm: sef.getSelectedDocuments()) {
+				Document document = documentService.getById(docForm.getId());
+				stockEmail.getAttachments().add(document);
+			}
+		}
+
 		stockEmailRepository.save(stockEmail);
 		return stockEmail;
 	}
@@ -201,11 +247,21 @@ public class EmailService {
 			StockEmail stockEmail = emailRequest.getStockEmail();
 			Member member = emailRequest.getMember();
 			EmailDetail emailDetail = new EmailDetail();
-			emailDetail.setFromAddress("info@village-greens-coop.co.uk");
-			emailDetail.setFromDisplay("Village Greens Info");
+			emailDetail.setFromAddress("members@village-greens-coop.co.uk");
+			emailDetail.setFromDisplay("Village Greens Members");
 			emailDetail.setSubject(stockEmail.getEmailSubject());
 			emailDetail.setTemplate(populateMemberPlaceholders(stockEmail.getEmailBody(), member));
 			emailDetail.setToAddress(member.getEmail());
+			if (stockEmail.getAttachments() != null && stockEmail.getAttachments().size() > 0) {
+				EmailAttachment[] attachments = new EmailAttachment[stockEmail.getAttachments().size()];
+				int index = 0;
+				for (Document document: stockEmail.getAttachments()) {
+					EmailAttachment attachment = new EmailAttachment(document);
+					attachments[index] = attachment;
+					index++;
+				}
+				emailDetail.setAttachments(attachments);
+			}
 			sendEmail(emailDetail);
 			if (emailDetail.getError() != null) {
 				emailRequest.setError(emailDetail.getError());
@@ -216,5 +272,33 @@ public class EmailService {
 			numSent++;
 		}
 		return numSent;
+	}
+
+	public StockEmailForm getStockEmailForm() {
+		List<DocumentForm> availableDocuments = documentService.getAllDocumentsAsForms();
+		StockEmailForm sef = new StockEmailForm(availableDocuments);
+		return sef;
+	}
+
+	public StockEmailForm getStockEmailForm(StockEmail stockEmail) {
+		List<Document> allDocuments = documentService.getAllDocuments();
+		List<DocumentForm> availableDocuments = new ArrayList<DocumentForm>();
+		List<DocumentForm> selectedDocuments = new ArrayList<DocumentForm>();
+		// check each existing attachment, and use them to create the available and selected lists of DocumentForms
+		for (Document document: allDocuments) {
+			boolean documentSelected = false;
+			for (Document attachment: stockEmail.getAttachments()) {
+				if (document.getId().equals(attachment.getId())) {
+					documentSelected = true;
+					selectedDocuments.add(new DocumentForm(document));
+					break;
+				} 
+			}
+			if (!documentSelected) {
+				availableDocuments.add(new DocumentForm(document)); 
+			}
+		}
+		StockEmailForm sef = new StockEmailForm(stockEmail, availableDocuments, selectedDocuments);
+		return sef;
 	}
 }

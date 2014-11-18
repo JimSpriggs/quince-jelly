@@ -1,5 +1,7 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.email;
 
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Document;
+
 public class EmailAttachment {
 	String attachmentFileName;
 	String fullPathAndFileName;
@@ -8,6 +10,11 @@ public class EmailAttachment {
 		super();
 		this.attachmentFileName = attachmentFileName;
 		this.fullPathAndFileName = fullPathAndFileName;
+	}
+	public EmailAttachment(Document document) {
+		super();
+		this.attachmentFileName = document.getFilename();
+		this.fullPathAndFileName = "/VillageGreensMembers/documents/" + attachmentFileName;
 	}
 	public String getAttachmentFileName() {
 		return attachmentFileName;

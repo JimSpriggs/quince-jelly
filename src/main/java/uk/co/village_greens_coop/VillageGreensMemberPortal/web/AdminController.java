@@ -1,5 +1,8 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.web;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,8 +25,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import uk.co.village_greens_coop.VillageGreensMemberPortal.form.DocumentForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.MemberForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.SendStockEmailForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.StockEmailForm;
@@ -32,6 +37,7 @@ import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.StockEmail;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.MemberRows;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.service.DashboardService;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.service.DocumentService;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.service.EmailService;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.service.MemberAPIService;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.service.MemberService;
@@ -54,7 +60,10 @@ public class AdminController {
 	@Autowired
 	private EmailService emailService;
 	
-//    @InitBinder("memberForm")
+	@Autowired
+	private DocumentService documentService;
+
+	//    @InitBinder("memberForm")
 //    private void initBinder(WebDataBinder binder) {
 //    	// we want standard validation, plus also a special TelephoneFormValidator
 //    	binder.setValidator(new MemberFormValidator(new TelephoneFormValidator()));
@@ -314,7 +323,7 @@ public class AdminController {
     public String addEmail(
     		HttpServletRequest request, Model model) {
 
-   		StockEmailForm sef = new StockEmailForm();
+   		StockEmailForm sef = emailService.getStockEmailForm();
         model.addAttribute("stockEmailForm", sef);
         return "admin/email";
     }
@@ -327,7 +336,7 @@ public class AdminController {
 
     	StockEmail stockEmail = emailService.getStockEmailById(id);
     	if (stockEmail != null) {
-    		StockEmailForm sef = new StockEmailForm(stockEmail);
+    		StockEmailForm sef = emailService.getStockEmailForm(stockEmail);
         	model.addAttribute("stockEmailForm", sef);
         	request.getSession().setAttribute("stockEmailId", id);
         	
@@ -416,6 +425,67 @@ public class AdminController {
     		ra.addFlashAttribute("message", String.format("%s email queued successfully for %d member(s)", emailPurpose, numRequested));
     	}
     	return "redirect:emails";
+    }
+    
+    @RequestMapping(value = "documents", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String getDocumentsList(HttpServletRequest request, Model model) {
+    	List<DocumentForm> documentForms = documentService.getAllDocumentsAsForms();
+    	model.addAttribute("documents", documentForms);
+    	return "admin/documents";
+    }
+
+    @RequestMapping(value = "addDocument", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String addDocument(
+    		HttpServletRequest request, Model model) {
+
+   		DocumentForm df = new DocumentForm();
+        model.addAttribute("documentForm", df);
+        return "admin/document";
+    }
+
+    /**
+     * Upload single file using Spring Controller
+     */
+    @RequestMapping(value = "/document", method = RequestMethod.POST, consumes = { "multipart/form-data" })
+      public String uploadFileHandler(
+    		@RequestParam("description") String description,
+            @RequestParam("filename") MultipartFile file) {
+
+        if (!file.isEmpty()) {
+            try {
+                byte[] bytes = file.getBytes();
+ 
+                // Create the file on server
+                File serverFile = new File(
+                		"/VillageGreensMembers/documents/" + file.getOriginalFilename());
+                BufferedOutputStream stream = new BufferedOutputStream(
+                        new FileOutputStream(serverFile));
+                stream.write(bytes);
+                stream.close();
+ 
+                LOG.info("File uploaded: " + serverFile.getAbsolutePath());
+                
+                documentService.createDocument(file.getOriginalFilename(), description);
+ 
+            } catch (Exception e) {
+                LOG.error("Upload of {} failed", file.getName(), e);
+            }
+        } else {
+            LOG.warn("File upload not possible due to empty file");
+        }
+        return "redirect:documents";
+    }
+
+    @RequestMapping(value = "deleteDocument", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String deleteDocument(
+    		@RequestParam(value = "id") Long id,
+    		HttpServletRequest request, Model model) {
+
+    	documentService.deleteDocument(id);
+    	return "redirect:documents";
     }
     
 }

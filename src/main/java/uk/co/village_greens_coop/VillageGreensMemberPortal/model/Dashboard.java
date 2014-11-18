@@ -17,6 +17,7 @@ public class Dashboard implements java.io.Serializable {
 	private BigDecimal overduePayments = new BigDecimal("0.00");
 	private int overduePaymentsCount;
 	private int stockEmailCount;
+	private int documentCount;
 
 	public Dashboard() {
 	}
@@ -116,6 +117,13 @@ public class Dashboard implements java.io.Serializable {
 	public void setStockEmailCount(int stockEmailCount) {
 		this.stockEmailCount = stockEmailCount;
 	}
-	
+
+	public int getDocumentCount() {
+		return documentCount;
+	}
+
+	public void setDocumentCount(int documentCount) {
+		this.documentCount = documentCount;
+	}
 	
 }

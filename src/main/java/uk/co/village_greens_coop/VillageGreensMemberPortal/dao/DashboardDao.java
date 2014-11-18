@@ -109,4 +109,12 @@ public class DashboardDao {
 		BigInteger count = (BigInteger) q.getSingleResult();
 		dashboard.setStockEmailCount(count.intValue());
 	}
+
+	public void getDocumentCount(Dashboard dashboard) {
+		String countsQuery = 
+				"SELECT COUNT(*) FROM document d";
+		Query q = entityManager.createNativeQuery(countsQuery);
+		BigInteger count = (BigInteger) q.getSingleResult();
+		dashboard.setDocumentCount(count.intValue());
+	}
 }

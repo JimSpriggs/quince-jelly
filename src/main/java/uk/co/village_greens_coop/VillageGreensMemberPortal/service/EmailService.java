@@ -246,30 +246,36 @@ public class EmailService {
 		for (StockEmailRequest emailRequest: emailRequests) {
 			StockEmail stockEmail = emailRequest.getStockEmail();
 			Member member = emailRequest.getMember();
-			EmailDetail emailDetail = new EmailDetail();
-			emailDetail.setFromAddress("members@village-greens-coop.co.uk");
-			emailDetail.setFromDisplay("Village Greens Members");
-			emailDetail.setSubject(stockEmail.getEmailSubject());
-			emailDetail.setTemplate(populateMemberPlaceholders(stockEmail.getEmailBody(), member));
-			emailDetail.setToAddress(member.getEmail());
-			if (stockEmail.getAttachments() != null && stockEmail.getAttachments().size() > 0) {
-				EmailAttachment[] attachments = new EmailAttachment[stockEmail.getAttachments().size()];
-				int index = 0;
-				for (Document document: stockEmail.getAttachments()) {
-					EmailAttachment attachment = new EmailAttachment(document);
-					attachments[index] = attachment;
-					index++;
-				}
-				emailDetail.setAttachments(attachments);
-			}
-			sendEmail(emailDetail);
-			if (emailDetail.getError() != null) {
-				emailRequest.setError(emailDetail.getError());
+			if (member.getEmail() == null || member.getEmail().trim().equals("")) {
+				LOG.warn("Member [id: {}] has no email address - not sending stock email", member.getId());
+				emailRequest.setError("No email address found for member");
 			} else {
-				emailRequest.setSentTimestamp(new Date());
+				LOG.info("Sending stock email [id: {}] to member [id: {}]", stockEmail.getId(), member.getId());
+				EmailDetail emailDetail = new EmailDetail();
+				emailDetail.setFromAddress("members@village-greens-coop.co.uk");
+				emailDetail.setFromDisplay("Village Greens Members");
+				emailDetail.setSubject(stockEmail.getEmailSubject());
+				emailDetail.setTemplate(populateMemberPlaceholders(stockEmail.getEmailBody(), member));
+				emailDetail.setToAddress(member.getEmail());
+				if (stockEmail.getAttachments() != null && stockEmail.getAttachments().size() > 0) {
+					EmailAttachment[] attachments = new EmailAttachment[stockEmail.getAttachments().size()];
+					int index = 0;
+					for (Document document: stockEmail.getAttachments()) {
+						EmailAttachment attachment = new EmailAttachment(document);
+						attachments[index] = attachment;
+						index++;
+					}
+					emailDetail.setAttachments(attachments);
+				}
+				sendEmail(emailDetail);
+				if (emailDetail.getError() != null) {
+					emailRequest.setError(emailDetail.getError());
+				} else {
+					emailRequest.setSentTimestamp(new Date());
+				}
+				numSent++;
 			}
 			stockEmailRepository.save(stockEmail);
-			numSent++;
 		}
 		return numSent;
 	}

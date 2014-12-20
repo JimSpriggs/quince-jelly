@@ -3,7 +3,9 @@ package uk.co.village_greens_coop.VillageGreensMemberPortal.web;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.DocumentForm;
@@ -142,6 +146,37 @@ public class AdminController {
     			HttpServletRequest request) {
     	return memberAPIService.getMemberRows(memberStatus);
     }
+    
+    @RequestMapping(value = "downloadMembers", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+	protected ModelAndView handleRequestInternal(HttpServletRequest request,
+		HttpServletResponse response) throws Exception {
+ 
+		String output =
+			ServletRequestUtils.getStringParameter(request, "output");
+ 
+		//dummy data
+		Map<String,String> revenueData = new HashMap<String,String>();
+		revenueData.put("Jan-2010", "$100,000,000");
+		revenueData.put("Feb-2010", "$110,000,000");
+		revenueData.put("Mar-2010", "$130,000,000");
+		revenueData.put("Apr-2010", "$140,000,000");
+		revenueData.put("May-2010", "$200,000,000");
+ 
+		if(output ==null || "".equals(output)){
+			//return normal view
+			return new ModelAndView("RevenueSummary","revenueData",revenueData);
+ 
+		}else if("EXCEL".equals(output.toUpperCase())){
+			//return excel view
+			return new ModelAndView("ExcelRevenueSummary","revenueData",revenueData);
+ 
+		}else{
+			//return normal view
+			return new ModelAndView("RevenueSummary","revenueData",revenueData);
+ 
+		}	
+	}
     
     private void addMemberModelAttributes(String memberStatus, Model model) {
     	String returnUrl = "/admin/";

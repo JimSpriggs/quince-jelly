@@ -102,6 +102,14 @@ public class DashboardDao {
 		dashboard.setCertifiableMembers(count.intValue());
 	}
 
+	public void getCommitteeMembersCount(Dashboard dashboard) {
+		String countsQuery = 
+				"SELECT COUNT(*) FROM member m WHERE m.committee = true";
+		Query q = entityManager.createNativeQuery(countsQuery);
+		BigInteger count = (BigInteger) q.getSingleResult();
+		dashboard.setCommitteeMembers(count.intValue());
+	}
+
 	public void getStockEmailCount(Dashboard dashboard) {
 		String countsQuery = 
 				"SELECT COUNT(*) FROM stock_email se";

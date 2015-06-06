@@ -139,6 +139,15 @@ public class AdminController {
     	return "admin/nonFullMembers";
     }
     
+    @RequestMapping(value = "committeeMembers", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String getCommitteeMembers(HttpServletRequest request, Model model) {
+    	model.addAttribute("memberStatus", "COMMITTEE");
+    	request.getSession().setAttribute("memberStatus", "COMMITTEE");
+    	addMemberModelAttributes("COMMITTEE", model);
+    	return "admin/members";
+    }
+    
     @RequestMapping(value = "memberRows", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody MemberRows getMemberRows(
@@ -198,8 +207,11 @@ public class AdminController {
     		returnUrl += "unpaidMembers";
     		breadcrumbMembersDescription = "Unpaid" + breadcrumbMembersDescription;
     	} else if (memberStatus.equals("OVERDUE")) {
-    		returnUrl += "overdueMembers";
+    		returnUrl += "overduePayments";
     		breadcrumbMembersDescription = "Overdue" + breadcrumbMembersDescription;
+    	} else if (memberStatus.equals("COMMITTEE")) {
+    		returnUrl += "committeeMembers";
+    		breadcrumbMembersDescription = "Committe" + breadcrumbMembersDescription;
     	} else if (memberStatus.equals("NEW")) {
     		returnUrl += "addMember";
     		breadcrumbMembersDescription = "Add Member";
@@ -289,6 +301,8 @@ public class AdminController {
     			returnString = "partialMembers";
     		} else if (memberStatus.equals("UNPAID")) {
     			returnString = "unpaidMembers";
+    		} else if (memberStatus.equals("COMMITTEE")) {
+    			returnString = "committeeMembers";
     		}
     	}
     	

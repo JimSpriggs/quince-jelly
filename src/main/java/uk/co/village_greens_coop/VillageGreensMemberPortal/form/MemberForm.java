@@ -63,6 +63,8 @@ public class MemberForm {
 
 	private Boolean seis = Boolean.FALSE;
 
+	private Boolean committee = Boolean.FALSE;
+
 	private Date certificateGenerated;
 	
 	@Valid
@@ -96,6 +98,7 @@ public class MemberForm {
 		this.certificateGenerated = member.getCertificateGenerated();
 		this.rollCall = member.getRollCall();
 		this.seis = member.getSeis();
+		this.committee = member.getCommittee();
 		this.memberStatus = member.getMemberStatus();
 		Set<MemberTelephone> memberTelephones = member.getMemberTelephones();
 		for (MemberTelephone memberTelephone: memberTelephones) {
@@ -290,6 +293,14 @@ public class MemberForm {
 
 	public void setSeis(Boolean seis) {
 		this.seis = seis;
+	}
+
+	public Boolean getCommittee() {
+		return committee;
+	}
+
+	public void setCommittee(Boolean committee) {
+		this.committee = committee;
 	}
 
 	public List<TelephoneForm> getTelephones() {

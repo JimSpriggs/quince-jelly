@@ -32,6 +32,7 @@ public class MemberRow {
 	private BigDecimal amountOverdue;
 	private Boolean rollCall;
 	private Boolean seis;
+	private Boolean committee;
 	private String certificateGenerated;
 	private String certificateSent;
 	
@@ -57,6 +58,7 @@ public class MemberRow {
 		this.amountOverdue = new BigDecimal(0);
 		this.rollCall = member.getRollCall();
 		this.seis = member.getSeis();
+		this.committee  = member.getCommittee();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));
 		this.certificateGenerated = member.getCertificateGenerated() == null ? "" : sdf.format(member.getCertificateGenerated());
@@ -123,6 +125,10 @@ public class MemberRow {
 
 	public Boolean getSeis() {
 		return seis;
+	}
+
+	public Boolean getCommittee() {
+		return committee;
 	}
 
 	public String getCertificateGenerated() {

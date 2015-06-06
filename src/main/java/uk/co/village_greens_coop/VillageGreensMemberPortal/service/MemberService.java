@@ -107,6 +107,10 @@ public class MemberService {
 		return memberRepository.getPartPaidMemberRows();
 	}
 	
+	public List<MemberRow> getCommitteeMembers() {
+		return memberRepository.getCommitteeMemberRows();
+	}
+	
 	@Transactional
 	public void markCertificateGenerated(Member member) {
 		member.setCertificateGenerated(new Date());
@@ -197,6 +201,7 @@ public class MemberService {
     	member.setPostcode(mf.getPostcode());
     	member.setRollCall(mf.getRollCall());
     	member.setSeis(mf.getSeis());
+    	member.setCommittee(mf.getCommittee());
     	member.setTotalInvestment(new BigDecimal(mf.getTotalInvestment()));
     	if (mf.getTelephones() != null) {
 	    	for (TelephoneForm tf : mf.getTelephones()) {

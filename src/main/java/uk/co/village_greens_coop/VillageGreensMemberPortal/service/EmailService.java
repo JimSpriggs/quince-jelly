@@ -209,7 +209,7 @@ public class EmailService {
 				membersToSend.addAll(membersList);
 			}
 			if (sendStockEmailForm.getCommitteeMembers()) {
-				List<Member> membersList = memberRepository.getCommitteeMembers();
+				List<Member> membersList = memberRepository.getCommitteeAndSysAdminMembers();
 				membersToSend.addAll(membersList);
 			}
 		}

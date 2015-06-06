@@ -27,6 +27,8 @@ public class MemberAPIService {
 			memberRows = memberService.getUnpaidMembers();
 		} else if ("PART".equals(memberStatus)) {
 			memberRows = memberService.getPartPaidMembers();
+		} else if ("COMMITTEE".equals(memberStatus)) {
+			memberRows = memberService.getCommitteeMembers();
 		} else {
 			memberRows = memberService.getByMemberStatus(memberStatus);
 		}

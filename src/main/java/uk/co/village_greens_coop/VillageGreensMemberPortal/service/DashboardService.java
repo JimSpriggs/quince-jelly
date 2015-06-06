@@ -23,6 +23,7 @@ public class DashboardService {
 		dashboardRepository.getTotalPledges(dashboard);
 		dashboardRepository.getOverdueMembersCount(dashboard);
 		dashboardRepository.getCertifiableMembersCount(dashboard);
+		dashboardRepository.getCommitteeMembersCount(dashboard);
 		dashboardRepository.getStockEmailCount(dashboard);
 		dashboardRepository.getDocumentCount(dashboard);
 		return dashboard;

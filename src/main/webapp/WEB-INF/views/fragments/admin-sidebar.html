@@ -94,6 +94,13 @@
 										th:text="${dashboard.overdueMembers}">400</small>
 								</a>
 							</li>
+							<li th:class="${activeSubmenu == 'COMMITTEE'} ? 'active'">
+								<a th:href="@{/admin/committeeMembers}" href="committeeMembers.html">
+									<i class="fa fa-angle-double-right"></i><span>Committee Members</span>
+									<small class="badge pull-right alert-danger"
+										th:text="${dashboard.committeeMembers}">400</small>
+								</a>
+							</li>
 						</ul>
 		            </li>
 		            <li class="active" 

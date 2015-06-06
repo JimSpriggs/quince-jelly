@@ -61,6 +61,11 @@ public class MemberDao {
 				.getResultList();
 	}
 
+	public List<Member> getCommitteeAndSysAdminMembers() {
+		return (List<Member>)entityManager.createNamedQuery(Member.FIND_COMMITTEE_AND_SYSADMIN_MEMBERS, Member.class)
+				.getResultList();
+	}
+
 	@SuppressWarnings("unchecked")
 	public List<Member> getAllEmailable() {
 		return (List<Member>)entityManager.createQuery("from Member m where email IS NOT NULL m order by m.id")
@@ -203,6 +208,14 @@ public class MemberDao {
 		
 		// get a list of members who could be overdue
 		List<Member> members = getPartPaidMembers();
+
+		return getMemberRowsWithRelatedPaymentInfo(members);
+	}
+	
+	public List<MemberRow> getCommitteeMemberRows() {
+		
+		// get a list of members who could be overdue
+		List<Member> members = getCommitteeMembers();
 
 		return getMemberRowsWithRelatedPaymentInfo(members);
 	}

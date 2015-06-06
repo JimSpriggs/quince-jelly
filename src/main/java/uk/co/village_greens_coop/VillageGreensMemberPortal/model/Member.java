@@ -27,14 +27,17 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 	@NamedQuery(name = Member.FIND_BY_STATUS, 
 		query = "select DISTINCT m from Member m where member_status_cd = :memberStatus order by m.memberno"),
 //		query = "select DISTINCT m from Member m LEFT JOIN FETCH m.memberTelephones mt where member_status_cd = :memberStatus order by m.memberno, m.id, mt.id"),
+	@NamedQuery(name = Member.FIND_COMMITTEE_AND_SYSADMIN_MEMBERS, 
+		query = "select DISTINCT m from Member m where m.memberno = 95 OR m.committee = true"),
 	@NamedQuery(name = Member.FIND_COMMITTEE_MEMBERS, 
-		query = "select DISTINCT m from Member m where memberno IN (1, 2, 3, 4, 5, 6, 7) order by m.memberno")
+		query = "select DISTINCT m from Member m where m.committee = true")
 })
 public class Member implements java.io.Serializable {
 
 	public static final String FIND_BY_SURNAME = "Member.findBySurname";
 	public static final String FIND_BY_STATUS = "Member.findByMemberStatus";
 	public static final String FIND_COMMITTEE_MEMBERS = "Member.findCommitteeMembers";
+	public static final String FIND_COMMITTEE_AND_SYSADMIN_MEMBERS = "Member.findCommitteeAndSysAdminMembers";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,6 +76,8 @@ public class Member implements java.io.Serializable {
 	private Date certificateGenerated;
 	@Column
 	private Date certificateSent;
+	@Column
+	private Boolean committee;
 	@Column(name = "member_status_cd")
 	private String memberStatus;
 	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="member")
@@ -257,6 +262,14 @@ public class Member implements java.io.Serializable {
 
 	public void setSeis(Boolean seis) {
 		this.seis = seis;
+	}
+	
+	public Boolean getCommittee() {
+		return committee;
+	}
+
+	public void setCommittee(Boolean committee) {
+		this.committee = committee;
 	}
 	
 	public Date getCertificateSent() {

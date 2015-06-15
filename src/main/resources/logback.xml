@@ -13,7 +13,7 @@
     	<file>/VillageGreensMembers/logs/vgmembers.daily.log</file>
     	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 	      	<!-- daily rollover -->
-	      	<fileNamePattern>vgmembers.daily.%d{yyyy-MM-dd}.log</fileNamePattern>
+	      	<fileNamePattern>/VillageGreensMembers/logs/vgmembers.daily.%d{yyyy-MM-dd}.log</fileNamePattern>
 	
 	      	<!-- keep 90 days' worth of history -->
 	      	<maxHistory>90</maxHistory>

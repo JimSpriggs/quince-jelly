@@ -1,8 +1,0 @@
-dataSource.driverClassName=org.postgresql.Driver
-dataSource.url=jdbc:postgresql://localhost:5432/vgdev
-dataSource.username=vguser
-dataSource.password=vgpassword
-
-hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-hibernate.hbm2ddl.auto=verify
-hibernate.show_sql=true

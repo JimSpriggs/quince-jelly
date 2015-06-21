@@ -70,8 +70,8 @@ public class SignUpService {
 							
 		EmailDetail emailDetail = new EmailDetail(
 									account.getEmail(), 
-									"info@village-greens-coop.co.uk", 
-									"Village Greens Info",
+									"members@village-greens-coop.co.uk", 
+									"Village Greens Members",
 									"Your Village Greens Account needs to be activated",
 									emailBody);
 
@@ -123,8 +123,8 @@ public class SignUpService {
 								
 			EmailDetail emailDetail = new EmailDetail(
 										account.getEmail(), 
-										"info@village-greens-coop.co.uk", 
-										"Village Greens Info",
+										"members@village-greens-coop.co.uk", 
+										"Village Greens Members",
 										"Your Village Greens password",
 										emailBody);
 

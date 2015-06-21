@@ -6,4 +6,16 @@
 	<error-page>
     	<location>/generalError</location>
 	</error-page>
+	<resource-ref>
+	  <description>Village Greens Members Database</description>
+	  <res-ref-name>jdbc/vgdb</res-ref-name>
+	  <res-type>javax.sql.DataSource</res-type>
+	  <res-auth>Container</res-auth>
+	</resource-ref>
+	<resource-ref>
+	  <description>Village Greens SMTP (Outbound Email) Server</description>
+	  <res-ref-name>mail/vgsmtp</res-ref-name>
+	  <res-type>javax.mail.Session</res-type>
+	  <res-auth>Container</res-auth>
+	</resource-ref>
 </web-app>

@@ -1,0 +1,5 @@
+<Context>
+<!-- this link is essential to map from the application context to the server resources -->
+  <ResourceLink global="jdbc/vgdb" name="jdbc/vgdb" auth="Container" type="javax.sql.DataSource"/>
+  <ResourceLink global="mail/vgMembersSmtp" name="mail/vgMembersSmtp" auth="Container" type="javax.mail.Session"/>
+</Context>

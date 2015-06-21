@@ -46,16 +46,6 @@
 			<location>/Users/john/Google Drive/Dev/Village Greens/doc/db/patch001.0/dml</location>
 		</link>
 		<link>
-			<name>src/main/resources/mail.properties.PROD</name>
-			<type>1</type>
-			<location>/Users/john/Google Drive/accounts/jhurst1970@gmail.com/Dev/Village Greens/properties/mail.properties</location>
-		</link>
-		<link>
-			<name>src/main/resources/persistence.properties.PROD</name>
-			<type>1</type>
-			<location>/Users/john/Google Drive/accounts/jhurst1970@gmail.com/Dev/Village Greens/properties/persistence.properties.PROD</location>
-		</link>
-		<link>
 			<name>doc/db/patch001.0/ddl/db001.9.ddl.sql</name>
 			<type>1</type>
 			<location>/Users/john/Google Drive/Dev/Village Greens/doc/db/patch001.0/ddl/db001.9.ddl.sql</location>

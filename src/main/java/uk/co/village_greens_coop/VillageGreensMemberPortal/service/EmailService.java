@@ -248,14 +248,16 @@ public class EmailService {
 	
 	private String populateMemberPlaceholders(String bodyText, Member member) {
 		String retval = bodyText;
-		retval = retval.replaceAll("\\$\\{informalSalutation\\}", member.getSalutation(false));
-		retval = retval.replaceAll("\\$\\{untitledInformalSalutation\\}", member.getUntitledSalutation(false));
-		retval = retval.replaceAll("\\$\\{formalSalutation\\}", member.getSalutation(true));
-		retval = retval.replaceAll("\\$\\{untitledformalSalutation\\}", member.getUntitledSalutation(true));
-		retval = retval.replaceAll("\\$\\{salutation\\}", member.getSalutation(false));
-		retval = retval.replaceAll("\\$\\{holding\\}", new DecimalFormat("###,###").format(member.getTotalInvestment()));
-		retval = retval.replaceAll("\\$\\{numshares\\}", "£" + new DecimalFormat("###,###").format(member.getTotalInvestment()));
-		retval = retval.replaceAll("\\$\\{memberno\\}", (member.getMemberno() != null ? member.getMemberno().toString() : "n/a"));
+		if (retval != null) {
+			retval = retval.replaceAll("\\$\\{informalSalutation\\}", member.getSalutation(false));
+			retval = retval.replaceAll("\\$\\{untitledInformalSalutation\\}", member.getUntitledSalutation(false));
+			retval = retval.replaceAll("\\$\\{formalSalutation\\}", member.getSalutation(true));
+			retval = retval.replaceAll("\\$\\{untitledformalSalutation\\}", member.getUntitledSalutation(true));
+			retval = retval.replaceAll("\\$\\{salutation\\}", member.getSalutation(false));
+			retval = retval.replaceAll("\\$\\{holding\\}", new DecimalFormat("###,###").format(member.getTotalInvestment()));
+			retval = retval.replaceAll("\\$\\{numshares\\}", "£" + new DecimalFormat("###,###").format(member.getTotalInvestment()));
+			retval = retval.replaceAll("\\$\\{memberno\\}", (member.getMemberno() != null ? member.getMemberno().toString() : "n/a"));
+		}
 		return retval;
 	}
 	

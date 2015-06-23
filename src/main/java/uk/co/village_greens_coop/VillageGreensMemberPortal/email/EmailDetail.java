@@ -8,6 +8,7 @@ public class EmailDetail {
 	private String fromDisplay;
 	private String subject;
 	private String template;
+	private String html;
 	private EmailAttachment[] attachments;
 	private String error;
 
@@ -80,6 +81,12 @@ public class EmailDetail {
 	}
 	public void setError(String error) {
 		this.error = error;
+	}
+	public String getHtml() {
+		return html;
+	}
+	public void setHtml(String html) {
+		this.html = html;
 	}
 
 	@Override

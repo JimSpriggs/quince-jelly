@@ -25,7 +25,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Table(name = "stock_email")
 @NamedQueries({
 	@NamedQuery(name = StockEmail.FIND_BY_PURPOSE, query = "select e from StockEmail e where e.emailPurpose = :emailPurpose"),
-	@NamedQuery(name = StockEmail.FIND_BY_ID, query = "select e from StockEmail e where e.id = :id")
+	@NamedQuery(name = StockEmail.FIND_BY_ID, query = "select distinct e from StockEmail e left join fetch e.attachments where e.id = :id")
 })
 public class StockEmail implements java.io.Serializable {
 
@@ -41,9 +41,11 @@ public class StockEmail implements java.io.Serializable {
 	private String emailPurpose;
 	@Column(name = "email_body_tx")
 	private String emailBody;
+	@Column(name = "email_html_body_tx")
+	private String emailHtmlBody;
 	@Column(name = "email_subject_tx")
 	private String emailSubject;
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "stock_email_attachment", 
 				joinColumns = { 
 					@JoinColumn(
@@ -89,6 +91,14 @@ public class StockEmail implements java.io.Serializable {
 		this.emailBody = emailBody;
 	}
 
+	public String getEmailHtmlBody() {
+		return emailHtmlBody;
+	}
+
+	public void setEmailHtmlBody(String emailHtmlBody) {
+		this.emailHtmlBody = emailHtmlBody;
+	}
+
 	public String getEmailSubject() {
 		return emailSubject;
 	}
@@ -118,6 +128,7 @@ public class StockEmail implements java.io.Serializable {
         return new ToStringBuilder(this)
         		.append("emailPurpose", emailPurpose)
                 .append("emailBody", emailBody)
+                .append("emailHtmlBody", emailHtmlBody)
                 .append("emailSubject", emailSubject).toString();
     }
 }

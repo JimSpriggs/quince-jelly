@@ -55,9 +55,11 @@ public class StockEmailDao {
 
 	public StockEmail findById(Long id) {
 		try {
-			return entityManager.createNamedQuery(StockEmail.FIND_BY_ID, StockEmail.class)
+			StockEmail email = entityManager.createNamedQuery(StockEmail.FIND_BY_ID, StockEmail.class)
 					.setParameter("id", id)
 					.getSingleResult();
+			email.getAttachments();
+			return email;
 		} catch (PersistenceException e) {
 			LOG.error("Exception finding StockEmail with id {}", id, e);
 			return null;

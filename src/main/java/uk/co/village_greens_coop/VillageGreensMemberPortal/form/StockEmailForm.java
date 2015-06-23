@@ -24,6 +24,8 @@ public class StockEmailForm {
 	@NotEmpty
 	private String emailBody;
 
+	private String emailHtmlBody;
+
 	@Valid
 	private List<DocumentForm> availableDocuments = new ArrayList<DocumentForm>();
 	
@@ -44,6 +46,7 @@ public class StockEmailForm {
 		updateState = "U";
 		emailPurpose = stockEmail.getEmailPurpose();
 		emailBody = stockEmail.getEmailBody();
+		emailHtmlBody = stockEmail.getEmailHtmlBody();
 		emailSubject = stockEmail.getEmailSubject();
 		this.availableDocuments = availableDocuments;
 		this.selectedDocuments = selectedDocuments;
@@ -87,6 +90,14 @@ public class StockEmailForm {
 
 	public void setEmailBody(String emailBody) {
 		this.emailBody = emailBody;
+	}
+
+	public String getEmailHtmlBody() {
+		return emailHtmlBody;
+	}
+
+	public void setEmailHtmlBody(String emailHtmlBody) {
+		this.emailHtmlBody = emailHtmlBody;
 	}
 
 	public List<DocumentForm> getAvailableDocuments() {

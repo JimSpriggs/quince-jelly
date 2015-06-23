@@ -10,8 +10,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.mail.BodyPart;
 import javax.mail.MessagingException;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +96,24 @@ public class EmailService {
 			message.setFrom(emailDetail.getFromAddress(), emailDetail.getFromDisplay());
 			message.setTo(emailDetail.getToAddress());
 			message.setSubject(emailDetail.getSubject());
-			message.setText(emailDetail.getTemplate());
+			
+			if (emailDetail.getHtml() != null &&
+					!emailDetail.getHtml().equals("")) {
+				MimeMultipart mp = new MimeMultipart("alternative");
+				mimeMessage.setContent(mp);
+				// create the plain text mime part
+				BodyPart plainText = new MimeBodyPart();
+				plainText.setText(emailDetail.getTemplate());
+				mp.addBodyPart(plainText);
+				// create the html mime part
+				BodyPart html = new MimeBodyPart();
+				html.setContent(emailDetail.getHtml(), "text/html");
+				mp.addBodyPart(html);
+			} else {
+				// just plain text, set it on the helper
+				message.setText(emailDetail.getTemplate());
+			}
+			
 			if (emailDetail.hasAttachments()) {
 				for (EmailAttachment attachment : emailDetail.getAttachments()) {
 					message.addAttachment(attachment.getAttachmentFileName(), new File(attachment.getFullPathAndFileName()));
@@ -149,6 +169,7 @@ public class EmailService {
 		stockEmail.setEmailPurpose(sef.getEmailPurpose());
 		stockEmail.setEmailSubject(sef.getEmailSubject());
 		stockEmail.setEmailBody(sef.getEmailBody());
+		stockEmail.setEmailHtmlBody(sef.getEmailHtmlBody());
 		
 		// first work out which current documents need to be removed
 		for (Iterator<Document> iterator = stockEmail.getAttachments().iterator(); iterator.hasNext();) {
@@ -255,6 +276,7 @@ public class EmailService {
 				emailDetail.setFromDisplay("Village Greens Members");
 				emailDetail.setSubject(stockEmail.getEmailSubject());
 				emailDetail.setTemplate(populateMemberPlaceholders(stockEmail.getEmailBody(), member));
+				emailDetail.setHtml(populateMemberPlaceholders(stockEmail.getEmailHtmlBody(), member));
 				emailDetail.setToAddress(member.getEmail());
 				if (stockEmail.getAttachments() != null && stockEmail.getAttachments().size() > 0) {
 					EmailAttachment[] attachments = new EmailAttachment[stockEmail.getAttachments().size()];

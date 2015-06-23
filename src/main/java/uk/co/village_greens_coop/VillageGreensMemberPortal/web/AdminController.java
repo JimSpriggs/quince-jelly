@@ -3,6 +3,7 @@ package uk.co.village_greens_coop.VillageGreensMemberPortal.web;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -362,8 +363,15 @@ public class AdminController {
     @RequestMapping(value = "emails", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     public String getEmailsList(HttpServletRequest request, Model model) {
+    	LOG.info("WAYMARK - calling getAllEmails();...");
     	List<StockEmailForm> emailForms = emailService.getAllEmails();
+//    	List<StockEmailForm> cutDownForms = new ArrayList<StockEmailForm>();
+//    	cutDownForms.add(emailForms.get(0));
+//    	cutDownForms.add(emailForms.get(1));
+    	LOG.info("WAYMARK - called getAllEmails();...");
+    	LOG.info("WAYMARK - adding emailForms to model...");
     	model.addAttribute("emails", emailForms);
+    	LOG.info("WAYMARK - added emailForms to model");
     	return "admin/emails";
     }
 

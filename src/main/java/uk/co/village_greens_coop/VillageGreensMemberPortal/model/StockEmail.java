@@ -1,5 +1,6 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.model;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
@@ -45,6 +46,8 @@ public class StockEmail implements java.io.Serializable {
 	private String emailHtmlBody;
 	@Column(name = "email_subject_tx")
 	private String emailSubject;
+	@Column(name = "creation_ts")
+	private Date creationTimestamp;
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "stock_email_attachment", 
 				joinColumns = { 
@@ -65,6 +68,7 @@ public class StockEmail implements java.io.Serializable {
 	private Set<Document> attachments = new TreeSet<Document>();
 	
 	public StockEmail() {
+		creationTimestamp = new Date();
 	}
 	
 	public Long getId() {
@@ -107,6 +111,14 @@ public class StockEmail implements java.io.Serializable {
 		this.emailSubject = emailSubject;
 	}
 
+	public Date getCreationTimestamp() {
+		return creationTimestamp;
+	}
+
+	public void setCreationTimestamp(Date creationTimestamp) {
+		this.creationTimestamp = creationTimestamp;
+	}
+
 	public Set<Document> getAttachments() {
 		return attachments;
 	}
@@ -129,6 +141,7 @@ public class StockEmail implements java.io.Serializable {
         		.append("emailPurpose", emailPurpose)
                 .append("emailBody", emailBody)
                 .append("emailHtmlBody", emailHtmlBody)
-                .append("emailSubject", emailSubject).toString();
+                .append("emailSubject", emailSubject)
+                .append("creationTimestamp", creationTimestamp).toString();
     }
 }

@@ -38,6 +38,7 @@ import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Document;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.StockEmail;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.StockEmailRequest;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.StockEmailRow;
 
 @Service
 public class EmailService {
@@ -85,7 +86,17 @@ public class EmailService {
 		}
 		return emailForms;
 	}
-	
+
+	@Transactional(readOnly = true)
+	public List<StockEmailRow> getAllStockEmailRows() {
+		List<StockEmail> emails = stockEmailRepository.getAll();
+		List<StockEmailRow> rows = new ArrayList<StockEmailRow>();
+		for (StockEmail email: emails) {
+			StockEmailRow row = new StockEmailRow(email);
+			rows.add(row);
+		}
+		return rows;
+	}
 	@Async
 	public void sendEmail(EmailDetail emailDetail) {
 		LOG.info("Sending email ", emailDetail.toString());

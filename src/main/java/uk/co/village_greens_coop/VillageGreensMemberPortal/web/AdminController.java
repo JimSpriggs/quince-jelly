@@ -3,7 +3,6 @@ package uk.co.village_greens_coop.VillageGreensMemberPortal.web;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,9 +39,13 @@ import uk.co.village_greens_coop.VillageGreensMemberPortal.form.StockEmailForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Dashboard;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.StockEmail;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.DocumentRows;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.MemberRows;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.StockEmailRows;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.service.DashboardService;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.service.DocumentApiService;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.service.DocumentService;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.service.EmailApiService;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.service.EmailService;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.service.MemberAPIService;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.service.MemberService;
@@ -66,7 +69,13 @@ public class AdminController {
 	private EmailService emailService;
 	
 	@Autowired
+	private EmailApiService emailApiService;
+	
+	@Autowired
 	private DocumentService documentService;
+
+	@Autowired
+	private DocumentApiService documentApiService;
 
 	//    @InitBinder("memberForm")
 //    private void initBinder(WebDataBinder binder) {
@@ -375,6 +384,12 @@ public class AdminController {
     	return "admin/emails";
     }
 
+    @RequestMapping(value = "emailRows", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public @ResponseBody StockEmailRows getStockEmailRows(HttpServletRequest request) {
+    	return emailApiService.getStockEmails();
+    }
+    
     @RequestMapping(value = "addEmail", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     public String addEmail(
@@ -492,6 +507,12 @@ public class AdminController {
     	return "admin/documents";
     }
 
+    @RequestMapping(value = "documentRows", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public @ResponseBody DocumentRows getDocumentRows(HttpServletRequest request) {
+    	return documentApiService.getAllDocumentRows();
+    }
+    
     @RequestMapping(value = "addDocument", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     public String addDocument(

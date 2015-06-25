@@ -124,7 +124,13 @@
 	</div> <!-- box -->
 <div class="pull-left"> 
 <button type="submit" id="saveButton" class="btn btn-lg btn-primary">Save</button>
+&nbsp;
 <button type="button" id="cancelButton" class="btn btn-lg btn-default">Cancel</button>
+</div>
+<div class="pull-right" th:if="${stockEmailForm.updateState != 'N' and stockEmailForm.id != null}">
+<button type="button" id="sendButton" class="btn btn-lg btn-info"><i class="fa fa-envelope"></i> Send...</button>
+&nbsp;
+<button type="button" id="deleteButton" class="btn btn-lg btn-danger"><i class="fa fa-times-circle"></i> Delete</button>
 </div>
 </form>
 <!-- form end -->
@@ -193,6 +199,16 @@ $(document).ready(function() {
     	});		
 		var newDiv = $(newDivHtml);
 		$("#documentDiv").append(newDiv);
+    });
+
+    $('#sendButton').click(function() {
+	    var sendEmailUrl = /*[[@{/admin/sendEmail}]]*/ '/admin/sendEmail';
+    	window.location = sendEmailUrl + '?id=' + /*[[${stockEmailForm.id}]]*/ 0;
+    });
+
+    $('#deleteButton').click(function() {
+	    var deleteEmailUrl = /*[[@{/admin/deleteEmail}]]*/ '/admin/deleteEmail';
+    	window.location = deleteEmailUrl + '?id=' + /*[[${stockEmailForm.id}]]*/ 0;
     });
 });
 /*]]>*/

@@ -32,12 +32,55 @@
 	
 	        <!-- Main content -->
 	        <section class="content">
+				<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				    <div class="modal-dialog">
+				        <div class="modal-content">
+				            <div class="modal-header">
+			                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			                    <h4 class="modal-title" id="myModalLabel">Confirm Delete</h4>
+				            </div>
+				            <div class="modal-body">
+			                    <p>Are you sure you wish to delete this file?</p>
+				            </div>
+				            <div class="modal-footer">
+				                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				                <a class="btn btn-danger btn-ok">Delete</a>
+				            </div>
+				        </div>
+				    </div>
+				</div>	        
 	        	<div th:unless="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
 	        		<p class="lead">
 	        			For full access to Member Documents and other administrator functions, <a href="mailto:john@village-greens-coop.co.uk">contact the system administrator</a>.
 	        		</p>
 	        	</div>
-	        	<div th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+	        	<div class="row" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+					<div class="col-xs-12">
+						<div class="box">
+							<div class="box-header">
+								<h3 class="box-title">Documents</h3>                                    
+							</div><!-- /.box-header -->
+							<div class="box-body table-responsive">
+								<table id="documentsTable" class="table table-bordered table-hover">
+									<thead>
+										<tr>
+											<th>CreatedMillis</th>
+											<th>Created</th>
+											<th>Filename</th>
+											<th>Description</th>
+											<th>Action</th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+							</div>
+						</div><!-- ./box -->
+					</div><!-- col-xs-12 -->
+				</div><!-- ./row -->
+	        	
+	        	
+<!-- 	        	<div th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
 				    <th:block th:if="${message != null}">
 				        <div th:replace="fragments/alert :: alert (type='success', message='__${message}__')">Alert</div>
 				    </th:block>
@@ -76,16 +119,16 @@
                             </span>
 			            </div>
 				     </div>
- 			         <div class="row">
- 			         	<div class="col-xs-4">
-							<button 
-								id="addDocumentBtn"
-								class="btn btn-default btn-md addDocument" type="button">Add Document
-							</button>
-						</div>
-			         </div>
-		        </div>
-	        </section><!-- /.content -->
+-->				    
+				<div class="row">
+		         	<div class="col-xs-4">
+						<button 
+							id="addDocumentBtn"
+							class="btn btn-primary btn-lg addDocument" type="button">Upload New Document...</button>
+					</div>
+				</div><!-- ./row -->
+				
+ 	        </section><!-- /.content -->
 	    </aside><!-- /.right-side -->
 	</div><!-- ./wrapper -->
 
@@ -112,12 +155,62 @@ $(document).ready(function() {
     	window.location = /*[[@{/admin/addDocument}]]*/ '/admin/addDocument';
     });
 	
-	$('.deleteDocument').click(function(e) {
-		e.preventDefault();
+	var documentsTable = $('#documentsTable').dataTable( {
+	    "stateSave": true,
+		"ajax": {
+	    	"url": "documentRows",
+	    	"dataSrc": "documentRows",
+	    	"type": "GET"
+	    },
+	    "order": [[ 0, "desc" ]],
+	    "columns": [
+			{ "data": "creationTimestampMillis" },
+	        { "data": "creationTimestamp" },
+            { "data": "filename" },
+	        { "data": "description" },
+	        { "data": "id" }
+	    ],
+	    "columnDefs": 
+	    [ 
+	      {
+	    	  "targets": 0,
+	    	  "visible": false,
+	    	  "searchable": false
+	      },
+	      {
+	    	  "targets": 1,
+	    	  "iDataSort": 0
+	      },
+	      {
+	    	  "targets": -1,
+	    	  "render": function (data) {
+	    		  var url = /*[[@{/admin/deleteDocument}]]*/ '/admin/deleteDocument';
+	    		  return '<button id="deleteDocumentBtn_' + data 
+	    		  	+ '" class="btn btn-sm btn-danger" '
+	    		  	+ 'data-href="' + url + '?id=' + data + '" '
+	    		  	+ 'data-toggle="modal" data-target="#confirm-delete">'
+	    		  	+ '<i class="fa fa-times-circle"></i> Delete</button>';
+	    	  }
+	    	  
+	      }
+	    ]
+	});
+	
+/* 	$("#documentsTable tbody").on("click", "td button", function() {
+//		var rowdata = documentsTable.fnGetData( this );
+
 		// id will be deleteDocumentBtn_XXX
 		var documentId = this.id.slice(18);
 	    var deleteDocumentUrl = /*[[@{/admin/deleteDocument}]]*/ '/admin/deleteDocument';
-    	window.location = deleteDocumentUrl + '?id=' + documentId;
+	    deleteDocumentUrl += '?id=' + documentId;
+//    	window.location = deleteDocumentUrl + '?id=' + documentId;
+
+	    console.log('Clicked delete button: ' + deleteDocumentUrl);
+	});
+	
+ */
+ 	$('#confirm-delete').on('show.bs.modal', function(e) {
+	    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
 	});
 });
 /*]]>*/

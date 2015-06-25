@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.DocumentDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.DocumentForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Document;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.DocumentRow;
 
 @Service
 public class DocumentService {
@@ -33,6 +34,17 @@ public class DocumentService {
 		return documents;
 	}
 
+	@Transactional(readOnly = true)
+	public List<DocumentRow> getAllDocumentRows() {
+		List<Document> docs = documentRepository.getAll();
+		List<DocumentRow> rows = new ArrayList<DocumentRow>();
+		for (Document doc: docs) {
+			DocumentRow row = new DocumentRow(doc);
+			rows.add(row);
+		}
+		return rows;
+	}
+	
 	@Transactional(readOnly = true)
 	public List<DocumentForm> getAllDocumentsAsForms() {
 		List<DocumentForm> docForms = new ArrayList<DocumentForm>();

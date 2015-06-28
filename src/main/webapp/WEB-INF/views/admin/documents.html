@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title th:text="#{coop.title} + ' - ' + #{signin.title}">Member Management</title>
+    <title>Member Documents</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link href="../favicon.ico" rel="shortcut icon" />
     <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
@@ -55,6 +55,9 @@
 	        		</p>
 	        	</div>
 	        	<div class="row" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+				    <th:block th:if="${message != null}">
+				        <div th:replace="fragments/alert :: alert (type='success', message='__${message}__')">Alert</div>
+				    </th:block>
 					<div class="col-xs-12">
 						<div class="box">
 							<div class="box-header">
@@ -183,11 +186,12 @@ $(document).ready(function() {
 	      },
 	      {
 	    	  "targets": -1,
-	    	  "render": function (data) {
+	    	  "render": function (data, type, full, meta) {
 	    		  var url = /*[[@{/admin/deleteDocument}]]*/ '/admin/deleteDocument';
 	    		  return '<button id="deleteDocumentBtn_' + data 
 	    		  	+ '" class="btn btn-sm btn-danger" '
 	    		  	+ 'data-href="' + url + '?id=' + data + '" '
+	    		  	+ 'data-docdesc="' + full.description + '" '
 	    		  	+ 'data-toggle="modal" data-target="#confirm-delete">'
 	    		  	+ '<i class="fa fa-times-circle"></i> Delete</button>';
 	    	  }
@@ -210,6 +214,7 @@ $(document).ready(function() {
 	
  */
  	$('#confirm-delete').on('show.bs.modal', function(e) {
+ 		$(this).find('.modal-title').text('Confirm delete of ' + $(e.relatedTarget).data('docdesc'));
 	    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
 	});
 });

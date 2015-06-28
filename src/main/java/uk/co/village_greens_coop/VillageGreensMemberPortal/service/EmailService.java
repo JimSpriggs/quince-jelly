@@ -203,9 +203,10 @@ public class EmailService {
 	}
 	
 	@Transactional
-	public void deleteStockEmail(Long id) {
+	public String deleteStockEmail(Long id) {
 		StockEmail stockEmail = stockEmailRepository.findById(id);
 		stockEmailRepository.delete(stockEmail);
+		return stockEmail.getEmailPurpose();
 	}
 
 	@Transactional

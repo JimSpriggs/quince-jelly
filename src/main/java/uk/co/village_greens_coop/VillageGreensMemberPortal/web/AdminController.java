@@ -37,6 +37,7 @@ import uk.co.village_greens_coop.VillageGreensMemberPortal.form.MemberForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.SendStockEmailForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.StockEmailForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Dashboard;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Document;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.StockEmail;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.DocumentRows;
@@ -423,9 +424,12 @@ public class AdminController {
     @ResponseStatus(value = HttpStatus.OK)
     public String deleteStockEmail(
     		@RequestParam(value = "id") Long id,
-    		HttpServletRequest request, Model model) {
+    		HttpServletRequest request, 
+    		RedirectAttributes ra, 
+    		Model model) {
 
-    	emailService.deleteStockEmail(id);
+    	String emailPurpose = emailService.deleteStockEmail(id);
+    	ra.addFlashAttribute("message", String.format("%s email deleted successfully", emailPurpose));
     	return "redirect:emails";
     }
     
@@ -560,9 +564,13 @@ public class AdminController {
     @ResponseStatus(value = HttpStatus.OK)
     public String deleteDocument(
     		@RequestParam(value = "id") Long id,
+    		RedirectAttributes ra,
     		HttpServletRequest request, Model model) {
 
-    	documentService.deleteDocument(id);
+    	Document doc = documentService.deleteDocument(id);
+    	String documentDescription = doc.getDescription();
+    	ra.addFlashAttribute("message", String.format("%s deleted successfully", documentDescription));
+
     	return "redirect:documents";
     }
     

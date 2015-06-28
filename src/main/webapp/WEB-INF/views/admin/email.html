@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title th:text="#{coop.title} + ' - ' + #{signin.title}">Edit Email</title>
+    <title>Edit Email</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link href="../favicon.ico" rel="shortcut icon" />
     <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
@@ -123,14 +123,9 @@
 		</div>
 	</div> <!-- box -->
 <div class="pull-left"> 
+<button type="button" id="cancelButton" class="btn btn-lg btn-default">Back</button>
+&nbsp;
 <button type="submit" id="saveButton" class="btn btn-lg btn-primary">Save</button>
-&nbsp;
-<button type="button" id="cancelButton" class="btn btn-lg btn-default">Cancel</button>
-</div>
-<div class="pull-right" th:if="${stockEmailForm.updateState != 'N' and stockEmailForm.id != null}">
-<button type="button" id="sendButton" class="btn btn-lg btn-info"><i class="fa fa-envelope"></i> Send...</button>
-&nbsp;
-<button type="button" id="deleteButton" class="btn btn-lg btn-danger"><i class="fa fa-times-circle"></i> Delete</button>
 </div>
 </form>
 <!-- form end -->
@@ -199,16 +194,6 @@ $(document).ready(function() {
     	});		
 		var newDiv = $(newDivHtml);
 		$("#documentDiv").append(newDiv);
-    });
-
-    $('#sendButton').click(function() {
-	    var sendEmailUrl = /*[[@{/admin/sendEmail}]]*/ '/admin/sendEmail';
-    	window.location = sendEmailUrl + '?id=' + /*[[${stockEmailForm.id}]]*/ 0;
-    });
-
-    $('#deleteButton').click(function() {
-	    var deleteEmailUrl = /*[[@{/admin/deleteEmail}]]*/ '/admin/deleteEmail';
-    	window.location = deleteEmailUrl + '?id=' + /*[[${stockEmailForm.id}]]*/ 0;
     });
 });
 /*]]>*/

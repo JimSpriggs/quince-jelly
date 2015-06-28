@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title th:text="#{coop.title} + ' - ' + #{signin.title}">Member Management</title>
+    <title>Email Templates</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link href="../favicon.ico" rel="shortcut icon" />
     <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
@@ -21,7 +21,7 @@
 	        <!-- Content Header (Page header) -->
 	        <section class="content-header">
 	            <h1>
-	                Member Email Templates
+	                Email Templates
 	            </h1>
 	            <ol class="breadcrumb">
 	                <li><a th:href="@{/admin/dashboard}" href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -32,12 +32,32 @@
 	
 	        <!-- Main content -->
 	        <section class="content">
+				<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				    <div class="modal-dialog">
+				        <div class="modal-content">
+				            <div class="modal-header">
+			                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			                    <h4 class="modal-title" id="confirmDeleteLabel">Confirm Delete</h4>
+				            </div>
+				            <div class="modal-body">
+			                    <p>Are you sure you wish to delete this email?</p>
+				            </div>
+				            <div class="modal-footer">
+				                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				                <button type="button" class="btn btn-danger btn-ok" data-dismiss="modal" id="btnConfirmDelete">Delete</button>
+				            </div>
+				        </div>
+				    </div>
+				</div>	        
 	        	<div th:unless="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
 	        		<p class="lead">
 	        			For full access to Member Emails and other administrator functions, <a href="mailto:john@village-greens-coop.co.uk">contact the system administrator</a>.
 	        		</p>
 	        	</div>
 	        	<div class="row" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+				    <th:block th:if="${message != null}">
+				        <div th:replace="fragments/alert :: alert (type='success', message='__${message}__')">Alert</div>
+				    </th:block>
 					<div class="col-xs-12">
 						<div class="box">
 							<div class="box-header">
@@ -51,6 +71,7 @@
 											<th>Created</th>
 											<th>Purpose</th>
 											<th>Subject</th>
+											<th>Actions</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -132,6 +153,8 @@
 <script th:inline="javascript">
 /*<![CDATA[*/
 $(document).ready(function() {
+	var confirmDeleteOfId = -1;
+	
 	$('#addEmailBtn').click(function() {
     	window.location = /*[[@{/admin/addEmail}]]*/ '/admin/addEmail';
     });
@@ -148,7 +171,11 @@ $(document).ready(function() {
 			{ "data": "creationTimestampMillis" },
 	        { "data": "creationTimestamp" },
             { "data": "emailPurpose" },
-	        { "data": "emailSubject" }
+	        { "data": "emailSubject" },
+	        { 
+	        	"data": "id",
+	        	"className": "dt-right" 
+	        }
 	    ],
 	    "columnDefs": 
 	    [ 
@@ -160,17 +187,84 @@ $(document).ready(function() {
 	      {
 	    	  "targets": 1,
 	    	  "iDataSort": 0
-	      }
+	      },
+	      {
+	    	  "targets": -1,
+	    	  "render": function (data, type, full, meta) {
+	    		  var sendUrl = /*[[@{/admin/sendEmail}]]*/ '/admin/sendEmail';
+	    		  var deleteUrl = /*[[@{/admin/deleteEmail}]]*/ '/admin/deleteEmail';
+	    		  var buttonHtml = 
+	    		  	'<div class="text-center"><button id="sendEmailBtn_' + data
+	    		  	+ '" class="btnSend btn btn-sm btn-info" '
+	    		  	+ 'data-emailid="' + data + '">'
+	    		  	+ '<i class="fa fa-envelope"></i> Send</button>&nbsp;&nbsp;'
+	    		  	+ '<button id="deleteEmailBtn_' + data 
+	    		  	+ '" class="btnDelete btn btn-sm btn-danger" '
+	    		  	+ 'data-href="' + deleteUrl + '?id=' + data + '" '
+	    		  	+ 'data-purpose="' + full.emailPurpose + '" '
+	    		  	+ 'data-emailid="' + data + '" '
+	    		  	+ 'data-toggle="modal" data-target="#confirm-delete">'
+	    		  	+ '<i class="fa fa-times-circle"></i> Delete</button></div>';
+//	    		  console.log('HTML for buttons: ' + buttonHtml);
+	    		  return buttonHtml;
+	    	  }
+		   }	      
 	    ]
 	});
+
+ 	$('#emailsTable tbody').on( 'click', '.btnSend', function(event) {
+ 		event.stopPropagation(); // ensure the tr doesn't get the event
+		var emailid = $(this).data('emailid');
+//		console.log('send email button clicked: id ' + emailid);
+	    var newLocation = /*[[@{/admin/sendEmail}]]*/ '/admin/sendEmail';
+	    window.location.href = newLocation + '?id=' + emailid;
+	} ); 
 	
-	$("#emailsTable tbody").delegate("tr", "click", function() {
+ 	// need to handle deletes in an event handler rather than using data-toggle / data-target
+ 	// as we need to stop the propagation to avoid the row also handling the event
+ 	$('#emailsTable tbody').on( 'click', '.btnDelete', function(event) {
+ 		event.stopPropagation(); // ensure the tr doesn't get the event
+ 		var button = $(this);
+ 		var buttonid = this.id;
+ 		var purpose = button.data('purpose');
+ 		var emailid = button.data('emailid');
+//		console.log('delete email button clicked: id ' + emailid);
+ 		confirmDeleteOfId = emailid;
+ 		$('.modal-title').text('Confirm delete of email ' + purpose);
+		$('#confirm-delete').modal('show'); 
+	} ); 
+	
+ 	$('#emailsTable tbody').on( 'click', 'tr', function(event) {
 		var rowdata = emailsTable.fnGetData( this );
-	    console.log('Clicked row for email id ' + rowdata.id);
+		console.log('Table row click for id ' + rowdata.id);
 	    var newLocation = /*[[@{/admin/editEmail}]]*/ '/admin/editEmail';
 	    window.location.href = newLocation + '?id=' + rowdata.id;
+	} ); 
+
+ 	$('#confirm-delete').on('show.bs.modal', function(event) {
+// 		var button = $(event.relatedTarget);
+// 		var id = button.data('emailPurpose');
+// 		var modal = $(this);
+// 		modal.find('.modal-title').text('Confirm delete of email ' + id);
+ 	});
+ 	
+ 	$('#btnConfirmDelete').on('click', function (event) {
+// 		console.log('Confirmed delete of ' + confirmDeleteOfId);
+	    var newLocation = /*[[@{/admin/deleteEmail}]]*/ '/admin/deleteEmail';
+	    window.location.href = newLocation + '?id=' + confirmDeleteOfId;
+ 	});
+ 	
+/*  	$("#emailsTable tbody").delegate("tr", "click", function() {
+		var rowdata = emailsTable.fnGetData( this );
+	    console.log('Clicked col ' + col + ' in row for email id ' + rowdata.id);
+	    if (col != 3) {
+		    var newLocation = /*[[@{/admin/editEmail}]]*/ '/admin/editEmail';
+		    window.location.href = newLocation + '?id=' + rowdata.id;
+	    }
 	});
+ */
 });
+ 	
 /*]]>*/
 </script>
 

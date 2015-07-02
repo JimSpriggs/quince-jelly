@@ -9,6 +9,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.StockEmail;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.DocumentRow;
 
 public class StockEmailForm {
 	private Long id;
@@ -27,21 +28,21 @@ public class StockEmailForm {
 	private String emailHtmlBody;
 
 	@Valid
-	private List<DocumentForm> availableDocuments = new ArrayList<DocumentForm>();
+	private List<DocumentRow> availableDocuments = new ArrayList<DocumentRow>();
 	
 	@Valid
-	private List<DocumentForm> selectedDocuments = new ArrayList<DocumentForm>();
+	private List<DocumentRow> selectedDocuments = new ArrayList<DocumentRow>();
 
 	public StockEmailForm() { }
 	
-	public StockEmailForm(List<DocumentForm> availableDocuments) {
+	public StockEmailForm(List<DocumentRow> availableDocuments) {
 		updateState = "N";
 		this.availableDocuments = availableDocuments;
 	}
 	
 	public StockEmailForm(StockEmail stockEmail, 
-							List<DocumentForm> availableDocuments,
-							List<DocumentForm> selectedDocuments) {
+							List<DocumentRow> availableDocuments,
+							List<DocumentRow> selectedDocuments) {
 		id = stockEmail.getId();
 		updateState = "U";
 		emailPurpose = stockEmail.getEmailPurpose();
@@ -100,19 +101,19 @@ public class StockEmailForm {
 		this.emailHtmlBody = emailHtmlBody;
 	}
 
-	public List<DocumentForm> getAvailableDocuments() {
+	public List<DocumentRow> getAvailableDocuments() {
 		return availableDocuments;
 	}
 
-	public void setAvailableDocuments(List<DocumentForm> availableDocuments) {
+	public void setAvailableDocuments(List<DocumentRow> availableDocuments) {
 		this.availableDocuments = availableDocuments;
 	}
 
-	public List<DocumentForm> getSelectedDocuments() {
+	public List<DocumentRow> getSelectedDocuments() {
 		return selectedDocuments;
 	}
 
-	public void setSelectedDocuments(List<DocumentForm> selectedDocuments) {
+	public void setSelectedDocuments(List<DocumentRow> selectedDocuments) {
 		this.selectedDocuments = selectedDocuments;
 	}
 

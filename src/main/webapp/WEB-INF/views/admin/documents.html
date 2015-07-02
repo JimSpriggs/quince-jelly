@@ -49,12 +49,12 @@
 				        </div>
 				    </div>
 				</div>	        
-	        	<div th:unless="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+	        	<div th:unless="${#authorization.expression('hasRole(''ROLE_ADMIN'') or hasRole(''ROLE_EMAIL_ADMIN'')')}">
 	        		<p class="lead">
 	        			For full access to Member Documents and other administrator functions, <a href="mailto:john@village-greens-coop.co.uk">contact the system administrator</a>.
 	        		</p>
 	        	</div>
-	        	<div class="row" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+	        	<div class="row" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'') or hasRole(''ROLE_EMAIL_ADMIN'')')}">
 				    <th:block th:if="${message != null}">
 				        <div th:replace="fragments/alert :: alert (type='success', message='__${message}__')">Alert</div>
 				    </th:block>

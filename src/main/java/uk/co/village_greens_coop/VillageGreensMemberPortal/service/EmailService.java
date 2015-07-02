@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,13 +33,13 @@ import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.StockEmailDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.StockEmailRequestDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.email.EmailAttachment;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.email.EmailDetail;
-import uk.co.village_greens_coop.VillageGreensMemberPortal.form.DocumentForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.SendStockEmailForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.StockEmailForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Document;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.StockEmail;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.StockEmailRequest;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.DocumentRow;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.StockEmailRow;
 
 @Service
@@ -150,8 +152,8 @@ public class EmailService {
 		stockEmail.setEmailBody(sef.getEmailBody());
 		
 		if (sef.getSelectedDocuments() != null && sef.getSelectedDocuments().size() > 0) {
-			for (DocumentForm docForm: sef.getSelectedDocuments()) {
-				Document document = documentService.getById(docForm.getId());
+			for (DocumentRow docRow: sef.getSelectedDocuments()) {
+				Document document = documentService.getById(docRow.getId());
 				stockEmail.getAttachments().add(document);
 			}
 		}
@@ -161,11 +163,11 @@ public class EmailService {
 
 	// given a set of DocumentForm objects (from a submitted form), return true if the given
 	// document matches one of the DocumentForms in the set (and removes it from the set)
-	private boolean checkDocumentSelectedAndRemove(Document document, List<DocumentForm> selectedDocuments) {
+	private boolean checkDocumentSelectedAndRemove(Document document, List<DocumentRow> selectedDocuments) {
 		if (selectedDocuments != null) {
-			for (Iterator<DocumentForm> iterator = selectedDocuments.iterator(); iterator.hasNext();) {
-				DocumentForm docForm = iterator.next();
-				if (document.getId().equals(docForm.getId())) {
+			for (Iterator<DocumentRow> iterator = selectedDocuments.iterator(); iterator.hasNext();) {
+				DocumentRow docRow = iterator.next();
+				if (document.getId().equals(docRow.getId())) {
 					iterator.remove();
 					return true;
 				}
@@ -192,8 +194,8 @@ public class EmailService {
 		
 		// now the selected documents list contains only those documents which need to be added
 		if (sef.getSelectedDocuments() != null && sef.getSelectedDocuments().size() > 0) {
-			for (DocumentForm docForm: sef.getSelectedDocuments()) {
-				Document document = documentService.getById(docForm.getId());
+			for (DocumentRow docRow: sef.getSelectedDocuments()) {
+				Document document = documentService.getById(docRow.getId());
 				stockEmail.getAttachments().add(document);
 			}
 		}
@@ -316,29 +318,41 @@ public class EmailService {
 	}
 
 	public StockEmailForm getStockEmailForm() {
-		List<DocumentForm> availableDocuments = documentService.getAllDocumentsAsForms();
+		List<DocumentRow> availableDocuments = documentService.getAllDocumentsAsDocumentRows();
 		StockEmailForm sef = new StockEmailForm(availableDocuments);
 		return sef;
 	}
 
+	@SuppressWarnings("unchecked")
 	public StockEmailForm getStockEmailForm(StockEmail stockEmail) {
 		List<Document> allDocuments = documentService.getAllDocuments();
-		List<DocumentForm> availableDocuments = new ArrayList<DocumentForm>();
-		List<DocumentForm> selectedDocuments = new ArrayList<DocumentForm>();
+		List<DocumentRow> availableDocuments = new ArrayList<DocumentRow>();
+		List<DocumentRow> selectedDocuments = new ArrayList<DocumentRow>();
 		// check each existing attachment, and use them to create the available and selected lists of DocumentForms
 		for (Document document: allDocuments) {
 			boolean documentSelected = false;
 			for (Document attachment: stockEmail.getAttachments()) {
 				if (document.getId().equals(attachment.getId())) {
 					documentSelected = true;
-					selectedDocuments.add(new DocumentForm(document));
+					selectedDocuments.add(new DocumentRow(document));
 					break;
 				} 
 			}
 			if (!documentSelected) {
-				availableDocuments.add(new DocumentForm(document)); 
+				availableDocuments.add(new DocumentRow(document)); 
 			}
 		}
+		
+		Comparator<DocumentRow> reverseCreationDateComparator = new Comparator<DocumentRow> () {
+			@Override
+			public int compare(DocumentRow o1, DocumentRow o2) {
+				return o2.getCreationTimestampMillis().compareTo(o1.getCreationTimestampMillis());
+			}
+		};
+		
+		Collections.sort(availableDocuments, reverseCreationDateComparator);
+		Collections.sort(selectedDocuments, reverseCreationDateComparator);
+
 		StockEmailForm sef = new StockEmailForm(stockEmail, availableDocuments, selectedDocuments);
 		return sef;
 	}

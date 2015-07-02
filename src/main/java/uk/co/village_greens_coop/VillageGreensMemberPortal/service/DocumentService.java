@@ -55,11 +55,31 @@ public class DocumentService {
 		return docForms;
 	}
 	
+	@Transactional(readOnly = true)
+	public List<DocumentRow> getAllDocumentsAsDocumentRows() {
+		List<DocumentRow> docRows = new ArrayList<DocumentRow>();
+		List<Document> documents = getAllDocuments();
+		for (Document document: documents) {
+			docRows.add(new DocumentRow(document));
+		}
+		return docRows;
+	}
+	
 	@Transactional
 	public Document createDocument(DocumentForm df) {
 		Document document = new Document();
 		document.setFilename(df.getFilename());
 		document.setDescription(df.getDescription());
+		document.setCreationTimestamp(new Date());
+		documentRepository.save(document);
+		return document;
+	}
+	
+	@Transactional
+	public Document createDocument(DocumentRow dr) {
+		Document document = new Document();
+		document.setFilename(dr.getFilename());
+		document.setDescription(dr.getDescription());
 		document.setCreationTimestamp(new Date());
 		documentRepository.save(document);
 		return document;

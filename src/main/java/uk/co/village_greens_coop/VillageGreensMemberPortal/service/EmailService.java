@@ -101,7 +101,7 @@ public class EmailService {
 	}
 	@Async
 	public void sendEmail(EmailDetail emailDetail) {
-		LOG.info("Sending email ", emailDetail.toString());
+		LOG.info("Sending email " + emailDetail.toString());
 		try {
 			final JavaMailSender javaMailSender = (JavaMailSender)mailSender;
 			final MimeMessage mimeMessage = javaMailSender.createMimeMessage();

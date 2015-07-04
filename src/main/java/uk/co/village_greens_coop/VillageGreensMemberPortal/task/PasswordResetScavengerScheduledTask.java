@@ -16,7 +16,7 @@ public class PasswordResetScavengerScheduledTask {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(PasswordResetScavengerScheduledTask.class);
 	
-	@Scheduled(fixedRate = 50000)  // every 5 minutes
+	@Scheduled(fixedRate = 300000)  // every 5 minutes
 	public void scavengeUnusedPasswordResetRequests() {
 		LOG.info("Scavenging password resets...");
 		

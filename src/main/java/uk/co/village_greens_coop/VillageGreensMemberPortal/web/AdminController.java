@@ -370,6 +370,18 @@ public class AdminController {
     	return memberService.getCertificateForDownload(id, response);
     }
 
+    @RequestMapping(value = "document", method = RequestMethod.GET )
+    @ResponseStatus(value = HttpStatus.OK)
+    @ResponseBody
+    public FileSystemResource downloadDocument(
+    		@RequestParam(value = "id") Long id,
+    		HttpServletRequest request, 
+    		HttpServletResponse response,
+    		Model model) {
+
+    	return documentService.getDocumentForDownload(id, response);
+    }
+
     @RequestMapping(value = "emails", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     public String getEmailsList(HttpServletRequest request, Model model) {
@@ -541,7 +553,7 @@ public class AdminController {
  
                 // Create the file on server
                 File serverFile = new File(
-                		"/VillageGreensMembers/documents/" + file.getOriginalFilename());
+                		DocumentService.DOCUMENT_LOCATION + file.getOriginalFilename());
                 BufferedOutputStream stream = new BufferedOutputStream(
                         new FileOutputStream(serverFile));
                 stream.write(bytes);

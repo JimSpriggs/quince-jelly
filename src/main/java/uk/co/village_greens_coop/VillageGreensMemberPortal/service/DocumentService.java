@@ -4,20 +4,26 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.DocumentDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.DocumentForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Document;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.DocumentRow;
 
 @Service
 public class DocumentService {
 
+	public static final String DOCUMENT_LOCATION = "/VillageGreensMembers/documents/";
+	
 	private static final Logger LOG = LoggerFactory.getLogger(DocumentService.class);
 
 	@Autowired
@@ -115,4 +121,16 @@ public class DocumentService {
 		return document;
 	}
 
+	public FileSystemResource getDocumentForDownload(long id, HttpServletResponse response) {
+		FileSystemResource fsr = null;
+		
+		Document document = documentRepository.findById(id);
+		if (document != null) {
+			String fileName = document.getFilename();
+			response.setHeader( "Content-Disposition", "attachment;filename=" + fileName);
+			fsr = new FileSystemResource(DOCUMENT_LOCATION + fileName);
+		}
+		return fsr;
+	}
+	
 }

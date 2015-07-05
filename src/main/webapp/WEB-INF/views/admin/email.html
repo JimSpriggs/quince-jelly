@@ -72,18 +72,13 @@
 		                <span class="help-block" th:if="${#fields.hasErrors('emailBody')}" th:errors="*{emailBody}">Please supply a value</span>
 		            </div>
 		        </div>
-		        <div class="form-group" th:classappend="${#fields.hasErrors('emailHtmlBody')}? 'has-error'">
-		            <label for="emailHtmlBody" class="col-md-2 control-label">Email HTML Part (MailChimp-only)</label>
+<div id="documentDiv" class="hide">
+<!-- this is where we write the hidden fields in which the selected and available documents are written -->
+</div>		        <div class="form-group">
+		            <label for="attachments" class="col-md-2 control-label">Attachments</label>
 		            <div class="col-xs-7">
-		                <textarea class="form-control" cols="60" rows="20" id="emailHtmlBody" placeholder="Email HTML Body" th:field="*{emailHtmlBody}" />
-		                <span class="help-block" th:if="${#fields.hasErrors('emailHtmlBody')}" th:errors="*{emailHtmlBody}">Please supply a value</span>
-		            </div>
-		        </div>
-		        <div class="form-group">
-		            <label for="emailBody" class="col-md-2 control-label">Attachments</label>
-		            <div class="col-xs-6">
-		                <select class="form-control" size="8" multiple="true" id="availableDocuments">
-							<option th:each="document : *{availableDocuments}"
+		                <select class="form-control" size="8" multiple="true" id="attachments" />
+<!-- 							<option th:each="document : *{availableDocuments}"
 									th:value="${{document.id}}"
 									th:text="${document.description}">
 								Available Document
@@ -94,10 +89,15 @@
 								Selected Document
 							</option>
 						</select>		                
+-->		            </div>
+		        </div>
+		        <div class="form-group" th:classappend="${#fields.hasErrors('emailHtmlBody')}? 'has-error'">
+		            <label for="emailHtmlBody" class="col-md-2 control-label">Email HTML Part (MailChimp-only)</label>
+		            <div class="col-xs-7">
+		                <textarea class="form-control" cols="60" rows="20" id="emailHtmlBody" placeholder="Email HTML Body" th:field="*{emailHtmlBody}" />
+		                <span class="help-block" th:if="${#fields.hasErrors('emailHtmlBody')}" th:errors="*{emailHtmlBody}">Please supply a value</span>
 		            </div>
 		        </div>
-<div id="documentDiv" class="hide">
-</div>
 			</fieldset>
 		</div>
 	</div> <!-- box -->
@@ -137,6 +137,9 @@
 <!--  Selectize.js -->
 <script th:src="@{/resources/js/selectize.min.js}" src="../../../resources/js/selectize.min.js" type="text/javascript"></script>
 
+<!--  Underscore -->
+<script th:src="@{/resources/js/underscore-min.js}" src="../../../resources/js/underscore-min.js" type="text/javascript"></script>
+
 <!-- AdminLTE App -->
 <script th:src="@{/resources/js/vg-admin.js}" src="../../../resources/js/vg-admin.js" type="text/javascript"></script>
 
@@ -146,45 +149,165 @@ $(document).ready(function() {
     $('#cancelButton').click(function() {
     	window.location = /*[[@{/admin/emails}]]*/ '/admin/emails';
     });
+
+    var modelAvailableDocs = [];
+    var modelSelectedDocs = [];
+    var modelAllDocs = [];
+
+    function findDoc(docId) {
+    	var foundDoc = null;
+    	modelAllDocs.forEach(function(doc) {
+    		if (doc.id == docId) {
+    			foundDoc = doc;
+    			return;
+    		}
+    	});
+    	return foundDoc;
+    }
     
-    var $docsSelect = $('#availableDocuments').selectize({
+    var initialAvailableDocs = /*[[${stockEmailForm.availableDocuments}]]*/ [];
+    var initialSelectedDocs = /*[[${stockEmailForm.selectedDocuments}]]*/ [];
+    
+    var $docsSelect = $('#attachments').selectize({
         plugins: ['remove_button'],
         delimiter: ',',
         persist: false,
-        create: false
+        create: false,
+        render: {
+        	item: function(data, escape) {
+        		var docUrl = /*[[@{/admin/document}]]*/ '/admin/document';
+        		var docDownloadUrl = '<a href="' + docUrl + '?id=' + escape(data.value) + '">' +
+				  escape(data.filename) + '</a>';
+
+        		var html = 
+	         		'<div class="alert-success">' +
+						'<span style="display: block; color: black; font-size: 14px;">' + escape(data.text) + '</span>' +
+						'<span style="display: block; color: gray; font-size: 12px;">' + escape(data.creationTimestamp) + ' - ' + docDownloadUrl + '</span>' +
+					'</div>';
+				console.log(html);
+				return html;
+        	},
+        	option: function(data, escape) {
+        		var html = 
+	         		'<div>' +
+						'<span style="display: block; color: black; font-size: 14px;">' + escape(data.text) + '</span>' +
+						'<span style="display: block; color: gray; font-size: 12px;">' + escape(data.creationTimestamp) + ' - ' + escape(data.filename) + '</span>' +
+					'</div>';
+				console.log(html);
+				return html;
+        	}
+        }
+/*         onBlur: function() {
+        	close();
+        	blur();
+        	console.log('trying to blur');
+        },
+        */   
     });
     
     var docsSelectize = $docsSelect[0].selectize;
 
-    var selectedDocs = /*[[${stockEmailForm.selectedDocuments}]]*/ [];
-    selectedDocs.forEach( function(doc) {
-    	console.log('value: ' + doc.id + ', text: '+ doc.description);
-		docsSelectize.addOption({'value': doc.id, 'text': doc.description});
-		docsSelectize.addItem(doc.id);
+    function sortAvailableDocs() {
+		modelAvailableDocs = _.sortBy(modelAvailableDocs, function(doc) {
+			return ( 0 - doc.creationTimestampMillis); 
+		});
+    }
+
+	function addDocToOptions(doc) {
+    	docsSelectize.addOption({'value': doc.id, 'text': doc.description, 'filename': doc.filename, 'creationTimestamp': doc.creationTimestamp});
+    }
+    
+    function buildOptions() {
+		sortAvailableDocs();
+    	
+    	// now rebuild the options based on the newly amended and sorted model
+    	docsSelectize.clearOptions();
+    	modelAvailableDocs.forEach(function(doc) {
+    		addDocToOptions(doc);
+    	});
+    	modelSelectedDocs.forEach(function(doc) {
+    		addDocToOptions(doc);
+    		docsSelectize.addItem(doc.id);
+    	});
+    	
+    	docsSelectize.refreshOptions();
+    }
+    
+    initialSelectedDocs.forEach( function(doc) {
+    	// first, add this doc to the model array of all docs
+    	modelAllDocs.push(doc);
+    	modelSelectedDocs.push(doc);
+    
+//    	addDocToOptions(doc);
+//		docsSelectize.addItem(doc.id);
     });
-//    docsSelectize.refreshOptions();
+
+    initialAvailableDocs.forEach( function(doc) {
+    	// and add this doc to the model array of all docs
+    	modelAllDocs.push(doc);
+    	modelAvailableDocs.push(doc);
+        
+//   	addDocToOptions(doc);
+    });
+
+    buildOptions();
+    
+    docsSelectize.on('blur', function() {
+    	this.close();
+    });
+
+    function addSelectedDoc(id) {
+    	var doc = findDoc(id);
+    	if (doc != null) {
+    		modelSelectedDocs.push(doc);
+    		modelAvailableDocs = _.without(modelAvailableDocs, doc);
+    	}
+    	return doc;
+    }
+    
+    function removeSelectedDoc(id) {
+    	var doc = findDoc(id);
+    	if (doc != null) {
+	    	// use underscore to recreate the selected array without doc
+	    	modelSelectedDocs = _.without(modelSelectedDocs, doc);
+	    	modelAvailableDocs.push(doc);
+    		// sort the options in reverse order of creation time
+    	}
+
+    	buildOptions();
+    }
+    
+    // now that the options and items are set up, add the event handlers
+    // for adding and removing
+	docsSelectize.on('item_add', function(value) {
+    	addSelectedDoc(value);
+	});
+	docsSelectize.on('item_remove', function(value, $item) {
+    	removeSelectedDoc(value);
+    });
+
+	docsSelectize.refreshOptions();
 //    docsSelectize.loadSearches = {};
     
-/*    
     $('#saveButton').click(function() {
     	newDivHtml = "";
     	var i = 0;
-    	$("#availableDocuments > option").each(function() {
-        	newDivHtml += '<input type="hidden" id="availableDocuments' + i + '.id" name="availableDocuments[' + i + '].id" value="' + this.value + '" />';
-        	newDivHtml += '<input type="hidden" id="availableDocuments' + i + '.description" name="availableDocuments[' + i + '].description" value="' + this.text + '" />';
+    	modelAvailableDocs.forEach(function(doc) {
+        	newDivHtml += '<input type="hidden" id="availableDocuments' + i + '.id" name="availableDocuments[' + i + '].id" value="' + doc.id + '" />';
+        	newDivHtml += '<input type="hidden" id="availableDocuments' + i + '.description" name="availableDocuments[' + i + '].description" value="' + doc.description + '" />';
         	i++;
     	});		
     	i = 0;
-    	$("#selectedDocuments > option").each(function() {
-        	newDivHtml += '<input type="hidden" id="selectedDocuments' + i + '.id" name="selectedDocuments[' + i + '].id" value="' + this.value + '" />';
-        	newDivHtml += '<input type="hidden" id="selectedDocuments' + i + '.description" name="selectedDocuments[' + i + '].description" value="' + this.text + '" />';
+    	modelSelectedDocs.forEach(function(doc) {
+        	newDivHtml += '<input type="hidden" id="selectedDocuments' + i + '.id" name="selectedDocuments[' + i + '].id" value="' + doc.id + '" />';
+        	newDivHtml += '<input type="hidden" id="selectedDocuments' + i + '.description" name="selectedDocuments[' + i + '].description" value="' + doc.description + '" />';
         	i++;
     	});		
 		var newDiv = $(newDivHtml);
 		$("#documentDiv").append(newDiv);
     });
-    
-*/    
+
+    $('#emailPurpose').focus();
     
 });
 /*]]>*/

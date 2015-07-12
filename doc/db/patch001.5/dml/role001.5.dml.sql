@@ -1,0 +1,1 @@
+INSERT INTO role (name, description) VALUES ('ROLE_EMAIL_ADMIN', 'Email Administrator');

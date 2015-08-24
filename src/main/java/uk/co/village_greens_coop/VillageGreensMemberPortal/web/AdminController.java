@@ -22,6 +22,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,6 +38,7 @@ import uk.co.village_greens_coop.VillageGreensMemberPortal.form.DocumentForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.MemberForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.SendStockEmailForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.StockEmailForm;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.form.validation.SendStockEmailFormValidator;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Dashboard;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Document;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
@@ -77,6 +80,9 @@ public class AdminController {
 
 	@Autowired
 	private DocumentApiService documentApiService;
+	
+	@Autowired
+	private SendStockEmailFormValidator sendStockEmailFormValidator;
 
 	//    @InitBinder("memberForm")
 //    private void initBinder(WebDataBinder binder) {
@@ -84,6 +90,12 @@ public class AdminController {
 //    	binder.setValidator(new MemberFormValidator(new TelephoneFormValidator()));
 //    }
 
+    @InitBinder("sendStockEmailForm")
+    private void initBinder(WebDataBinder binder) {
+	  	// we want standard validation, plus also a special validator for the sendStockEmailForm
+	  	binder.setValidator(sendStockEmailFormValidator);
+    }
+    
 	@ModelAttribute
 	public Dashboard getDashboardValues() {
     	Dashboard dashboard = dashboardService.getDashboardFigures();
@@ -501,16 +513,16 @@ public class AdminController {
     	
     	if (errors.hasErrors()) {
     		LOG.info("Errors in SendStockEmailForm");
-    		List<FieldError> fieldErrors = errors.getFieldErrors();
+//    		List<FieldError> fieldErrors = errors.getFieldErrors();
     		
-    		return "admin/email";
+    		return "admin/sendEmail";
     	}
 
     	String emailPurpose = sendStockEmailForm.getEmailPurpose();
     	int numRequested = emailService.sendStockEmail(sendStockEmailForm);
     	
     	if (numRequested != -1) {
-    		ra.addFlashAttribute("message", String.format("%s email queued successfully for %d member(s)", emailPurpose, numRequested));
+    		ra.addFlashAttribute("message", String.format("%s email queued successfully for %d recipient(s)", emailPurpose, numRequested));
     	}
     	return "redirect:emails";
     }

@@ -99,6 +99,23 @@
 		                	</label>
 		                </div>
 		            </div>
+		            <div class="col-md-12">
+		            	<div class="checkbox">
+							<label>
+		                	<input type="checkbox" class="flat-green form-control" id="adhocRecipients" th:field="*{adhocRecipients}" />
+		                	Ad-hoc Recipients
+		                	</label>
+		                </div>
+		            </div>
+		            <div class="col-md-12">
+				        <div class="form-group" th:classappend="${#fields.hasErrors('recipients')}? 'has-error'">
+				            <label for="recipients" class="col-md-2 control-label">Recipient(s)</label>
+				            <div class="col-md-8">
+				                <input type="text" class="form-control" id="recipients" placeholder="Recipients" th:field="*{recipients}" />
+				                <span class="help-block" th:if="${#fields.hasErrors('recipients')}" th:errors="*{recipients}">Please supply one or more email addresses (separated by commas)</span>
+				            </div>
+				        </div>
+		            </div>
 		        </div>
 			</fieldset>
 		</div> <!-- box-body -->

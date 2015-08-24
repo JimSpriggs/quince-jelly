@@ -31,6 +31,8 @@ public class StockEmailRequest implements java.io.Serializable {
 	private Date requestTimestamp;
 	@Column(name = "sent_ts")
 	private Date sentTimestamp;
+	@Column(name = "recipient_email_tx")
+	private String recipientEmail;
 	@Column(name = "error_tx")
 	private String error;
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -46,6 +48,13 @@ public class StockEmailRequest implements java.io.Serializable {
 	public StockEmailRequest(final Member member, final StockEmail stockEmail) {
 		this.member = member;
 		this.stockEmail = stockEmail;
+		this.requestTimestamp = new Date();
+	}
+
+	public StockEmailRequest(final StockEmail stockEmail, final String recipientEmail) {
+		this.member = null;
+		this.stockEmail = stockEmail;
+		this.recipientEmail = recipientEmail;
 		this.requestTimestamp = new Date();
 	}
 
@@ -95,6 +104,14 @@ public class StockEmailRequest implements java.io.Serializable {
 
 	public void setStockEmail(StockEmail stockEmail) {
 		this.stockEmail = stockEmail;
+	}
+
+	public String getRecipientEmail() {
+		return recipientEmail;
+	}
+
+	public void setRecipientEmail(String recipientEmail) {
+		this.recipientEmail = recipientEmail;
 	}
 	
 }

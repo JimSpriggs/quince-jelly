@@ -20,7 +20,11 @@ public class StockEmailSenderScheduledTask {
 	public void scavengeUnusedPasswordResetRequests() {
 		LOG.info("Sending member emails...");
 		
-		int numSent = emailService.sendQueuedStockEmails();
-		LOG.info("Emails sent this run: {}", numSent);
+		try {
+			int numSent = emailService.sendQueuedStockEmails();
+			LOG.info("Emails sent this run: {}", numSent);
+		} catch (Throwable t) {
+			LOG.error("Exception caught sending queued stock emails", t);
+		}
 	}
 }

@@ -14,8 +14,18 @@ public class SendStockEmailForm {
 	private Boolean partMembers = Boolean.FALSE;
 	private Boolean unpaidMembers = Boolean.FALSE;
 	private Boolean overdueMembers = Boolean.FALSE;
-	private Boolean committeeMembers = Boolean.TRUE;
+	private Boolean committeeMembers = Boolean.FALSE;
+	private Boolean adhocRecipients = Boolean.TRUE;
+	private String recipients = "";
 	
+	public String getRecipients() {
+		return recipients;
+	}
+
+	public void setRecipients(String recipients) {
+		this.recipients = recipients;
+	}
+
 	public SendStockEmailForm() {
 	}
 	
@@ -104,5 +114,13 @@ public class SendStockEmailForm {
 
 	public void setCommitteeMembers(Boolean committeeMembers) {
 		this.committeeMembers = committeeMembers;
+	}
+
+	public Boolean getAdhocRecipients() {
+		return adhocRecipients;
+	}
+
+	public void setAdhocRecipients(Boolean adhocRecipients) {
+		this.adhocRecipients = adhocRecipients;
 	}
 }

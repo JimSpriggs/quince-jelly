@@ -150,6 +150,7 @@ public class EmailService {
 		stockEmail.setEmailPurpose(sef.getEmailPurpose());
 		stockEmail.setEmailSubject(sef.getEmailSubject());
 		stockEmail.setEmailBody(sef.getEmailBody());
+		stockEmail.setEmailHtmlBody(sef.getEmailHtmlBody());
 		
 		if (sef.getSelectedDocuments() != null && sef.getSelectedDocuments().size() > 0) {
 			for (DocumentRow docRow: sef.getSelectedDocuments()) {
@@ -257,12 +258,35 @@ public class EmailService {
 			LOG.info("Requested stock email {} for member {}", stockEmail.getId(), member.getId());
 		}
 		
+		// process any ad-hoc recipients
+		if (sendStockEmailForm.getAdhocRecipients()) {
+			List<String> recipientList = getRecipientEmails(sendStockEmailForm);
+			for (String recipient : recipientList) {
+				StockEmailRequest emailRequest = new StockEmailRequest(stockEmail, recipient);
+				stockEmailRequestRepository.save(emailRequest);
+				numRequested++;
+				LOG.info("Requested stock email {} for adhoc recipient {}", stockEmail.getId(), recipient);
+			}
+		}
+		
 		return numRequested;
 	}
-	
+
+	private List<String> getRecipientEmails(SendStockEmailForm form) {
+		List<String> list = new ArrayList<String>(); 
+		String recipients = form.getRecipients();
+		if (recipients != null && !recipients.trim().equals("")) {
+			String[] recipientArray = recipients.split(",");
+			if (recipientArray != null && recipientArray.length > 0) {
+				Collections.addAll(list,  recipientArray);
+			}
+		}
+		return list;
+	}
+		
 	private String populateMemberPlaceholders(String bodyText, Member member) {
 		String retval = bodyText;
-		if (retval != null) {
+		if (retval != null && member != null) {
 			retval = retval.replaceAll("\\$\\{informalSalutation\\}", member.getSalutation(false));
 			retval = retval.replaceAll("\\$\\{untitledInformalSalutation\\}", member.getUntitledSalutation(false));
 			retval = retval.replaceAll("\\$\\{formalSalutation\\}", member.getSalutation(true));
@@ -282,18 +306,23 @@ public class EmailService {
 		for (StockEmailRequest emailRequest: emailRequests) {
 			StockEmail stockEmail = emailRequest.getStockEmail();
 			Member member = emailRequest.getMember();
-			if (member.getEmail() == null || member.getEmail().trim().equals("")) {
+			if (member != null && (member.getEmail() == null || member.getEmail().trim().equals(""))) {
 				LOG.warn("Member [id: {}] has no email address - not sending stock email", member.getId());
 				emailRequest.setError("No email address found for member");
 			} else {
-				LOG.info("Sending stock email [id: {}] to member [id: {}]", stockEmail.getId(), member.getId());
 				EmailDetail emailDetail = new EmailDetail();
+				if (member == null) {
+					LOG.info("Sending stock email [id: {}] to adhoc recipient {}", stockEmail.getId(), emailRequest.getRecipientEmail());
+					emailDetail.setToAddress(emailRequest.getRecipientEmail());
+				} else {
+					LOG.info("Sending stock email [id: {}] to member [id: {}]", stockEmail.getId(), member.getId());
+					emailDetail.setToAddress(member.getEmail());
+				}
 				emailDetail.setFromAddress("members@village-greens-coop.co.uk");
 				emailDetail.setFromDisplay("Village Greens Members");
 				emailDetail.setSubject(stockEmail.getEmailSubject());
 				emailDetail.setTemplate(populateMemberPlaceholders(stockEmail.getEmailBody(), member));
 				emailDetail.setHtml(populateMemberPlaceholders(stockEmail.getEmailHtmlBody(), member));
-				emailDetail.setToAddress(member.getEmail());
 				if (stockEmail.getAttachments() != null && stockEmail.getAttachments().size() > 0) {
 					EmailAttachment[] attachments = new EmailAttachment[stockEmail.getAttachments().size()];
 					int index = 0;

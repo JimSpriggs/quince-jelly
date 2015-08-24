@@ -20,6 +20,10 @@ public class PasswordResetScavengerScheduledTask {
 	public void scavengeUnusedPasswordResetRequests() {
 		LOG.info("Scavenging password resets...");
 		
-		signUpService.removeExpiredPasswordResets();
+		try {
+			signUpService.removeExpiredPasswordResets();
+		} catch (Throwable t) {
+			LOG.error("Exception caught removing expired passwords", t);
+		}
 	}
 }

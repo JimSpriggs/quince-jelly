@@ -2,14 +2,20 @@ apply plugin: 'war'
 apply plugin: 'idea'
 
 group = 'uk.co.village-greens-coop'
-version = '0.0.1-SNAPSHOT'
 
-description = """Spring MVC Application"""
+description = """Village Greens Members"""
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
+}
+
+war {
+    baseName = "VillageGreensMembers"
+    version = "1.0.1"
+    classifier = "SNAPSHOT"
+    extension = "war"
 }
 
 repositories {

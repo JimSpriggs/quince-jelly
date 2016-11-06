@@ -166,7 +166,7 @@ $(document).ready(function() {
 	    	"dataSrc": "stockEmailRows",
 	    	"type": "GET"
 	    },
-	    "order": [[ 0, "desc" ]],
+	    "order": [ [ 0, "desc" ] ],
 	    "columns": [
 			{ "data": "creationTimestampMillis" },
 	        { "data": "creationTimestamp" },
@@ -254,15 +254,6 @@ $(document).ready(function() {
 	    window.location.href = newLocation + '?id=' + confirmDeleteOfId;
  	});
  	
-/*  	$("#emailsTable tbody").delegate("tr", "click", function() {
-		var rowdata = emailsTable.fnGetData( this );
-	    console.log('Clicked col ' + col + ' in row for email id ' + rowdata.id);
-	    if (col != 3) {
-		    var newLocation = /*[[@{/admin/editEmail}]]*/ '/admin/editEmail';
-		    window.location.href = newLocation + '?id=' + rowdata.id;
-	    }
-	});
- */
 });
  	
 /*]]>*/

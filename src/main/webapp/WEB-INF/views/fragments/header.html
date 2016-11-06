@@ -44,8 +44,12 @@
 					                <a href="#" class="btn btn-default btn-flat">Profile</a>
 					            </div>
 					            <div class="pull-right">
-					                <a href="/logout" th:href="@{/logout}" class="btn btn-default btn-flat">Sign out</a>
+					                <a href="#" class="btn btn-default btn-flat" onclick="document.getElementById('logout').submit();">Sign out</a>
 					            </div>
+								<form action="/logout" th:action="@{/logout}" id="logout" method="post">
+									<input type="hidden" name="${_csrf.parameterName}"
+										   value="${_csrf.token}" />
+								</form>
 					        </li>
 					    </ul>
 					</li>                

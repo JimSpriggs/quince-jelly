@@ -21,6 +21,6 @@ public class VGAuthenticationSuccessHandler extends
 //            response.sendRedirect("admin/dashboard");   
 //            return;
 //        }
-        response.sendRedirect("");
+        response.sendRedirect("admin/dashboard");
     }    	
 }

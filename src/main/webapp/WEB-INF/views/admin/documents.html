@@ -165,7 +165,7 @@ $(document).ready(function() {
 	    	"dataSrc": "documentRows",
 	    	"type": "GET"
 	    },
-	    "order": [[ 0, "desc" ]],
+	    "order": [ [ 0, "desc" ] ],
 	    "columns": [
 			{ "data": "creationTimestampMillis" },
 	        { "data": "creationTimestamp" },
@@ -210,19 +210,6 @@ $(document).ready(function() {
 	    ]
 	});
 	
-/* 	$("#documentsTable tbody").on("click", "td button", function() {
-//		var rowdata = documentsTable.fnGetData( this );
-
-		// id will be deleteDocumentBtn_XXX
-		var documentId = this.id.slice(18);
-	    var deleteDocumentUrl = /*[[@{/admin/deleteDocument}]]*/ '/admin/deleteDocument';
-	    deleteDocumentUrl += '?id=' + documentId;
-//    	window.location = deleteDocumentUrl + '?id=' + documentId;
-
-	    console.log('Clicked delete button: ' + deleteDocumentUrl);
-	});
-	
- */
  	$('#confirm-delete').on('show.bs.modal', function(e) {
  		$(this).find('.modal-title').text('Confirm delete of ' + $(e.relatedTarget).data('docdesc'));
 	    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));

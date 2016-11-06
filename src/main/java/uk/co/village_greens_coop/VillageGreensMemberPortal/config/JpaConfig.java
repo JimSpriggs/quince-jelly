@@ -1,10 +1,5 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.config;
 
-import java.util.Properties;
-
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,8 +13,11 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
-
 import uk.co.village_greens_coop.VillageGreensMemberPortal.Application;
+
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement

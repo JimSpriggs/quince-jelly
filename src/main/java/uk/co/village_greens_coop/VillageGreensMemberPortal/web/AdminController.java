@@ -279,7 +279,6 @@ public class AdminController {
     }
     
     @RequestMapping(value = "member", method = RequestMethod.POST)
-    @ResponseStatus(value = HttpStatus.OK)
     public String saveMember(
     		@Valid @ModelAttribute (value = "memberForm") MemberForm memberForm,
 			BindingResult result, 
@@ -397,15 +396,15 @@ public class AdminController {
     @RequestMapping(value = "emails", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     public String getEmailsList(HttpServletRequest request, Model model) {
-    	LOG.info("WAYMARK - calling getAllEmails();...");
-    	List<StockEmailForm> emailForms = emailService.getAllEmails();
+//    	LOG.info("WAYMARK - calling getAllEmails();...");
+//    	List<StockEmailForm> emailForms = emailService.getAllEmails();
 //    	List<StockEmailForm> cutDownForms = new ArrayList<StockEmailForm>();
 //    	cutDownForms.add(emailForms.get(0));
 //    	cutDownForms.add(emailForms.get(1));
-    	LOG.info("WAYMARK - called getAllEmails();...");
-    	LOG.info("WAYMARK - adding emailForms to model...");
-    	model.addAttribute("emails", emailForms);
-    	LOG.info("WAYMARK - added emailForms to model");
+//    	LOG.info("WAYMARK - called getAllEmails();...");
+//    	LOG.info("WAYMARK - adding emailForms to model...");
+//    	model.addAttribute("emails", emailForms);
+//    	LOG.info("WAYMARK - added emailForms to model");
     	return "admin/emails";
     }
 
@@ -458,7 +457,6 @@ public class AdminController {
     }
     
     @RequestMapping(value = "email", method = RequestMethod.POST)
-    @ResponseStatus(value = HttpStatus.OK)
     public String saveEmail(
     		@Valid @ModelAttribute (value = "stockEmailForm") StockEmailForm stockEmailForm,
 			BindingResult result, 
@@ -480,7 +478,7 @@ public class AdminController {
         	emailService.createStockEmail(stockEmailForm);
     	}
     	
-    	return "redirect:emails";
+    	return "redirect:/admin/emails";
     }
  
     @RequestMapping(value = "sendEmail", method = RequestMethod.GET)
@@ -497,12 +495,11 @@ public class AdminController {
         	return "admin/sendEmail";
     	} else {
     		//TODO add an error message, the id wasn't found
-    		return "redirect:emails";
+    		return "redirect:/admin/emails";
     	}
     }
 
     @RequestMapping(value = "sendEmail", method = RequestMethod.POST)
-    @ResponseStatus(value = HttpStatus.OK)
     public String sendEmail(
     		@Valid @ModelAttribute (value = "sendStockEmailForm") SendStockEmailForm sendStockEmailForm,
 			BindingResult result, 
@@ -530,13 +527,13 @@ public class AdminController {
     @RequestMapping(value = "documents", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     public String getDocumentsList(HttpServletRequest request, Model model) {
-    	List<DocumentForm> documentForms = documentService.getAllDocumentsAsForms();
-    	model.addAttribute("documents", documentForms);
+//    	List<DocumentForm> documentForms = documentService.getAllDocumentsAsForms();
+//    	model.addAttribute("documents", documentForms);
     	return "admin/documents";
     }
 
     @RequestMapping(value = "documentRows", method = RequestMethod.GET)
-    @ResponseStatus(value = HttpStatus.OK)
+	@ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody DocumentRows getDocumentRows(HttpServletRequest request) {
     	return documentApiService.getAllDocumentRows();
     }

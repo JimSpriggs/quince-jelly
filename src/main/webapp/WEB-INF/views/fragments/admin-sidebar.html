@@ -101,6 +101,13 @@
 										th:text="${dashboard.committeeMembers}">400</small>
 								</a>
 							</li>
+							<li th:class="${activeSubmenu == 'DOWNLOAD'} ? 'active'">
+								<a th:href="@{/admin/downloadMembers.xlsx}" href="downloadMembers.xlsx">
+									<i class="fa fa-file-excel-o"></i><span>Download As Excel</span>
+									<small class="badge pull-right alert-danger"
+										   th:text="${dashboard.allMembers}">400</small>
+								</a>
+							</li>
 						</ul>
 		            </li>
 		            <li class="active" 

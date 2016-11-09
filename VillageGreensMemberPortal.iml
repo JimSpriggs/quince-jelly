@@ -367,11 +367,22 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar:///Users/john/.gradle/caches/modules-2/files-2.1/org.apache.poi/poi/3.10.1/95174823e13aa828cb715b542e647e56096ffcb2/poi-3.10.1.jar!/"/>
+          <root url="jar:///Users/john/.gradle/caches/modules-2/files-2.1/org.apache.poi/poi/3.15/965bba8899988008bb2341e300347de62aad5391/poi-3.15.jar!/"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES>
-          <root url="jar:///Users/john/.gradle/caches/modules-2/files-2.1/org.apache.poi/poi/3.10.1/dcbcab74270ee3f68da61ef13c6f0858fb532e52/poi-3.10.1-sources.jar!/"/>
+          <root url="jar:///Users/john/.gradle/caches/modules-2/files-2.1/org.apache.poi/poi/3.15/bd552aa859b560a2ab85694f23771b6ef50698dd/poi-3.15-sources.jar!/"/>
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar:///Users/john/.gradle/caches/modules-2/files-2.1/org.apache.poi/poi-ooxml/3.15/e2800856735b07b8edd417aee07685470216a00f/poi-ooxml-3.15.jar!/"/>
+        </CLASSES>
+        <JAVADOC/>
+        <SOURCES>
+          <root url="jar:///Users/john/.gradle/caches/modules-2/files-2.1/org.apache.poi/poi-ooxml/3.15/b49e9cf942f8ba4492017a274c6c3480584909d8/poi-ooxml-3.15-sources.jar!/"/>
         </SOURCES>
       </library>
     </orderEntry>
@@ -598,11 +609,42 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar:///Users/john/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.5/cf993e250ff71804754ec2734a16f23c0be99f70/commons-codec-1.5.jar!/"/>
+          <root url="jar:///Users/john/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.10/4b95f4897fa13f2cd904aee711aeafc0c5295cd8/commons-codec-1.10.jar!/"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES>
-          <root url="jar:///Users/john/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.5/1100638866461d41fbed0e89d722b161c579fe23/commons-codec-1.5-sources.jar!/"/>
+          <root url="jar:///Users/john/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.10/11fb3d88ae7e3b757d70237064210ceb954a5a04/commons-codec-1.10-sources.jar!/"/>
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar:///Users/john/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-collections4/4.1/a4cf4688fe1c7e3a63aa636cc96d013af537768e/commons-collections4-4.1.jar!/"/>
+        </CLASSES>
+        <JAVADOC/>
+        <SOURCES>
+          <root url="jar:///Users/john/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-collections4/4.1/f305f3aa45a3b208c013ef92328f8f230329f20e/commons-collections4-4.1-sources.jar!/"/>
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar:///Users/john/.gradle/caches/modules-2/files-2.1/org.apache.poi/poi-ooxml-schemas/3.15/de4a50ca39de48a19606b35644ecadb2f733c479/poi-ooxml-schemas-3.15.jar!/"/>
+        </CLASSES>
+        <JAVADOC/>
+        <SOURCES/>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar:///Users/john/.gradle/caches/modules-2/files-2.1/com.github.virtuald/curvesapi/1.04/3386abf821719bc89c7685f9eaafaf4a842f0199/curvesapi-1.04.jar!/"/>
+        </CLASSES>
+        <JAVADOC/>
+        <SOURCES>
+          <root url="jar:///Users/john/.gradle/caches/modules-2/files-2.1/com.github.virtuald/curvesapi/1.04/5c01708d122c6a61e90716e931b58226d8261312/curvesapi-1.04-sources.jar!/"/>
         </SOURCES>
       </library>
     </orderEntry>
@@ -621,6 +663,24 @@
       <library>
         <CLASSES>
           <root url="jar:///Users/john/.gradle/caches/modules-2/files-2.1/antlr/antlr/2.7.7/83cd2cd674a217ade95a4bb83a8a14f351f48bd0/antlr-2.7.7.jar!/"/>
+        </CLASSES>
+        <JAVADOC/>
+        <SOURCES/>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar:///Users/john/.gradle/caches/modules-2/files-2.1/org.apache.xmlbeans/xmlbeans/2.6.0/29e80d2dd51f9dcdef8f9ffaee0d4dc1c9bbfc87/xmlbeans-2.6.0.jar!/"/>
+        </CLASSES>
+        <JAVADOC/>
+        <SOURCES/>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar:///Users/john/.gradle/caches/modules-2/files-2.1/stax/stax-api/1.0.1/49c100caf72d658aca8e58bd74a4ba90fa2b0d70/stax-api-1.0.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES/>

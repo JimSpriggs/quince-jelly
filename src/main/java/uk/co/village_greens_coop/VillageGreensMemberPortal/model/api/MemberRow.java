@@ -7,6 +7,7 @@ import java.util.TimeZone;
 import org.springframework.stereotype.Component;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.MemberTelephone;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.utils.MemberUtils;
 
 @Component
@@ -21,6 +22,9 @@ public class MemberRow {
 	private String organisation;
 	private String displayName;
 	private String email;
+	private String homeTelephone;
+	private String workTelephone;
+	private String mobileTelephone;
 	private String addressLine1;
 	private String addressLine2;
 	private String addressLine3;
@@ -47,6 +51,11 @@ public class MemberRow {
 		this.surname = member.getSurname();
 		this.organisation = member.getOrganisation();
 		this.email = member.getEmail();
+		if (member.getMemberTelephones() != null) {
+			for (MemberTelephone tel : member.getMemberTelephones()) {
+				setTelephone(tel);
+			}
+		}
 		this.addressLine1 = member.getAddressLine1();
 		this.addressLine2 = member.getAddressLine2();
 		this.addressLine3 = member.getAddressLine3();
@@ -255,5 +264,37 @@ public class MemberRow {
 		this.amountOverdue = amountOverdue;
 	}
 
-	
+	public String getHomeTelephone() {
+		return homeTelephone;
+	}
+
+	public void setHomeTelephone(String homeTelephone) {
+		this.homeTelephone = homeTelephone;
+	}
+
+	public String getWorkTelephone() {
+		return workTelephone;
+	}
+
+	public void setWorkTelephone(String workTelephone) {
+		this.workTelephone = workTelephone;
+	}
+
+	public String getMobileTelephone() {
+		return mobileTelephone;
+	}
+
+	public void setMobileTelephone(String mobileTelephone) {
+		this.mobileTelephone = mobileTelephone;
+	}
+
+	public void setTelephone(MemberTelephone telephone) {
+		if ("MOBILE".equals(telephone.getTelephoneType().getTelephoneType())) {
+			setMobileTelephone(telephone.getTelephoneNumber());
+		} else if ("HOME".equals(telephone.getTelephoneType().getTelephoneType())) {
+			setHomeTelephone(telephone.getTelephoneNumber());
+		} else if ("WORK".equals(telephone.getTelephoneType().getTelephoneType())) {
+			setWorkTelephone(telephone.getTelephoneNumber());
+		}
+	}
 }

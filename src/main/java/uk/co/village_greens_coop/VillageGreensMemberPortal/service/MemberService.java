@@ -39,7 +39,7 @@ public class MemberService {
 	
 	@Autowired
 	private MemberDao memberRepository;
-	
+
 	@Autowired
 	private MemberTelephoneDao memberTelephoneRepository;
 
@@ -70,11 +70,15 @@ public class MemberService {
 		}
 		return memberRows;
 	}
-	
+
 	public List<MemberRow> getAll() {
 		List<Member> membersList = memberRepository.getAll();
-		
+
 		return convertMembersToMemberRows(membersList);
+	}
+
+	public List<MemberRow> getAllMemberRowsForDownload() {
+		return memberRepository.getAllMemberRowsForDownload();
 	}
 
 	public List<MemberRow> getByMemberStatus(String memberStatus) {

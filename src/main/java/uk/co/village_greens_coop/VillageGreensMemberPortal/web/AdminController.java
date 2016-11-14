@@ -184,7 +184,7 @@ public class AdminController {
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 		HttpServletResponse response) throws Exception {
 
-		return new ModelAndView("ExcelMembersView","members", memberService.getAll());
+		return new ModelAndView("ExcelMembersView","members", memberService.getAllMemberRowsForDownload());
 	}
     
     private void addMemberModelAttributes(String memberStatus, Model model) {

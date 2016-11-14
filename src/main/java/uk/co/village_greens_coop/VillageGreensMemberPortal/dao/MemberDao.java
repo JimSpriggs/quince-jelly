@@ -15,7 +15,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.MemberTelephone;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.MembershipPayment;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.TelephoneType;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.MemberRow;
 
 @Repository
@@ -141,7 +143,50 @@ public class MemberDao {
 		
 		return memberRows;
 	}
-	
+
+	private List<MemberRow> getMemberRowsWithTelephoneNumbers(List<Member> members) {
+
+		Date now = new Date();
+
+		// get a list of all payments
+		@SuppressWarnings("unchecked")
+		List<MemberTelephone> tels = (List<MemberTelephone>)entityManager.createQuery("from MemberTelephone mt ORDER BY mt.member")
+				.getResultList();
+
+		List<MemberRow> memberRows = new ArrayList<MemberRow>();
+		for (Member member: members) {
+			memberRows.add(new MemberRow(member));
+		}
+
+		// now add payment values to the member rows
+		if (tels != null && tels.size() > 0) {
+			Member prevMember = null;
+			MemberRow prevMemberRow = null;
+			for (MemberTelephone telephone: tels) {
+				Member m = telephone.getMember();
+				if (m == prevMember || members.contains(m)) {
+					MemberRow mr = null;
+					if (m == prevMember) {
+						mr = prevMemberRow;
+					} else {
+						// get or create the MemberRow
+						mr = getOrCreateMemberRow(memberRows, m);
+					}
+
+					// add the telephone number
+					mr.setTelephone(telephone);
+
+					// record the last member (and row) processed
+					prevMember = m;
+					prevMemberRow = mr;
+				}
+			}
+		}
+
+		return memberRows;
+	}
+
+
 	@SuppressWarnings("unchecked")
 	public List<Member> getAllPossiblyOverdueMembers() {
 		
@@ -227,7 +272,15 @@ public class MemberDao {
 
 		return getMemberRowsWithRelatedPaymentInfo(members);
 	}
-	
+
+	public List<MemberRow> getAllMemberRowsForDownload() {
+
+		// get a list of members who could be overdue
+		List<Member> members = getAll();
+
+		return getMemberRowsWithTelephoneNumbers(members);
+	}
+
 	public Member generateMemberNoAndSave(Member member) {
 		Query q = entityManager.createNativeQuery("SELECT nextval('member_no_seq')");
 		BigInteger memberNo = (BigInteger)q.getSingleResult();

@@ -42,6 +42,9 @@ public class ExcelMembersView extends AbstractXlsxStreamingView {
 		header.createCell(col++).setCellValue("Surname");
 		header.createCell(col++).setCellValue("Organisation");
 		header.createCell(col++).setCellValue("Email");
+		header.createCell(col++).setCellValue("HomeTel");
+		header.createCell(col++).setCellValue("MobileTel");
+		header.createCell(col++).setCellValue("WorkTel");
 		header.createCell(col++).setCellValue("AddressLine1");
 		header.createCell(col++).setCellValue("AddressLine2");
 		header.createCell(col++).setCellValue("AddressLine3");
@@ -70,6 +73,9 @@ public class ExcelMembersView extends AbstractXlsxStreamingView {
 				row.createCell(col++).setCellValue(nullOrBlank(member.getSurname()));
 				row.createCell(col++).setCellValue(nullOrBlank(member.getOrganisation()));
 				row.createCell(col++).setCellValue(nullOrBlank(member.getEmail()));
+				row.createCell(col++).setCellValue(nullOrBlank(member.getHomeTelephone()));
+				row.createCell(col++).setCellValue(nullOrBlank(member.getMobileTelephone()));
+				row.createCell(col++).setCellValue(nullOrBlank(member.getWorkTelephone()));
 				row.createCell(col++).setCellValue(nullOrBlank(member.getAddressLine1()));
 				row.createCell(col++).setCellValue(nullOrBlank(member.getAddressLine2()));
 				row.createCell(col++).setCellValue(nullOrBlank(member.getAddressLine3()));

@@ -16,8 +16,10 @@ public class SendStockEmailForm {
 	private Boolean overdueMembers = Boolean.FALSE;
 	private Boolean committeeMembers = Boolean.FALSE;
 	private Boolean adhocRecipients = Boolean.TRUE;
+	private Boolean mailingList = Boolean.FALSE;
 	private String recipients = "";
-	
+	private String contactListId = "";
+
 	public String getRecipients() {
 		return recipients;
 	}
@@ -122,5 +124,21 @@ public class SendStockEmailForm {
 
 	public void setAdhocRecipients(Boolean adhocRecipients) {
 		this.adhocRecipients = adhocRecipients;
+	}
+
+	public Boolean getMailingList() {
+		return mailingList;
+	}
+
+	public void setMailingList(Boolean mailingList) {
+		this.mailingList = mailingList;
+	}
+
+	public String getContactListId() {
+		return contactListId;
+	}
+
+	public void setContactListId(String contactListId) {
+		this.contactListId = contactListId;
 	}
 }

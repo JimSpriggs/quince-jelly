@@ -1,0 +1,1 @@
+INSERT INTO contact_list (description_tx, creation_ts) VALUES ('Shop Customers', NOW());

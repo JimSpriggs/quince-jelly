@@ -28,6 +28,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.ContactListDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.MemberDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.StockEmailDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.StockEmailRequestDao;
@@ -35,10 +36,7 @@ import uk.co.village_greens_coop.VillageGreensMemberPortal.email.EmailAttachment
 import uk.co.village_greens_coop.VillageGreensMemberPortal.email.EmailDetail;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.SendStockEmailForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.form.StockEmailForm;
-import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Document;
-import uk.co.village_greens_coop.VillageGreensMemberPortal.model.Member;
-import uk.co.village_greens_coop.VillageGreensMemberPortal.model.StockEmail;
-import uk.co.village_greens_coop.VillageGreensMemberPortal.model.StockEmailRequest;
+import uk.co.village_greens_coop.VillageGreensMemberPortal.model.*;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.DocumentRow;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.StockEmailRow;
 
@@ -49,10 +47,13 @@ public class EmailService {
 
 	@Autowired
 	private MemberDao memberRepository;
-	
+
+	@Autowired
+	private ContactListDao contactListDao;
+
 	@Autowired
 	private MailSender mailSender;
-	
+
 	@Autowired
 	private StockEmailDao stockEmailRepository;
 	
@@ -268,7 +269,19 @@ public class EmailService {
 				LOG.info("Requested stock email {} for adhoc recipient {}", stockEmail.getId(), recipient);
 			}
 		}
-		
+
+		if (sendStockEmailForm.getMailingList()) {
+			ContactList contactList = contactListDao.findById(Long.parseLong(sendStockEmailForm.getContactListId()));
+			if (contactList != null && contactList.getListSubscribers() != null) {
+				for (ListSubscriber subscriber: contactList.getListSubscribers()) {
+					StockEmailRequest emailRequest = new StockEmailRequest(stockEmail, subscriber.getEmail());
+					stockEmailRequestRepository.save(emailRequest);
+					numRequested++;
+					LOG.info("Requested stock email {} for mailing list {} subscriber {}", stockEmail.getId(), contactList.getId(), subscriber.getId());
+				}
+			}
+		}
+
 		return numRequested;
 	}
 

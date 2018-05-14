@@ -58,6 +58,12 @@ public class MemberDao {
 				.getResultList();
 	}
 
+	public List<Member> getByConsentedMemberStatus(String memberStatus) {
+		return (List<Member>)entityManager.createNamedQuery(Member.FIND_CONSENTED_BY_STATUS, Member.class)
+				.setParameter("memberStatus", memberStatus)
+				.getResultList();
+	}
+
 	public List<Member> getCommitteeMembers() {
 		return (List<Member>)entityManager.createNamedQuery(Member.FIND_COMMITTEE_MEMBERS, Member.class)
 				.getResultList();
@@ -240,7 +246,11 @@ public class MemberDao {
 	public List<Member> getFullMembers() {
 		return getByMemberStatus("FULL");
 	}
-		
+
+	public List<Member> getFullConsentedMembers() {
+		return getByConsentedMemberStatus("FULL");
+	}
+
 	public List<Member> getPartPaidMembers() {
 		return getByMemberStatus("PART");
 	}

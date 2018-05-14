@@ -3,6 +3,7 @@ package uk.co.village_greens_coop.VillageGreensMemberPortal.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 

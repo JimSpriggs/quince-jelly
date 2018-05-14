@@ -11,6 +11,7 @@ public class SendStockEmailForm {
 
 	private Boolean allMembers = Boolean.FALSE;
 	private Boolean fullMembers = Boolean.FALSE;
+	private Boolean fullConsentedMembers = Boolean.FALSE;
 	private Boolean partMembers = Boolean.FALSE;
 	private Boolean unpaidMembers = Boolean.FALSE;
 	private Boolean overdueMembers = Boolean.FALSE;
@@ -52,6 +53,14 @@ public class SendStockEmailForm {
 
 	public void setFullMembers(Boolean fullMembers) {
 		this.fullMembers = fullMembers;
+	}
+
+	public Boolean getFullConsentedMembers() {
+		return fullConsentedMembers;
+	}
+
+	public void setFullConsentedMembers(Boolean fullConsentedMembers) {
+		this.fullConsentedMembers = fullConsentedMembers;
 	}
 
 	public Boolean getPartMembers() {

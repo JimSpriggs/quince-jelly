@@ -1,33 +1,15 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.service;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.mail.BodyPart;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.ContactListDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.MemberDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.StockEmailDao;
@@ -40,8 +22,23 @@ import uk.co.village_greens_coop.VillageGreensMemberPortal.model.*;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.DocumentRow;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.StockEmailRow;
 
+import javax.mail.BodyPart;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
+import java.util.*;
+
 @Service
 public class EmailService {
+
+	@Value("${email.unsubscribe.url.base}")
+	private String emailUnsubscribeUrlBase;
+	@Value("${email.consent.url.base}")
+	private String emailConsentUrlBase;
 
 	private static final Logger LOG = LoggerFactory.getLogger(EmailService.class);
 
@@ -62,7 +59,7 @@ public class EmailService {
 	
 	@Autowired
 	private DocumentService documentService;
-	
+
 	@Transactional(readOnly = true)
 	public EmailDetail getStockEmailDetail(String purpose) {
 		StockEmail email = stockEmailRepository.findByPurpose(purpose);
@@ -134,8 +131,8 @@ public class EmailService {
 				}
 			}
 			
-			javaMailSender.send(mimeMessage);
-			LOG.info("Email sent successfully");
+//			javaMailSender.send(mimeMessage);
+			LOG.info("Email NOT sent successfully");
 		} catch (MessagingException e) {
 			LOG.error("Unable to send message: {}", emailDetail.toString(), e);
 			emailDetail.setError(e.getMessage());
@@ -232,6 +229,10 @@ public class EmailService {
 				List<Member> membersList = memberRepository.getFullMembers();
 				membersToSend.addAll(membersList);
 			}
+			if (sendStockEmailForm.getFullConsentedMembers()) {
+				List<Member> membersList = memberRepository.getFullConsentedMembers();
+				membersToSend.addAll(membersList);
+			}
 			if (sendStockEmailForm.getPartMembers()) {
 				List<Member> membersList = memberRepository.getPartPaidMembers();
 				membersToSend.addAll(membersList);
@@ -308,6 +309,7 @@ public class EmailService {
 			retval = retval.replaceAll("\\$\\{holding\\}", new DecimalFormat("###,###").format(member.getTotalInvestment()));
 			retval = retval.replaceAll("\\$\\{numshares\\}", "£" + new DecimalFormat("###,###").format(member.getTotalInvestment()));
 			retval = retval.replaceAll("\\$\\{memberno\\}", (member.getMemberno() != null ? member.getMemberno().toString() : "n/a"));
+			retval = retval.replaceAll("\\$\\{unsubscribe_url\\}", emailUnsubscribeUrlBase + member.getUuid());
 		}
 		return retval;
 	}

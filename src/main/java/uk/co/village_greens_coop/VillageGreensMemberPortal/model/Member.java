@@ -4,18 +4,9 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
@@ -26,8 +17,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 	@NamedQuery(name = Member.FIND_BY_SURNAME, query = "select m from Member m where m.surname = :surname"),
 	@NamedQuery(name = Member.FIND_BY_STATUS, 
 		query = "select DISTINCT m from Member m where member_status_cd = :memberStatus order by m.memberno"),
-//		query = "select DISTINCT m from Member m LEFT JOIN FETCH m.memberTelephones mt where member_status_cd = :memberStatus order by m.memberno, m.id, mt.id"),
-	@NamedQuery(name = Member.FIND_COMMITTEE_AND_SYSADMIN_MEMBERS, 
+	@NamedQuery(name = Member.FIND_CONSENTED_BY_STATUS,
+		query = "select DISTINCT m from Member m inner join fetch m.memberConsents mc where mc.marketing = true and m.memberStatus = :memberStatus order by m.memberno"),
+	@NamedQuery(name = Member.FIND_COMMITTEE_AND_SYSADMIN_MEMBERS,
 		query = "select DISTINCT m from Member m where m.memberno = 95 OR m.committee = true"),
 	@NamedQuery(name = Member.FIND_COMMITTEE_MEMBERS, 
 		query = "select DISTINCT m from Member m where m.committee = true")
@@ -38,6 +30,7 @@ public class Member implements java.io.Serializable {
 	public static final String FIND_BY_STATUS = "Member.findByMemberStatus";
 	public static final String FIND_COMMITTEE_MEMBERS = "Member.findCommitteeMembers";
 	public static final String FIND_COMMITTEE_AND_SYSADMIN_MEMBERS = "Member.findCommitteeAndSysAdminMembers";
+	public static final String FIND_CONSENTED_BY_STATUS = "Member.findConsentedByMemberStatus";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,12 +73,18 @@ public class Member implements java.io.Serializable {
 	private Boolean committee;
 	@Column(name = "member_status_cd")
 	private String memberStatus;
+	@Column
+	private String uuid;
 	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="member")
-	private Set<MembershipPayment> membershipPayments = new HashSet<MembershipPayment>();
+	private Set<MembershipPayment> membershipPayments = new HashSet<>();
 	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="member")
-	private Set<MemberTelephone> memberTelephones = new HashSet<MemberTelephone>();
-	
+	private Set<MemberTelephone> memberTelephones = new HashSet<>();
+	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="member")
+	private Set<MemberConsent> memberConsents = new HashSet<>();
+
 	public Member() {
+		UUID uuid = UUID.randomUUID();
+		this.uuid = uuid.toString();
 	}
 
 	public Member(String title, String firstName,
@@ -302,6 +301,22 @@ public class Member implements java.io.Serializable {
 
 	public void setMemberno(Long memberno) {
 		this.memberno = memberno;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	public Set<MemberConsent> getMemberConsents() {
+		return memberConsents;
+	}
+
+	public void setMemberConsents(Set<MemberConsent> memberConsents) {
+		this.memberConsents = memberConsents;
 	}
 
 	public Set<MembershipPayment> getMembershipPayments() {

@@ -51,22 +51,14 @@
 			<fieldset>
 		        <legend>Recipients</legend>
 		        <div class="form-group">
-		            <div class="col-md-12">
-		            	<div class="checkbox">
+					<div class="col-md-12">
+						<div class="checkbox">
 							<label>
-		                	<input type="checkbox" class="flat-green form-control" id="allMembers" th:field="*{allMembers}" />
-		                	All Members
-		                	</label>
-		                </div>
-		            </div>
-		            <div class="col-md-12">
-		            	<div class="checkbox">
-							<label>
-		                	<input type="checkbox" class="flat-green form-control" id="fullMembers" th:field="*{fullMembers}" />
-		                	Full Members
-		                	</label>
-		                </div>
-		            </div>
+								<input type="checkbox" class="flat-green form-control" id="fullMembers" th:field="*{fullConsentedMembers}" />
+								Full Members (only those who have granted consent for news and offers)
+							</label>
+						</div>
+					</div>
 		            <div class="col-md-12">
 		            	<div class="checkbox">
 							<label>
@@ -103,7 +95,7 @@
 		            	<div class="checkbox">
 							<label>
 		                	<input type="checkbox" class="flat-green form-control" id="adhocRecipients" th:field="*{adhocRecipients}" />
-		                	Ad-hoc Recipients
+		                	Ad-hoc Recipients (list of email addresses, comma-separated)
 		                	</label>
 		                </div>
 		            </div>
@@ -132,6 +124,14 @@
 									<option value="1">General Mailing List</option>
 								</select>
 							</div>
+						</div>
+					</div>
+					<div class="col-md-12">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" class="flat-green form-control" id="fullMembers" th:field="*{fullMembers}" />
+								All Full Members <b>(Cooperative business emails only)</b>
+							</label>
 						</div>
 					</div>
 		        </div>

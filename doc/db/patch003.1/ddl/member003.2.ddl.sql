@@ -1,0 +1,2 @@
+ALTER TABLE member
+		ALTER uuid SET NOT NULL;

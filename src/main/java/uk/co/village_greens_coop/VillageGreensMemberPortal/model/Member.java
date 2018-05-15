@@ -15,6 +15,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Table(name = "member")
 @NamedQueries({
 	@NamedQuery(name = Member.FIND_BY_SURNAME, query = "select m from Member m where m.surname = :surname"),
+	@NamedQuery(name = Member.FIND_BY_UUID, query = "select m from Member m where m.uuid = :uuid"),
 	@NamedQuery(name = Member.FIND_BY_STATUS, 
 		query = "select DISTINCT m from Member m where member_status_cd = :memberStatus order by m.memberno"),
 	@NamedQuery(name = Member.FIND_CONSENTED_BY_STATUS,
@@ -27,6 +28,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class Member implements java.io.Serializable {
 
 	public static final String FIND_BY_SURNAME = "Member.findBySurname";
+	public static final String FIND_BY_UUID = "Member.findByUuid";
 	public static final String FIND_BY_STATUS = "Member.findByMemberStatus";
 	public static final String FIND_COMMITTEE_MEMBERS = "Member.findCommitteeMembers";
 	public static final String FIND_COMMITTEE_AND_SYSADMIN_MEMBERS = "Member.findCommitteeAndSysAdminMembers";

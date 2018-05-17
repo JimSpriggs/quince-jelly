@@ -309,11 +309,20 @@ public class EmailService {
 			retval = retval.replaceAll("\\$\\{holding\\}", new DecimalFormat("###,###").format(member.getTotalInvestment()));
 			retval = retval.replaceAll("\\$\\{numshares\\}", "£" + new DecimalFormat("###,###").format(member.getTotalInvestment()));
 			retval = retval.replaceAll("\\$\\{memberno\\}", (member.getMemberno() != null ? member.getMemberno().toString() : "n/a"));
+			// every member email will now have an "unsubscribe" footer
+			retval = retval + getUnsubscribeFooter(member);
+			retval = retval.replaceAll("\\$\\{marketing_consent_url\\}", emailConsentUrlBase + member.getUuid());
 			retval = retval.replaceAll("\\$\\{unsubscribe_url\\}", emailUnsubscribeUrlBase + member.getUuid());
 		}
 		return retval;
 	}
-	
+
+	private String getUnsubscribeFooter(Member member) {
+		return "\n\nYou are receiving this email because you subscribed to Village Greens' mailing list. " +
+				"If you wish to unsubscribe, click here: " + emailUnsubscribeUrlBase + member.getUuid() + "\n\n" +
+				"Village Greens, 1 Longfield Centre, Prestwich, Manchester M25 1AY. UK\n";
+	}
+
 	@Transactional
 	public int sendQueuedStockEmails() {
 		int numSent = 0;

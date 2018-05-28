@@ -131,7 +131,7 @@ public class EmailService {
 				}
 			}
 			
-//			javaMailSender.send(mimeMessage);
+			javaMailSender.send(mimeMessage);
 			LOG.info("Email NOT sent successfully");
 		} catch (MessagingException e) {
 			LOG.error("Unable to send message: {}", emailDetail.toString(), e);
@@ -310,7 +310,9 @@ public class EmailService {
 			retval = retval.replaceAll("\\$\\{numshares\\}", "£" + new DecimalFormat("###,###").format(member.getTotalInvestment()));
 			retval = retval.replaceAll("\\$\\{memberno\\}", (member.getMemberno() != null ? member.getMemberno().toString() : "n/a"));
 			// every member email will now have an "unsubscribe" footer
-			retval = retval + getUnsubscribeFooter(member);
+			if (retval != null && !"".equals(retval.trim())) {
+				retval = retval + getUnsubscribeFooter(member);
+			}
 			retval = retval.replaceAll("\\$\\{marketing_consent_url\\}", emailConsentUrlBase + member.getUuid());
 			retval = retval.replaceAll("\\$\\{unsubscribe_url\\}", emailUnsubscribeUrlBase + member.getUuid());
 		}

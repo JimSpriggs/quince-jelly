@@ -16,8 +16,8 @@ public class StockEmailSenderScheduledTask {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(StockEmailSenderScheduledTask.class);
 	
-	@Scheduled(fixedRate = 300000)  // every 5 minutes
-	public void scavengeUnusedPasswordResetRequests() {
+	@Scheduled(fixedDelay = 10000)  // every 5 minutes
+	public void sendQueuedStockeEmails() {
 		LOG.info("Sending member emails...");
 		
 		try {

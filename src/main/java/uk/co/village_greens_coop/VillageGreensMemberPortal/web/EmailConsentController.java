@@ -18,6 +18,7 @@ import uk.co.village_greens_coop.VillageGreensMemberPortal.signup.SignupForm;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.support.web.MessageHelper;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 @Controller
@@ -34,8 +35,10 @@ public class EmailConsentController {
 	private ConsentService consentService;
 
 	@RequestMapping(value = "c/{uuid}")
-	public String consent(Model model, @PathVariable("uuid") String uuid) {
+	public String consent(HttpSession session, Model model, @PathVariable("uuid") String uuid) {
 		LOG.info("New consent request detected");
+		// don't want a session to linger any longer than necessary, using up server resources
+		session.invalidate();
 		if (consentService.captureConsent(uuid)) {
 			return CONSENT_VIEW_NAME;
 		} else {
@@ -44,8 +47,9 @@ public class EmailConsentController {
 	}
 
 	@RequestMapping(value = "u/{uuid}")
-	public String unsubscribe(Model model, @PathVariable("uuid") String uuid) {
+	public String unsubscribe(HttpSession session, Model model, @PathVariable("uuid") String uuid) {
 		LOG.info("New unsubscribe request detected");
+		session.invalidate();
 		if (consentService.unsubscribe(uuid)) {
 			model.addAttribute("memberUuid", uuid);
 			return UNSUBSCRIBE_VIEW_NAME;

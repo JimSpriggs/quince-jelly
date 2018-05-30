@@ -358,16 +358,18 @@ public class EmailService {
 				EmailDetail emailDetail = new EmailDetail();
 				if (member == null && listSubscriber == null) {
 					LOG.info("Sending stock email [id: {}] to adhoc recipient {}", stockEmail.getId(), emailRequest.getRecipientEmail());
+					emailDetail.setFromAddress("customers@village-greens-coop.co.uk");
+					emailDetail.setFromDisplay("Village Greens Customers");
 					emailDetail.setToAddress(emailRequest.getRecipientEmail());
 				} else if (member != null) {
 					LOG.info("Sending stock email [id: {}] to member [id: {}]", stockEmail.getId(), member.getId());
+					emailDetail.setFromAddress("members@village-greens-coop.co.uk");
+					emailDetail.setFromDisplay("Village Greens Members");
 					emailDetail.setToAddress(member.getEmail());
 				} else if (listSubscriber != null) {
 					LOG.info("Sending stock email [id: {}] to list subscriber [id: {}]", stockEmail.getId(), listSubscriber.getId());
 					emailDetail.setToAddress(listSubscriber.getEmail());
 				}
-				emailDetail.setFromAddress("members@village-greens-coop.co.uk");
-				emailDetail.setFromDisplay("Village Greens Members");
 				emailDetail.setSubject(stockEmail.getEmailSubject());
 				emailDetail.setTemplate(populatePlaceholders(stockEmail.getEmailBody(), member, listSubscriber));
 				emailDetail.setHtml(populatePlaceholders(stockEmail.getEmailHtmlBody(), member, listSubscriber));

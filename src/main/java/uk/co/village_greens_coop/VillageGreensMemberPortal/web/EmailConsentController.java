@@ -26,33 +26,59 @@ import javax.validation.Valid;
 public class EmailConsentController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(EmailConsentController.class);
-	private static final String CONSENT_VIEW_NAME = "email/consent";
+	private static final String MEMBER_CONSENT_VIEW_NAME = "email/member-consent";
+	private static final String LIST_SUBSCRIBER_CONSENT_VIEW_NAME = "email/list-subscriber-consent";
+	private static final String MEMBER_UNSUBSCRIBE_VIEW_NAME = "email/member-unsubscribe";
+	private static final String LIST_SUBSCRIBER_UNSUBSCRIBE_VIEW_NAME = "email/list-subscriber-unsubscribe";
 	private static final String CONSENT_ERROR_VIEW_NAME = "email/consent-error";
-	private static final String UNSUBSCRIBE_VIEW_NAME = "email/unsubscribe";
 	private static final String UNSUBSCRIBE_ERROR_VIEW_NAME = "email/unsubscribe-error";
 
 	@Autowired
 	private ConsentService consentService;
 
-	@RequestMapping(value = "c/{uuid}")
-	public String consent(HttpSession session, Model model, @PathVariable("uuid") String uuid) {
+	@RequestMapping(value = {"c/m/{uuid}", "c/{uuid}"})
+	public String memberConsent(HttpSession session, Model model, @PathVariable("uuid") String uuid) {
 		LOG.info("New consent request detected");
 		// don't want a session to linger any longer than necessary, using up server resources
 		session.invalidate();
-		if (consentService.captureConsent(uuid)) {
-			return CONSENT_VIEW_NAME;
+		if (consentService.memberConsent(uuid)) {
+			return MEMBER_CONSENT_VIEW_NAME;
 		} else {
 			return CONSENT_ERROR_VIEW_NAME;
 		}
 	}
 
-	@RequestMapping(value = "u/{uuid}")
-	public String unsubscribe(HttpSession session, Model model, @PathVariable("uuid") String uuid) {
+	@RequestMapping(value = {"u/m/{uuid}", "u/{uuid}"})
+	public String memberUnsubscribe(HttpSession session, Model model, @PathVariable("uuid") String uuid) {
 		LOG.info("New unsubscribe request detected");
 		session.invalidate();
-		if (consentService.unsubscribe(uuid)) {
+		if (consentService.memberUnsubscribe(uuid)) {
 			model.addAttribute("memberUuid", uuid);
-			return UNSUBSCRIBE_VIEW_NAME;
+			return MEMBER_UNSUBSCRIBE_VIEW_NAME;
+		} else {
+			return UNSUBSCRIBE_ERROR_VIEW_NAME;
+		}
+	}
+
+	@RequestMapping(value = "c/l/{uuid}")
+	public String listSubscriberConsent(HttpSession session, Model model, @PathVariable("uuid") String uuid) {
+		LOG.info("New consent request detected");
+		// don't want a session to linger any longer than necessary, using up server resources
+		session.invalidate();
+		if (consentService.listSubscriberConsent(uuid)) {
+			return LIST_SUBSCRIBER_CONSENT_VIEW_NAME;
+		} else {
+			return CONSENT_ERROR_VIEW_NAME;
+		}
+	}
+
+	@RequestMapping(value = "u/l/{uuid}")
+	public String listSubscriberUnsubscribe(HttpSession session, Model model, @PathVariable("uuid") String uuid) {
+		LOG.info("New unsubscribe request detected");
+		session.invalidate();
+		if (consentService.listSubscriberUnsubscribe(uuid)) {
+			model.addAttribute("listSubscriberUuid", uuid);
+			return LIST_SUBSCRIBER_UNSUBSCRIBE_VIEW_NAME;
 		} else {
 			return UNSUBSCRIBE_ERROR_VIEW_NAME;
 		}

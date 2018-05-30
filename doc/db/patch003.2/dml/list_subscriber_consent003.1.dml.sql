@@ -1,0 +1,1 @@
+INSERT INTO list_subscriber_consent (list_subscriber_id, marketing_in, creation_ts, update_ts) SELECT id, true, NOW(), NOW() FROM list_subscriber;

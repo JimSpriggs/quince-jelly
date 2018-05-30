@@ -28,4 +28,17 @@ public class ContactListDao {
             LOG.error("Exception finding ContactList {}", id, e);
             return null;
         }
-    }}
+    }
+
+    @Transactional(readOnly = true)
+    public ContactList findConsentedById(Long id) {
+        try {
+            return entityManager.createNamedQuery(ContactList.FIND_CONSENTED_BY_LIST, ContactList.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
+        } catch (PersistenceException e) {
+            LOG.error("Exception finding ContactList {}", id, e);
+            return null;
+        }
+    }
+}

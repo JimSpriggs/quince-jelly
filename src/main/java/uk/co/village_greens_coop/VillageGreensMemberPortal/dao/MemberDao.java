@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -37,12 +38,19 @@ public class MemberDao {
 	}
 	
 	public Member find(Serializable id) {
-		return entityManager.find(Member.class,  id);
+		return entityManager.find(Member.class, id);
 	}
 	
 	public Member findBySurname(String surname) {
 		return entityManager.createNamedQuery(Member.FIND_BY_SURNAME, Member.class)
 				.setParameter("surname", surname)
+				.getSingleResult();
+	}
+
+	@Transactional(noRollbackFor = NoResultException.class)
+	public Member findByUuid(String uuid) {
+		return entityManager.createNamedQuery(Member.FIND_BY_UUID, Member.class)
+				.setParameter("uuid", uuid)
 				.getSingleResult();
 	}
 
@@ -54,6 +62,12 @@ public class MemberDao {
 
 	public List<Member> getByMemberStatus(String memberStatus) {
 		return (List<Member>)entityManager.createNamedQuery(Member.FIND_BY_STATUS, Member.class)
+				.setParameter("memberStatus", memberStatus)
+				.getResultList();
+	}
+
+	public List<Member> getByConsentedMemberStatus(String memberStatus) {
+		return (List<Member>)entityManager.createNamedQuery(Member.FIND_CONSENTED_BY_STATUS, Member.class)
 				.setParameter("memberStatus", memberStatus)
 				.getResultList();
 	}
@@ -240,7 +254,11 @@ public class MemberDao {
 	public List<Member> getFullMembers() {
 		return getByMemberStatus("FULL");
 	}
-		
+
+	public List<Member> getFullConsentedMembers() {
+		return getByConsentedMemberStatus("FULL");
+	}
+
 	public List<Member> getPartPaidMembers() {
 		return getByMemberStatus("PART");
 	}

@@ -1,33 +1,15 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.service;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.mail.BodyPart;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.ContactListDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.MemberDao;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.dao.StockEmailDao;
@@ -40,8 +22,23 @@ import uk.co.village_greens_coop.VillageGreensMemberPortal.model.*;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.DocumentRow;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.model.api.StockEmailRow;
 
+import javax.mail.BodyPart;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
+import java.util.*;
+
 @Service
 public class EmailService {
+
+	@Value("${email.unsubscribe.url.base}")
+	private String emailUnsubscribeUrlBase;
+	@Value("${email.consent.url.base}")
+	private String emailConsentUrlBase;
 
 	private static final Logger LOG = LoggerFactory.getLogger(EmailService.class);
 
@@ -62,7 +59,7 @@ public class EmailService {
 	
 	@Autowired
 	private DocumentService documentService;
-	
+
 	@Transactional(readOnly = true)
 	public EmailDetail getStockEmailDetail(String purpose) {
 		StockEmail email = stockEmailRepository.findByPurpose(purpose);
@@ -135,7 +132,7 @@ public class EmailService {
 			}
 			
 			javaMailSender.send(mimeMessage);
-			LOG.info("Email sent successfully");
+			LOG.info("Email NOT sent successfully");
 		} catch (MessagingException e) {
 			LOG.error("Unable to send message: {}", emailDetail.toString(), e);
 			emailDetail.setError(e.getMessage());
@@ -232,6 +229,10 @@ public class EmailService {
 				List<Member> membersList = memberRepository.getFullMembers();
 				membersToSend.addAll(membersList);
 			}
+			if (sendStockEmailForm.getFullConsentedMembers()) {
+				List<Member> membersList = memberRepository.getFullConsentedMembers();
+				membersToSend.addAll(membersList);
+			}
 			if (sendStockEmailForm.getPartMembers()) {
 				List<Member> membersList = memberRepository.getPartPaidMembers();
 				membersToSend.addAll(membersList);
@@ -271,13 +272,13 @@ public class EmailService {
 		}
 
 		if (sendStockEmailForm.getMailingList()) {
-			ContactList contactList = contactListDao.findById(Long.parseLong(sendStockEmailForm.getContactListId()));
+			ContactList contactList = contactListDao.findConsentedById(Long.parseLong(sendStockEmailForm.getContactListId()));
 			if (contactList != null && contactList.getListSubscribers() != null) {
-				for (ListSubscriber subscriber: contactList.getListSubscribers()) {
-					StockEmailRequest emailRequest = new StockEmailRequest(stockEmail, subscriber.getEmail());
+				for (ListSubscriber listSubscriber: contactList.getListSubscribers()) {
+					StockEmailRequest emailRequest = new StockEmailRequest(listSubscriber, stockEmail);
 					stockEmailRequestRepository.save(emailRequest);
 					numRequested++;
-					LOG.info("Requested stock email {} for mailing list {} subscriber {}", stockEmail.getId(), contactList.getId(), subscriber.getId());
+					LOG.info("Requested stock email {} for mailing list {} subscriber {}", stockEmail.getId(), contactList.getId(), listSubscriber.getId());
 				}
 			}
 		}
@@ -297,7 +298,7 @@ public class EmailService {
 		return list;
 	}
 		
-	private String populateMemberPlaceholders(String bodyText, Member member) {
+	private String populatePlaceholders(String bodyText, Member member, ListSubscriber listSubscriber) {
 		String retval = bodyText;
 		if (retval != null && member != null) {
 			retval = retval.replaceAll("\\$\\{informalSalutation\\}", member.getSalutation(false));
@@ -308,10 +309,37 @@ public class EmailService {
 			retval = retval.replaceAll("\\$\\{holding\\}", new DecimalFormat("###,###").format(member.getTotalInvestment()));
 			retval = retval.replaceAll("\\$\\{numshares\\}", "£" + new DecimalFormat("###,###").format(member.getTotalInvestment()));
 			retval = retval.replaceAll("\\$\\{memberno\\}", (member.getMemberno() != null ? member.getMemberno().toString() : "n/a"));
+			// every member email will now have an "unsubscribe" footer
+			if (retval != null && !"".equals(retval.trim())) {
+				retval = retval + getUnsubscribeFooter(member);
+			}
+			retval = retval.replaceAll("\\$\\{marketing_consent_url\\}", emailConsentUrlBase + "m/" + member.getUuid());
+			retval = retval.replaceAll("\\$\\{unsubscribe_url\\}", emailUnsubscribeUrlBase + "m/" + member.getUuid());
+		} else if (retval != null && listSubscriber != null) {
+			retval = retval.replaceAll("\\$\\{marketing_consent_url\\}", emailConsentUrlBase + "l/" + listSubscriber.getUuid());
+			retval = retval.replaceAll("\\$\\{unsubscribe_url\\}", emailUnsubscribeUrlBase + "l/" + listSubscriber.getUuid());
+			// every list subscriber email will now have an "unsubscribe" footer
+			if (retval != null && !"".equals(retval.trim())) {
+				retval = retval + getUnsubscribeFooter(listSubscriber);
+			}
 		}
 		return retval;
 	}
-	
+
+	private String getUnsubscribeFooter(Member member) {
+		return getUnsubscribeFooter(emailUnsubscribeUrlBase + "m/" + member.getUuid());
+	}
+
+	private String getUnsubscribeFooter(ListSubscriber listSubscriber) {
+		return getUnsubscribeFooter(emailUnsubscribeUrlBase + "l/" + listSubscriber.getUuid());
+	}
+
+	private String getUnsubscribeFooter(String url) {
+		return String.format("\n\nYou are receiving this email because you subscribed to Village Greens' mailing list. " +
+				"If you wish to unsubscribe, click here: %s\n\n" +
+				"Village Greens, 1 Longfield Centre, Prestwich, Manchester M25 1AY. UK\n", url);
+	}
+
 	@Transactional
 	public int sendQueuedStockEmails() {
 		int numSent = 0;
@@ -319,23 +347,32 @@ public class EmailService {
 		for (StockEmailRequest emailRequest: emailRequests) {
 			StockEmail stockEmail = emailRequest.getStockEmail();
 			Member member = emailRequest.getMember();
+			ListSubscriber listSubscriber = emailRequest.getListSubscriber();
 			if (member != null && (member.getEmail() == null || member.getEmail().trim().equals(""))) {
 				LOG.warn("Member [id: {}] has no email address - not sending stock email", member.getId());
 				emailRequest.setError("No email address found for member");
+			} else if (listSubscriber != null && (listSubscriber.getEmail() == null || listSubscriber.getEmail().trim().equals(""))) {
+				LOG.warn("ListSubscriber [id: {}] has no email address - not sending stock email", member.getId());
+				emailRequest.setError("No email address found for list subscriber");
 			} else {
 				EmailDetail emailDetail = new EmailDetail();
-				if (member == null) {
+				if (member == null && listSubscriber == null) {
 					LOG.info("Sending stock email [id: {}] to adhoc recipient {}", stockEmail.getId(), emailRequest.getRecipientEmail());
+					emailDetail.setFromAddress("customers@village-greens-coop.co.uk");
+					emailDetail.setFromDisplay("Village Greens Customers");
 					emailDetail.setToAddress(emailRequest.getRecipientEmail());
-				} else {
+				} else if (member != null) {
 					LOG.info("Sending stock email [id: {}] to member [id: {}]", stockEmail.getId(), member.getId());
+					emailDetail.setFromAddress("members@village-greens-coop.co.uk");
+					emailDetail.setFromDisplay("Village Greens Members");
 					emailDetail.setToAddress(member.getEmail());
+				} else if (listSubscriber != null) {
+					LOG.info("Sending stock email [id: {}] to list subscriber [id: {}]", stockEmail.getId(), listSubscriber.getId());
+					emailDetail.setToAddress(listSubscriber.getEmail());
 				}
-				emailDetail.setFromAddress("members@village-greens-coop.co.uk");
-				emailDetail.setFromDisplay("Village Greens Members");
 				emailDetail.setSubject(stockEmail.getEmailSubject());
-				emailDetail.setTemplate(populateMemberPlaceholders(stockEmail.getEmailBody(), member));
-				emailDetail.setHtml(populateMemberPlaceholders(stockEmail.getEmailHtmlBody(), member));
+				emailDetail.setTemplate(populatePlaceholders(stockEmail.getEmailBody(), member, listSubscriber));
+				emailDetail.setHtml(populatePlaceholders(stockEmail.getEmailHtmlBody(), member, listSubscriber));
 				if (stockEmail.getAttachments() != null && stockEmail.getAttachments().size() > 0) {
 					EmailAttachment[] attachments = new EmailAttachment[stockEmail.getAttachments().size()];
 					int index = 0;

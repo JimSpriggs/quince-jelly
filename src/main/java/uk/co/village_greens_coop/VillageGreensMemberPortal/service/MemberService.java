@@ -60,7 +60,17 @@ public class MemberService {
 		Member member = memberRepository.find(id);
 		return member;
 	}
-	
+
+	@Transactional(readOnly = true)
+	public Member getByUuid(String uuid) {
+		try {
+			return memberRepository.findByUuid(uuid);
+		} catch (RuntimeException e) {
+			LOG.error("Exception caught when attempting to find member with uuid {}", uuid, e);
+		}
+		return null;
+	}
+
 	private List<MemberRow> convertMembersToMemberRows(List<Member> members) {
 		List<MemberRow> memberRows = new ArrayList<MemberRow>();
 		if (members != null) {

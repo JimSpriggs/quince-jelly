@@ -22,7 +22,7 @@ import javax.persistence.Table;
 })
 public class StockEmailRequest implements java.io.Serializable {
 
-	public static final String FIND_UNSENT = "StockEmailRequestfindUnsent";
+	public static final String FIND_UNSENT = "StockEmailRequest.findUnsent";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +39,9 @@ public class StockEmailRequest implements java.io.Serializable {
 	@JoinColumn(name = "member_id")
 	private Member member;
 	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "list_subscriber_id")
+	private ListSubscriber listSubscriber;
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "stock_email_id")
 	private StockEmail stockEmail;
 	
@@ -47,6 +50,12 @@ public class StockEmailRequest implements java.io.Serializable {
 
 	public StockEmailRequest(final Member member, final StockEmail stockEmail) {
 		this.member = member;
+		this.stockEmail = stockEmail;
+		this.requestTimestamp = new Date();
+	}
+
+	public StockEmailRequest(final ListSubscriber listSubscriber, final StockEmail stockEmail) {
+		this.listSubscriber = listSubscriber;
 		this.stockEmail = stockEmail;
 		this.requestTimestamp = new Date();
 	}
@@ -96,6 +105,14 @@ public class StockEmailRequest implements java.io.Serializable {
 
 	public void setMember(Member member) {
 		this.member = member;
+	}
+
+	public ListSubscriber getListSubscriber() {
+		return listSubscriber;
+	}
+
+	public void setListSubscriber(ListSubscriber listSubscriber) {
+		this.listSubscriber = listSubscriber;
 	}
 
 	public StockEmail getStockEmail() {

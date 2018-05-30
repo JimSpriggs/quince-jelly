@@ -6,12 +6,18 @@ import java.util.Set;
 
 @Entity
 @Table(name = "contact_list")
-@NamedQuery(name = ContactList.FIND_BY_LIST, query = "select cl from ContactList cl where cl.id = :id")
+@NamedQueries({
+	@NamedQuery(name = ContactList.FIND_BY_LIST,
+		query = "select cl from ContactList cl where cl.id = :id"),
+	@NamedQuery(name = ContactList.FIND_CONSENTED_BY_LIST,
+		query = "select cl from ContactList cl inner join fetch cl.listSubscribers ls inner join fetch ls.listSubscriberConsents lsc where lsc.marketing = true AND cl.id = :id order by lsc.id")
+})
 public class ContactList implements java.io.Serializable {
 
 	private static final long serialVersionUID = -2065528089497586759L;
 
 	public static final String FIND_BY_LIST = "ContactList.findByList";
+	public static final String FIND_CONSENTED_BY_LIST = "ContactList.findConsentedByList";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,13 +1,15 @@
 package uk.co.village_greens_coop.VillageGreensMemberPortal.model;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "list_subscriber")
-@NamedQuery(name = ListSubscriber.FIND_BY_ID, query = "select ls from ListSubscriber ls where ls.id = :id")
+@NamedQuery(name = ListSubscriber.FIND_BY_UUID, query = "select ls from ListSubscriber ls where ls.uuid = :uuid")
 public class ListSubscriber implements java.io.Serializable {
 
-	public static final String FIND_BY_ID = "ListSubscriber.findById";
+	public static final String FIND_BY_UUID = "ListSubscriber.findByUuid";
 
 	private static final long serialVersionUID = -7205404602741560810L;
 
@@ -31,6 +33,12 @@ public class ListSubscriber implements java.io.Serializable {
 	@Column(name = "email")
 	private String email;
 
+	@Column(name = "uuid")
+	private String uuid;
+
+	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="listSubscriber")
+	private Set<ListSubscriberConsent> listSubscriberConsents = new HashSet<>();
+
 	public ListSubscriber() {
 	}
 
@@ -41,6 +49,7 @@ public class ListSubscriber implements java.io.Serializable {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
+		this.uuid = uuid;
 	}
 
 	public Long getId() {
@@ -89,5 +98,21 @@ public class ListSubscriber implements java.io.Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	public Set<ListSubscriberConsent> getListSubscriberConsents() {
+		return listSubscriberConsents;
+	}
+
+	public void setListSubscriberConsents(Set<ListSubscriberConsent> listSubscriberConsents) {
+		this.listSubscriberConsents = listSubscriberConsents;
 	}
 }

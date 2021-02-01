@@ -24,6 +24,7 @@ public class DashboardService {
 		dashboardRepository.getOverdueMembersCount(dashboard);
 		dashboardRepository.getCertifiableMembersCount(dashboard);
 		dashboardRepository.getCommitteeMembersCount(dashboard);
+		dashboardRepository.getRefundedMembersCount(dashboard);
 		dashboardRepository.getStockEmailCount(dashboard);
 		dashboardRepository.getDocumentCount(dashboard);
 		return dashboard;

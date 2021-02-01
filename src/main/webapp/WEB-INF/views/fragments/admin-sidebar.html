@@ -52,13 +52,6 @@
 									<i class="fa fa-angle-double-right"></i>Add Member
 								</a>
 							</li>
-							<li th:class="${activeSubmenu == 'ALL'} ? 'active'">
-								<a th:href="@{/admin/allMembers}" href="allMembers.html">
-									<i class="fa fa-angle-double-right"></i><span>All Members</span>
-									<small class="badge pull-right alert-info"
-										th:text="${dashboard.allMembers}">400</small>
-								</a>
-							</li>
 							<li th:class="${activeSubmenu == 'FULL'} ? 'active'">
 								<a th:href="@{/admin/fullMembers}" href="fullMembers.html">
 									<i class="fa fa-angle-double-right"></i><span>All Full Members</span>
@@ -66,32 +59,11 @@
 										th:text="${dashboard.fullMembers}">400</small>
 								</a>
 							</li>
-							<li th:class="${activeSubmenu == 'CERTIFIABLE'} ? 'active'">
-								<a th:href="@{/admin/certifiableMembers}" href="certifiableMembers.html">
-									<i class="fa fa-angle-double-right"></i><span>Certifiable Members</span>
-									<small class="badge pull-right alert-warning"
-										th:text="${dashboard.certifiableMembers}">400</small>
-								</a>
-							</li>
-							<li th:class="${activeSubmenu == 'PART'} ? 'active'">
-								<a th:href="@{/admin/partialMembers}" href="partialMembers.html">
-									<i class="fa fa-angle-double-right"></i><span>Part-paid Members</span>
-									<small class="badge pull-right alert-warning"
-										th:text="${dashboard.partMembers}">400</small>
-								</a>
-							</li>
-							<li th:class="${activeSubmenu == 'UNPAID'} ? 'active'">
-								<a th:href="@{/admin/unpaidMembers}" href="unpaidMembers.html">
-									<i class="fa fa-angle-double-right"></i><span>Unpaid Members</span>
+							<li th:class="${activeSubmenu == 'DOWNLOAD'} ? 'active'">
+								<a th:href="@{/admin/downloadMembers.xlsx}" href="downloadMembers.xlsx">
+									<i class="fa fa-file-excel-o"></i><span>Download As Excel</span>
 									<small class="badge pull-right alert-danger"
-										th:text="${dashboard.unpaidMembers}">400</small>
-								</a>
-							</li>
-							<li th:class="${activeSubmenu == 'OVERDUE'} ? 'active'">
-								<a th:href="@{/admin/overduePayments}" href="overduePayments.html">
-									<i class="fa fa-angle-double-right"></i><span>Overdue Members</span>
-									<small class="badge pull-right alert-danger"
-										th:text="${dashboard.overdueMembers}">400</small>
+										   th:text="${dashboard.fullMembers}">400</small>
 								</a>
 							</li>
 							<li th:class="${activeSubmenu == 'COMMITTEE'} ? 'active'">
@@ -101,11 +73,11 @@
 										th:text="${dashboard.committeeMembers}">400</small>
 								</a>
 							</li>
-							<li th:class="${activeSubmenu == 'DOWNLOAD'} ? 'active'">
-								<a th:href="@{/admin/downloadMembers.xlsx}" href="downloadMembers.xlsx">
-									<i class="fa fa-file-excel-o"></i><span>Download As Excel</span>
+							<li th:class="${activeSubmenu == 'REFUNDED'} ? 'active'">
+								<a th:href="@{/admin/refundedMembers}" href="refundedMembers.html">
+									<i class="fa fa-angle-double-right"></i><span>Refunded Members</span>
 									<small class="badge pull-right alert-danger"
-										   th:text="${dashboard.allMembers}">400</small>
+										th:text="${dashboard.refundedMembers}">400</small>
 								</a>
 							</li>
 						</ul>

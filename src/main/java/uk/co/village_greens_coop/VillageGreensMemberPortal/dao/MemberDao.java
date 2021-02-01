@@ -294,7 +294,7 @@ public class MemberDao {
 	public List<MemberRow> getAllMemberRowsForDownload() {
 
 		// get a list of members who could be overdue
-		List<Member> members = getAll();
+		List<Member> members = getFullMembers();
 
 		return getMemberRowsWithTelephoneNumbers(members);
 	}

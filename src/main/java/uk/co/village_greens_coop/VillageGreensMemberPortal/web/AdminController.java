@@ -171,6 +171,15 @@ public class AdminController {
     	return "admin/members";
     }
     
+    @RequestMapping(value = "refundedMembers", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public String getRefundedMembers(HttpServletRequest request, Model model) {
+    	model.addAttribute("memberStatus", "REFUNDED");
+    	request.getSession().setAttribute("memberStatus", "REFUNDED");
+    	addMemberModelAttributes("REFUNDED", model);
+    	return "admin/members";
+    }
+
     @RequestMapping(value = "memberRows", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody MemberRows getMemberRows(

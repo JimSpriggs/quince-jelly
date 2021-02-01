@@ -43,13 +43,13 @@ public class DashboardDao {
 		if (results != null) {
 			for (Object result: results) {
 				Object[] row = (Object[]) result;
-				String status = (String)row[0];
-				BigInteger count = (BigInteger)row[1];
-				BigDecimal total = (BigDecimal)row[2];
+				String status = (String) row[0];
+				BigInteger count = (BigInteger) row[1];
+				BigDecimal total = (BigDecimal) row[2];
 				if (total == null) {
 					total = new BigDecimal("0.00");
 				}
-				
+
 				if ("FULL".equals(status)) {
 					dashboard.setFullMembers(count.intValue());
 					dashboard.setPaidPledges(total);
@@ -59,6 +59,9 @@ public class DashboardDao {
 				} else if ("UNPAID".equals(status)) {
 					dashboard.setUnpaidMembers(count.intValue());
 					// unpaid members, by definition, have made no payments
+				} else if ("REFUNDED".equals(status)) {
+					dashboard.setRefundedMembers(count.intValue());
+					dashboard.setRefundPayments(total);
 				}
 			}
 		}
@@ -66,7 +69,7 @@ public class DashboardDao {
 
 	public void getTotalPledges(Dashboard dashboard) {
 		String countsQuery = 
-				"SELECT SUM(totalinvestment) FROM member";
+				"SELECT SUM(totalinvestment) FROM member m WHERE m.member_status_cd <> 'REFUNDED'";
 		Query q = entityManager.createNativeQuery(countsQuery);
 		Object row = q.getSingleResult();
 		dashboard.setTotalPledges((BigDecimal)row);
@@ -100,6 +103,15 @@ public class DashboardDao {
 		Query q = entityManager.createNativeQuery(countsQuery);
 		BigInteger count = (BigInteger) q.getSingleResult();
 		dashboard.setCertifiableMembers(count.intValue());
+	}
+
+	public void getRefundedMembersCount(Dashboard dashboard) {
+		String countsQuery =
+				"SELECT COUNT(*) FROM member m "
+						+ "WHERE m.member_status_cd = 'REFUNDED'";
+		Query q = entityManager.createNativeQuery(countsQuery);
+		BigInteger count = (BigInteger) q.getSingleResult();
+		dashboard.setRefundedMembers(count.intValue());
 	}
 
 	public void getCommitteeMembersCount(Dashboard dashboard) {

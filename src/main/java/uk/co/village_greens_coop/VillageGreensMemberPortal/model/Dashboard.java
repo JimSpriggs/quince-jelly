@@ -12,10 +12,12 @@ public class Dashboard implements java.io.Serializable {
 	private int overdueMembers;
 	private int certifiableMembers;
 	private int committeeMembers;
+	private int refundedMembers;
 	private BigDecimal totalPledges = new BigDecimal("0.00");
 	private BigDecimal paidPledges = new BigDecimal("0.00");
 	private BigDecimal partPayments = new BigDecimal("0.00");
 	private BigDecimal overduePayments = new BigDecimal("0.00");
+	private BigDecimal refundPayments = new BigDecimal("0.00");
 	private int overduePaymentsCount;
 	private int stockEmailCount;
 	private int documentCount;
@@ -133,5 +135,21 @@ public class Dashboard implements java.io.Serializable {
 
 	public void setCommitteeMembers(int committeeMembers) {
 		this.committeeMembers = committeeMembers;
+	}
+
+	public int getRefundedMembers() {
+		return refundedMembers;
+	}
+
+	public void setRefundedMembers(int refundedMembers) {
+		this.refundedMembers = refundedMembers;
+	}
+
+	public BigDecimal getRefundPayments() {
+		return refundPayments;
+	}
+
+	public void setRefundPayments(BigDecimal refundPayments) {
+		this.refundPayments = refundPayments;
 	}
 }

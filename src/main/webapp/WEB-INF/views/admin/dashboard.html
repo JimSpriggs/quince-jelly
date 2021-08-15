@@ -43,13 +43,13 @@
 							<!-- small box -->
 							<div class="small-box bg-aqua">
 								<div class="inner">
-									<h3 th:text="${dashboard.allMembers}">400</h3>
+									<h3 th:text="${dashboard.fullMembers}">400</h3>
 									<p>All Members</p>
 								</div>
 								<div class="icon">
 									<i class="ion ion-person-stalker"></i>
 								</div>
-								<a href="allMembers" class="small-box-footer">
+								<a href="fullMembers" class="small-box-footer">
 								More info <i class="fa fa-arrow-circle-right"></i>
 								</a>
 							</div>
@@ -58,13 +58,13 @@
 							<!-- small box -->
 							<div class="small-box bg-aqua">
 								<div class="inner">
-									<h3 th:text="${'&pound;' + dashboard.totalPledges}">&pound;95,035</h3>
+									<h3 th:text="${'&pound;' + dashboard.paidPledges}">&pound;95,035</h3>
 									<p>Total Investment</p>
 								</div>
 								<div class="icon">
 									<i class="fa fa-money"></i>
 								</div>
-								<a href="allMembers" class="small-box-footer">
+								<a href="fullMembers" class="small-box-footer">
 								More info <i class="fa fa-arrow-circle-right"></i>
 								</a>
 							</div>
@@ -75,14 +75,14 @@
 							<!-- small box -->
 							<div class="small-box bg-red">
 								<div class="inner">
-									<h3 th:text="${dashboard.unpaidMembers}">35</h3>
-									<p>Unpaid Members</p>
+									<h3 th:text="${dashboard.refundedMembers}">35</h3>
+									<p>Refunded Ex-members</p>
 								</div>
 								<div class="icon">
 									<i class="ion ion-person-stalker"></i>
 								</div>
-								<a href="unpaidMembers" class="small-box-footer">
-								More info <i class="fa fa-arrow-circle-right"></i>
+								<a href="refundedMembers" class="small-box-footer">
+									More info <i class="fa fa-arrow-circle-right"></i>
 								</a>
 							</div>
 						</div><!-- ./col -->
@@ -90,78 +90,14 @@
 							<!-- small box -->
 							<div class="small-box bg-red">
 								<div class="inner">
-									<h3 th:text="${'&pound;' + dashboard.overduePayments}">&pound;8,700</h3>
-									<p>Overdue payments</p>
+									<h3 th:text="${'&pound;' + dashboard.refundPayments}">&pound;8,700</h3>
+									<p>Refund payments</p>
 								</div>
 								<div class="icon">
 									<i class="fa fa-money"></i>
 								</div>
-								<a href="overduePayments" class="small-box-footer">
-								More info <i class="fa fa-arrow-circle-right"></i>
-								</a>
-							</div>
-						</div><!-- ./col -->
-					</div> <!-- row -->
-					<div class="row">
-						<div class="col-xs-4">
-							<!-- small box -->
-							<div class="small-box bg-yellow">
-								<div class="inner">
-									<h3 th:text="${dashboard.partMembers}">36</h3>
-									<p>Part-paid Members</p>
-								</div>
-								<div class="icon">
-									<i class="ion ion-person-stalker"></i>
-								</div>
-								<a href="partialMembers" class="small-box-footer">
-								More info <i class="fa fa-arrow-circle-right"></i>
-								</a>
-							</div>
-						</div><!-- ./col -->
-						<div class="col-xs-6 col-sm-4">
-							<!-- small box -->
-							<div class="small-box bg-yellow">
-								<div class="inner">
-									<h3 th:text="${'&pound;' + dashboard.partPayments}">&pound;4,875</h3>
-									<p>Part-payments</p>
-								</div>
-								<div class="icon">
-									<i class="fa fa-money"></i>
-								</div>
-								<a href="partialMembers" class="small-box-footer">
-								More info <i class="fa fa-arrow-circle-right"></i>
-								</a>
-							</div>
-						</div><!-- ./col -->
-					</div> <!-- row -->
-					<div class="row">
-						<div class="col-xs-4">
-							<!-- small box -->
-							<div class="small-box bg-green">
-								<div class="inner">
-									<h3 th:text="${dashboard.fullMembers}">341</h3>
-									<p>Full Members</p>
-								</div>
-								<div class="icon">
-									<i class="ion ion-person-stalker"></i>
-								</div>
-								<a href="fullMembers" class="small-box-footer">
-								More info <i class="fa fa-arrow-circle-right"></i>
-								</a>
-							</div>
-						</div><!-- ./col -->
-						<div class="col-xs-6 col-sm-4">
-							<!-- small box -->
-							<div class="small-box bg-green">
-								<div class="inner">
-									<h3 th:text="${'&pound;' + dashboard.paidPledges}">&pound;87,250</h3>
-									<p>Paid in full</p>
-								</div>
-								<div class="icon">
-									<i class="fa fa-money"></i>
-								</div>
-								<a href="fullMembers" class="small-box-footer">
-								More info <i class="fa fa-arrow-circle-right"></i>
+								<a href="refundedMembers" class="small-box-footer">
+									More info <i class="fa fa-arrow-circle-right"></i>
 								</a>
 							</div>
 						</div><!-- ./col -->

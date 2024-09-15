@@ -132,7 +132,7 @@ public class EmailService {
 			}
 			
 			javaMailSender.send(mimeMessage);
-			LOG.info("Email NOT sent successfully");
+			LOG.info("Email sent successfully");
 		} catch (MessagingException e) {
 			LOG.error("Unable to send message: {}", emailDetail.toString(), e);
 			emailDetail.setError(e.getMessage());
@@ -356,15 +356,13 @@ public class EmailService {
 				emailRequest.setError("No email address found for list subscriber");
 			} else {
 				EmailDetail emailDetail = new EmailDetail();
-				emailDetail.setFromAddress("customers@village-greens-coop.co.uk");
-				emailDetail.setFromDisplay("Village Greens Customers");
+				emailDetail.setFromAddress("members@village-greens-coop.co.uk");
+				emailDetail.setFromDisplay("Village Greens Members");
 				if (member == null && listSubscriber == null) {
 					LOG.info("Sending stock email [id: {}] to adhoc recipient {}", stockEmail.getId(), emailRequest.getRecipientEmail());
 					emailDetail.setToAddress(emailRequest.getRecipientEmail());
 				} else if (member != null) {
 					LOG.info("Sending stock email [id: {}] to member [id: {}]", stockEmail.getId(), member.getId());
-					emailDetail.setFromAddress("members@village-greens-coop.co.uk");
-					emailDetail.setFromDisplay("Village Greens Members");
 					emailDetail.setToAddress(member.getEmail());
 				} else if (listSubscriber != null) {
 					LOG.info("Sending stock email [id: {}] to list subscriber [id: {}]", stockEmail.getId(), listSubscriber.getId());

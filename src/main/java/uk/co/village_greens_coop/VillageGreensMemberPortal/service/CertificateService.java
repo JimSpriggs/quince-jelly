@@ -8,6 +8,9 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +24,6 @@ import uk.co.village_greens_coop.VillageGreensMemberPortal.model.StockEmail;
 import uk.co.village_greens_coop.VillageGreensMemberPortal.utils.Utils;
 
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.PdfStamper;
 
 @Service
 public class CertificateService {
@@ -166,9 +165,9 @@ public class CertificateService {
 		EmailDetail emailDetail = emailService.getStockEmailDetail(StockEmail.EMAIL_PURPOSE_MEMBER_CERTIFICATE);
 		if (emailDetail != null) {
 			emailDetail.setTemplate(emailDetail.getTemplate().replaceAll("\\$\\{salutation\\}", member.getSalutation(false)));
-			emailDetail.setFromAddress("info@village-greens-coop.co.uk");
+			emailDetail.setFromAddress("members@village-greens-coop.co.uk");
 			emailDetail.setToAddress(member.getEmail());
-			emailDetail.setFromDisplay("Village Greens Info");
+			emailDetail.setFromDisplay("Village Greens Members");
 			EmailAttachment[] atts = new EmailAttachment[1];
 			atts[0] = new EmailAttachment(fileName, fullFileName);
 			emailDetail.setAttachments(atts);
@@ -238,49 +237,40 @@ public class CertificateService {
 		// get the content layer for stamping over the existing content
 		try {
 			PdfContentByte content = stamper.getOverContent(1);
-			content.beginText();
-			
-			BaseFont bfSmall = createBaseFont("DIN-Light.ttf", "images/din-light.ttf");
-//			BaseFont bfLarge = createBaseFont("FestivoLettersNo6.otf", "images/FestivoLettersNo.6.otf");
 
+			BaseFont bfSmall = createBaseFont("FestivoLettersNo6.otf", "images/FestivoLettersNo.6.otf");
 			content.setRGBColorFill(71, 55, 41);
 
 			String memberName = member.getDisplayName();
 			if (memberName.length() >= 30) {
-				content.setFontAndSize(bfSmall, 22F);
-				content.showTextAligned(PdfContentByte.ALIGN_LEFT, 
-						memberName,
+				ColumnText.showTextAligned(content, PdfContentByte.ALIGN_LEFT,
+						new Phrase(memberName, new Font(bfSmall, 22F)),
 						344,276,0);
 			} else if (memberName.length() > 28) {
-				content.setFontAndSize(bfSmall, 22F);
-				content.showTextAligned(PdfContentByte.ALIGN_CENTER, 
-						memberName,
+				ColumnText.showTextAligned(content, PdfContentByte.ALIGN_CENTER,
+						new Phrase(memberName, new Font(bfSmall, 22F)),
 						504,276,0);
 			} else {
 				content.setFontAndSize(bfSmall, 24F);
-				content.showTextAligned(PdfContentByte.ALIGN_CENTER, 
-						memberName,
+				ColumnText.showTextAligned(content, PdfContentByte.ALIGN_CENTER,
+						new Phrase(memberName, new Font(bfSmall, 24F)),
 						504,276,0);
 			}
 
-			content.setFontAndSize(bfSmall, 24F);
-			content.showTextAligned(PdfContentByte.ALIGN_RIGHT, 
-					new DecimalFormat("###,###").format(member.getTotalInvestment()),
+			ColumnText.showTextAligned(content, PdfContentByte.ALIGN_RIGHT,
+					new Phrase(new DecimalFormat("###,###").format(member.getTotalInvestment()), new Font(bfSmall, 24F)),
 					656,230,0);
 
-			content.setFontAndSize(bfSmall, 16F);
-			content.setRGBColorFill(71, 55, 41);
-			content.showTextAligned(PdfContentByte.ALIGN_RIGHT, 
-					new DecimalFormat("0").format(member.getMemberno()),
+			ColumnText.showTextAligned(content, PdfContentByte.ALIGN_RIGHT,
+					new Phrase(new DecimalFormat("0").format(member.getMemberno()), new Font(bfSmall, 16F)),
 					718,132,0);
-			content.showTextAligned(PdfContentByte.ALIGN_RIGHT, 
-					new DecimalFormat("###,###").format(member.getTotalInvestment()),
+			ColumnText.showTextAligned(content, PdfContentByte.ALIGN_RIGHT,
+					new Phrase(new DecimalFormat("###,###").format(member.getTotalInvestment()), new Font(bfSmall, 16F)),
 					718,98,0);
-			content.showTextAligned(PdfContentByte.ALIGN_RIGHT, 
-					String.format("%s", new SimpleDateFormat("dd MMMM yyyy").format(member.getCertificateGenerated())),
+			ColumnText.showTextAligned(content, PdfContentByte.ALIGN_RIGHT,
+					new Phrase(String.format("%s", new SimpleDateFormat("dd MMMM yyyy").format(member.getCertificateGenerated())), new Font(bfSmall, 16F)),
 					380,98,0);
 			
-			content.endText();
 			stamper.close();
 		} catch (DocumentException e) {
 			LOG.error("DocumentException caught writing certificate", e);
@@ -297,8 +287,8 @@ public class CertificateService {
 	protected BaseFont createBaseFont(String fontName, String fontFile) {
 		try {
 			byte[] fontBytes = Utils.getClassPathResourceIntoByteArray(fontFile);
-			BaseFont bf = BaseFont.createFont(fontName, BaseFont.WINANSI, BaseFont.EMBEDDED, BaseFont.NOT_CACHED, fontBytes, null);
-			return bf;
+			BaseFont thebf = BaseFont.createFont(fontName, BaseFont.WINANSI, BaseFont.EMBEDDED, BaseFont.NOT_CACHED, fontBytes, null);
+			return thebf;
 		} catch (DocumentException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

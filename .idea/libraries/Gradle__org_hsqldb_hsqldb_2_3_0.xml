@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="Gradle: org.hsqldb:hsqldb:2.3.0">
+  <library name="Gradle: org.hsqldb:hsqldb:2.3.0" external-system-id="GRADLE">
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hsqldb/hsqldb/2.3.0/93306187b1a782f2b929d12536022185487037d2/hsqldb-2.3.0.jar!/" />
     </CLASSES>

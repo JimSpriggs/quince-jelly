@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="Gradle: javax.mail:mail:1.4">
+  <library name="Gradle: javax.mail:mail:1.4" external-system-id="GRADLE">
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.mail/mail/1.4/1aa1579ae5ecd41920c4f355b0a9ef40b68315dd/mail-1.4.jar!/" />
     </CLASSES>

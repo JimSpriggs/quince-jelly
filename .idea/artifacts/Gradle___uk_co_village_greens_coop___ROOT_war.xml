@@ -1,8 +1,11 @@
 <component name="ArtifactManager">
-  <artifact type="war" name="Gradle : uk.co.village-greens-coop : ROOT.war">
+  <artifact type="war" external-system-id="GRADLE" name="Gradle : uk.co.village-greens-coop : ROOT.war">
     <output-path>$PROJECT_DIR$/build/libs</output-path>
     <properties id="gradle-properties">
-      <options external-project-path="$PROJECT_DIR$" />
+      <options external-project-path="$PROJECT_DIR$">
+        <buildTaskPath>:war</buildTaskPath>
+        <cleanTaskPath>:cleanWar</cleanTaskPath>
+      </options>
     </properties>
     <root id="archive" name="ROOT.war">
       <element id="artifact" artifact-name="Gradle : uk.co.village-greens-coop : ROOT.war (exploded)" />

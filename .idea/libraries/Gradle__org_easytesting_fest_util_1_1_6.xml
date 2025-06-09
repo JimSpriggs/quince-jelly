@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="Gradle: org.easytesting:fest-util:1.1.6">
+  <library name="Gradle: org.easytesting:fest-util:1.1.6" external-system-id="GRADLE">
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.easytesting/fest-util/1.1.6/e785ee9c1f314bbf9e5a824b85143e440642557a/fest-util-1.1.6.jar!/" />
     </CLASSES>

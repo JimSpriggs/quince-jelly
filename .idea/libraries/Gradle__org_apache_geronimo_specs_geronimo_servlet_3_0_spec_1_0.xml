@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="Gradle: org.apache.geronimo.specs:geronimo-servlet_3.0_spec:1.0">
+  <library name="Gradle: org.apache.geronimo.specs:geronimo-servlet_3.0_spec:1.0" external-system-id="GRADLE">
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.geronimo.specs/geronimo-servlet_3.0_spec/1.0/d45e479fd200236c71182c5f6b6077a5fb53f89/geronimo-servlet_3.0_spec-1.0.jar!/" />
     </CLASSES>

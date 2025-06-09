@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="Gradle: org.hibernate:hibernate-entitymanager:4.2.5.Final">
+  <library name="Gradle: org.hibernate:hibernate-entitymanager:4.2.5.Final" external-system-id="GRADLE">
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hibernate/hibernate-entitymanager/4.2.5.Final/2f4e93876023b3c346c2db21a1d73cd4e9dbf243/hibernate-entitymanager-4.2.5.Final.jar!/" />
     </CLASSES>

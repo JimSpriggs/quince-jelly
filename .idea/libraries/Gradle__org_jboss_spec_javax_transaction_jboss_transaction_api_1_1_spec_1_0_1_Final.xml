@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="Gradle: org.jboss.spec.javax.transaction:jboss-transaction-api_1.1_spec:1.0.1.Final">
+  <library name="Gradle: org.jboss.spec.javax.transaction:jboss-transaction-api_1.1_spec:1.0.1.Final" external-system-id="GRADLE">
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jboss.spec.javax.transaction/jboss-transaction-api_1.1_spec/1.0.1.Final/18f0e1d42f010a8b53aa447bf274a706d5148852/jboss-transaction-api_1.1_spec-1.0.1.Final.jar!/" />
     </CLASSES>

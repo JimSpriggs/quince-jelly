@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="Gradle: javax.activation:activation:1.1">
+  <library name="Gradle: javax.activation:activation:1.1" external-system-id="GRADLE">
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.activation/activation/1.1/e6cb541461c2834bdea3eb920f1884d1eb508b50/activation-1.1.jar!/" />
     </CLASSES>

@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="Gradle: org.springframework:spring-test:4.3.3.RELEASE">
+  <library name="Gradle: org.springframework:spring-test:4.3.3.RELEASE" external-system-id="GRADLE">
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-test/4.3.3.RELEASE/c2762ee500a939ded0435d11957e7630690de2f2/spring-test-4.3.3.RELEASE.jar!/" />
     </CLASSES>
